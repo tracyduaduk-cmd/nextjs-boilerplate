@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/spatial/Reveal";
 import { SplitText } from "@/components/spatial/SplitText";
@@ -26,9 +26,6 @@ import {
   LockKeyhole,
   PenTool,
   ArrowRight,
-  Check,
-  X,
-  Send,
 } from "lucide-react";
 
 interface ServiceExplorerProps {
@@ -52,12 +49,11 @@ const iconMap: Record<string, React.ElementType> = {
 export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({
   className = "",
 }) => {
+  const router = useRouter();
   const [services, setServices] = useState<ServiceRecord[]>(FALLBACK_SERVICES);
   const [selectedFamilyId, setSelectedFamilyId] = useState<CapabilityFamilyId>("WEB");
   const [activeServiceSlug, setActiveServiceSlug] = useState<string>("web-development");
   const [activeDiagnosticOptionId, setActiveDiagnosticOptionId] = useState<string | null>(null);
-  const [requestModalService, setRequestModalService] = useState<ServiceRecord | null>(null);
-  const [requestSubmitted, setRequestSubmitted] = useState(false);
 
   const explorerRef = useRef<HTMLElement>(null);
 
@@ -104,6 +100,11 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({
   // Handle problem diagnostic selection
   const handleDiagnosticSelect = (option: ProblemOption) => {
     setActiveDiagnosticOptionId(option.id);
+    if (option.id === "not-sure") {
+      router.push("/request?mode=diagnostic");
+      return;
+    }
+
     setSelectedFamilyId(option.capabilityFamily);
     if (option.recommendedSlug) {
       setActiveServiceSlug(option.recommendedSlug);
@@ -115,10 +116,9 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({
     }
   };
 
-  // Handle request CTA
+  // Handle request CTA -> navigate to /request?service=slug
   const handleRequestService = (service: ServiceRecord) => {
-    setRequestModalService(service);
-    setRequestSubmitted(false);
+    router.push(`/request?service=${encodeURIComponent(service.slug)}`);
   };
 
   return (
@@ -261,125 +261,6 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({
           </PerspectiveContainer>
         </Container>
       </section>
-
-      {/* 3. Request Service Modal Context */}
-      <AnimatePresence>
-        {requestModalService && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/80 backdrop-blur-md">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="relative w-full max-w-lg p-6 sm:p-8 rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl text-slate-100"
-            >
-              <button
-                type="button"
-                onClick={() => setRequestModalService(null)}
-                className="absolute top-5 right-5 p-2 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
-                aria-label="Close modal"
-              >
-                <X className="w-5 h-5" />
-              </button>
-
-              {!requestSubmitted ? (
-                <div className="space-y-6">
-                  <div>
-                    <div className="text-xs font-mono text-sky-400 font-semibold uppercase tracking-wider mb-1">
-                      SERVICE REQUEST
-                    </div>
-                    <h3 className="text-xl sm:text-2xl font-bold font-sans text-slate-100">
-                      {requestModalService.name}
-                    </h3>
-                    <p className="text-xs text-slate-400 font-sans mt-1">
-                      {requestModalService.short_description}
-                    </p>
-                  </div>
-
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      setRequestSubmitted(true);
-                    }}
-                    className="space-y-4 text-xs font-sans"
-                  >
-                    <div>
-                      <label className="block text-slate-300 font-mono text-[11px] mb-1">
-                        YOUR NAME / ORGANIZATION
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="Jane Doe or Acme Corp"
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-sky-500 font-sans"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-slate-300 font-mono text-[11px] mb-1">
-                        EMAIL ADDRESS
-                      </label>
-                      <input
-                        type="email"
-                        required
-                        placeholder="jane@example.com"
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-sky-500 font-sans"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-slate-300 font-mono text-[11px] mb-1">
-                        BRIEF DESCRIPTION OF YOUR TECHNICAL NEED
-                      </label>
-                      <textarea
-                        rows={3}
-                        required
-                        placeholder={`Tell us about your requirements for ${requestModalService.name}...`}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-sky-500 font-sans resize-none"
-                      />
-                    </div>
-
-                    <div className="pt-2 flex items-center justify-end gap-3">
-                      <button
-                        type="button"
-                        onClick={() => setRequestModalService(null)}
-                        className="px-4 py-2.5 rounded-xl text-slate-400 hover:text-slate-200 font-mono text-xs"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type="submit"
-                        className="px-5 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold font-mono text-xs flex items-center gap-2 shadow-lg shadow-sky-950/50"
-                      >
-                        <Send className="w-3.5 h-3.5" />
-                        <span>Submit Request</span>
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              ) : (
-                <div className="py-8 text-center space-y-4">
-                  <div className="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center border border-emerald-500/40">
-                    <Check className="w-6 h-6" />
-                  </div>
-                  <h3 className="text-xl font-bold font-sans text-slate-100">
-                    Request Received
-                  </h3>
-                  <p className="text-xs text-slate-400 font-sans max-w-xs mx-auto">
-                    Thank you for reaching out regarding <span className="text-sky-300">{requestModalService.name}</span>. Our engineering team will review your requirements and follow up promptly.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => setRequestModalService(null)}
-                    className="mt-4 px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-mono text-xs"
-                  >
-                    Close Window
-                  </button>
-                </div>
-              )}
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };
