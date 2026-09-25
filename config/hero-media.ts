@@ -49,8 +49,8 @@ export const heroMediaConfig: HeroMediaConfig = {
   subheadline:
     "Snow crafts scalable web applications, custom LLM workflows, and resilient digital architectures. Pure technical execution with spatial depth.",
   cta: {
-    primary: { text: "Start a Project", href: "#contact" },
-    secondary: { text: "Explore Systems", href: "#services" },
+    primary: { text: "Start a Project", href: "/request" },
+    secondary: { text: "Explore Systems", href: "/#services" },
   },
   capabilities: [
     "Full-Stack Web Engineering",

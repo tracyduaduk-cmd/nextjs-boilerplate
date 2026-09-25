@@ -16,14 +16,14 @@ export const Header: React.FC<HeaderProps> = ({ className = "" }) => {
 
   // Links for sections/pages that exist or anchor sections
   const navLinks = [
-    { label: "Services", href: "#services" },
-    { label: "Capabilities", href: "#capabilities" },
-    { label: "Approach", href: "#approach" },
+    { label: "Services", href: "/#services" },
+    { label: "Capabilities", href: "/#problem-diagnostic" },
+    { label: "Request Estimate", href: "/request" },
   ];
 
   const ctaLink = {
     label: "Start a Project",
-    href: "#contact",
+    href: "/request",
   };
 
   return (
