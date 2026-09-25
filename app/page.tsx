@@ -1,5 +1,6 @@
 import { Header } from "@/components/layout/Header";
 import { Hero } from "@/components/home/Hero";
+import { ServiceExplorer } from "@/components/services/ServiceExplorer";
 import { Footer } from "@/components/layout/Footer";
 
 export default function Home() {
@@ -8,6 +9,7 @@ export default function Home() {
       <Header />
       <main id="main-content" className="flex-1">
         <Hero />
+        <ServiceExplorer />
       </main>
       <Footer />
     </div>
