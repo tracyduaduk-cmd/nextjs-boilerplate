@@ -1,0 +1,39 @@
+import { createClient } from "@/lib/supabase/server";
+
+export type Service = { id: string; slug: string; name: string; title?: string; description?: string; short_description?: string; content?: string; featured?: boolean; sort_order?: number };
+export type ProjectMedia = { id: string; project_id: string; media_type: string; title: string; url: string; thumbnail_url?: string; provider?: string; alt_text?: string; sort_order?: number };
+export type Project = { id: string; slug: string; title: string; description?: string; short_description?: string; category?: string; client_name?: string | null; results?: string | null; problem?: string; solution?: string; technologies?: string[] | string; featured?: boolean; live_url?: string | null; github_url?: string | null; project_media?: ProjectMedia[] };
+export type FAQ = { id: string; question: string; answer: string; sort_order?: number; published?: boolean };
+
+async function rows<T>(table: string, query: (client: Awaited<ReturnType<typeof createClient>>) => PromiseLike<{ data: T[] | null; error: { message: string } | null }>, fallback: T[] = []) {
+  try {
+    const client = await createClient();
+    const { data, error } = await query(client);
+    if (error) { console.warn(`[Snow data] ${table}: ${error.message}`); return fallback; }
+    return data ?? fallback;
+  } catch (error) {
+    console.warn(`[Snow data] ${table} unavailable`, error);
+    return fallback;
+  }
+}
+
+export const demoProjects: Project[] = [
+  { id: "demo-aurora", slug: "aurora-commerce", title: "Aurora Commerce", category: "Concept Demo", description: "A product discovery and checkout experience designed for calm, confident shopping.", short_description: "Product discovery and checkout concept.", problem: "Designed to demonstrate how a complex catalogue can feel clear and inviting.", solution: "A responsive storefront concept with considered navigation, cart states and a mobile-first purchase flow.", technologies: ["Next.js", "TypeScript", "Supabase"], featured: true, results: "Concept demonstration — not a client project.", project_media: [{ id: "aurora-hero", project_id: "demo-aurora", media_type: "image", title: "Aurora commerce interface concept", url: "/concepts/aurora.svg", alt_text: "Original concept storefront interface for Aurora Commerce", sort_order: 0 }] },
+  { id: "demo-pulse", slug: "pulse-health", title: "Pulse Health", category: "Concept Demo", description: "An appointment and customer dashboard concept built around clarity and reassurance.", short_description: "Booking and dashboard concept.", problem: "Designed to demonstrate a thoughtful service journey without making medical claims.", solution: "A simple booking flow paired with an accessible account overview and clear next steps.", technologies: ["React", "UI/UX", "Accessibility"], featured: true, results: "Concept demonstration — not a client project.", project_media: [{ id: "pulse-hero", project_id: "demo-pulse", media_type: "image", title: "Pulse booking concept", url: "/concepts/pulse.svg", alt_text: "Original concept appointment booking interface for Pulse Health", sort_order: 0 }] },
+  { id: "demo-orbit", slug: "orbit-finance", title: "Orbit Finance", category: "Concept Demo", description: "A modern account dashboard concept for understanding activity at a glance.", short_description: "Financial dashboard concept.", problem: "Designed to demonstrate information hierarchy without implying real financial data.", solution: "A responsive dashboard language for charts, transactions and account navigation.", technologies: ["Next.js", "Charts", "Responsive UI"], featured: true, results: "Concept demonstration — not a client project.", project_media: [{ id: "orbit-hero", project_id: "demo-orbit", media_type: "image", title: "Orbit dashboard concept", url: "/concepts/orbit.svg", alt_text: "Original concept financial dashboard with illustrative data", sort_order: 0 }] },
+  { id: "demo-nova", slug: "nova-ai-assistant", title: "Nova AI Assistant", category: "Concept Demo", description: "A conversational workspace for turning recurring questions into useful workflows.", short_description: "AI assistant and automation concept.", problem: "Designed to demonstrate an AI workflow without presenting a live product or performance claim.", solution: "A focused assistant interface with context, suggested actions and human-readable activity states.", technologies: ["AI SDK", "React", "Workflow design"], results: "Concept demonstration — not a client project.", project_media: [{ id: "nova-hero", project_id: "demo-nova", media_type: "image", title: "Nova assistant concept", url: "/concepts/nova.svg", alt_text: "Original concept conversational AI assistant interface", sort_order: 0 }] },
+  { id: "demo-atlas", slug: "atlas-business-portal", title: "Atlas Business Portal", category: "Concept Demo", description: "A shared workspace concept for teams, projects and operational insight.", short_description: "Team and analytics portal concept.", technologies: ["TypeScript", "Dashboards", "APIs"], results: "Concept demonstration — not a client project.", project_media: [{ id: "atlas-hero", project_id: "demo-atlas", media_type: "image", title: "Atlas portal concept", url: "/concepts/atlas.svg", alt_text: "Original concept business portal interface", sort_order: 0 }] },
+  { id: "demo-studio", slug: "studio-landing", title: "Studio Landing", category: "Concept Demo", description: "A premium creative business website concept with a conversion-focused rhythm.", short_description: "Premium landing page concept.", technologies: ["Web design", "Motion", "Next.js"], results: "Concept demonstration — not a client project.", project_media: [{ id: "studio-hero", project_id: "demo-studio", media_type: "image", title: "Studio landing concept", url: "/concepts/studio.svg", alt_text: "Original concept premium business landing page", sort_order: 0 }] },
+];
+
+const fallbackServices: Service[] = [
+  "Websites & Web Apps", "Mobile Apps", "Website Repair & Maintenance", "AI Solutions & Automation", "Account Recovery & Digital Support", "SEO & Digital Growth", "UI/UX & Product Design", "Cloud, APIs & Integrations", "Digital Security & Hardening",
+].map((name, index) => ({ id: `fallback-service-${index}`, slug: name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""), name, description: "A practical Snow service shaped around your goals." }));
+
+export async function getServices() { return rows<Service>("services", c => c.from("services").select("*").order("sort_order", { ascending: true }), fallbackServices); }
+export async function getService(slug: string) { const data = await rows<Service>("services", c => c.from("services").select("*").eq("slug", slug).limit(1), []); return data[0] ?? null; }
+export async function getProjects() { const data = await rows<Project>("projects", c => c.from("projects").select("*, project_media(*)").order("featured", { ascending: false }).order("created_at", { ascending: false }), demoProjects); return data.length ? data : demoProjects; }
+export async function getProject(slug: string) { const data = await rows<Project>("projects", c => c.from("projects").select("*, project_media(*)").eq("slug", slug).limit(1), []); return data[0] ?? demoProjects.find(p => p.slug === slug) ?? null; }
+export async function getFaqs() { return rows<FAQ>("faqs", c => c.from("faqs").select("*").order("sort_order", { ascending: true }), []); }
+export async function getFeaturedProjects() { return (await getProjects()).filter(p => p.featured).slice(0, 3); }
+export async function getProjectMedia(projectId: string) { return rows<ProjectMedia>("project_media", c => c.from("project_media").select("*").eq("project_id", projectId).order("sort_order", { ascending: true }), []); }
