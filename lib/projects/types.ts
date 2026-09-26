@@ -37,5 +37,7 @@ export interface ProjectRecord {
 export interface ProjectWithMedia extends ProjectRecord {
   media: ProjectMediaRecord[];
   hero_media?: ProjectMediaRecord;
+  desktop_media?: ProjectMediaRecord;
+  mobile_media?: ProjectMediaRecord;
   screenshots?: ProjectMediaRecord[];
 }

@@ -17,36 +17,52 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ mediaItems, projectT
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {mediaItems.map((item) => (
-          <Tilt key={item.id} maxRotation={5} className="w-full">
-            <div
-              onClick={() => setSelectedMedia(item)}
-              className="group relative rounded-2xl border border-slate-800 bg-slate-900/60 overflow-hidden cursor-pointer hover:border-sky-500/50 transition-all duration-300 shadow-xl"
-            >
-              <SpatialMedia
-                src={item.url}
-                alt={item.alt_text || `${projectTitle} media screenshot`}
-                title={item.title || `${projectTitle} Screenshot`}
-                caption={item.alt_text}
-                category={item.media_type.toUpperCase()}
-                aspectRatio="video"
-              />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+        {mediaItems.map((item) => {
+          const isMobile = item.url.includes("mobile.webp");
+          const isDesktop = item.url.includes("desktop.webp");
+          const isHero = item.url.includes("hero.webp");
 
-              <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-20 pointer-events-none">
-                <span className="px-3.5 py-2 rounded-xl bg-slate-950/90 border border-sky-500/40 text-sky-400 text-xs font-mono shadow-2xl backdrop-blur-md">
-                  Expand View ↗
-                </span>
-              </div>
+          const roleLabel = isHero
+            ? "HERO VIEW"
+            : isDesktop
+            ? "DESKTOP VIEW"
+            : isMobile
+            ? "MOBILE VIEW"
+            : item.media_type.toUpperCase();
 
-              {item.title && (
-                <div className="p-3 bg-slate-950/90 border-t border-slate-800 text-xs font-mono text-slate-300 truncate">
-                  {item.title}
+          const aspectRatio = isMobile ? "portrait" : "video";
+
+          return (
+            <Tilt key={item.id} maxRotation={5} className="w-full">
+              <div
+                onClick={() => setSelectedMedia(item)}
+                className="group relative rounded-2xl border border-slate-800 bg-slate-900/60 overflow-hidden cursor-pointer hover:border-sky-500/50 transition-all duration-300 shadow-xl"
+              >
+                <SpatialMedia
+                  src={item.url}
+                  alt={item.alt_text || `${projectTitle} media screenshot`}
+                  title={item.title || `${projectTitle} Preview`}
+                  caption={item.alt_text}
+                  category={roleLabel}
+                  aspectRatio={aspectRatio}
+                />
+
+                <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-20 pointer-events-none">
+                  <span className="px-3.5 py-2 rounded-xl bg-slate-950/90 border border-sky-500/40 text-sky-400 text-xs font-mono shadow-2xl backdrop-blur-md">
+                    Expand View ↗
+                  </span>
                 </div>
-              )}
-            </div>
-          </Tilt>
-        ))}
+
+                {item.title && (
+                  <div className="p-3 bg-slate-950/90 border-t border-slate-800 text-xs font-mono text-slate-300 truncate">
+                    {item.title}
+                  </div>
+                )}
+              </div>
+            </Tilt>
+          );
+        })}
       </div>
 
       {selectedMedia && (
@@ -71,14 +87,14 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ mediaItems, projectT
                 ✕
               </button>
             </div>
-            <div className="p-4 bg-slate-950 flex justify-center">
+            <div className="p-4 bg-slate-950 flex justify-center max-h-[80vh] overflow-auto">
               <SpatialMedia
                 src={selectedMedia.url}
                 alt={selectedMedia.alt_text || projectTitle}
                 title={selectedMedia.title || projectTitle}
                 caption={selectedMedia.alt_text}
-                aspectRatio="auto"
-                className="max-h-[80vh] w-full"
+                aspectRatio={selectedMedia.url.includes("mobile.webp") ? "portrait" : "auto"}
+                className="max-h-[75vh] w-auto max-w-full"
                 priority={true}
               />
             </div>

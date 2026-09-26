@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 
 export interface SpatialMediaProps {
@@ -29,13 +29,32 @@ export const SpatialMedia: React.FC<SpatialMediaProps> = ({
 }) => {
   const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const imgRef = useRef<HTMLImageElement | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    if (imgRef.current && imgRef.current.complete) {
+      if (imgRef.current.naturalWidth === 0) {
+        queueMicrotask(() => {
+          if (active) setHasError(true);
+        });
+      } else {
+        queueMicrotask(() => {
+          if (active) setIsLoading(false);
+        });
+      }
+    }
+    return () => {
+      active = false;
+    };
+  }, [src]);
 
   const aspectClasses = {
     video: "aspect-[16/10]",
     wide: "aspect-[21/9]",
     square: "aspect-square",
     portrait: "aspect-[9/16]",
-    auto: "",
+    auto: "min-h-[260px]",
   }[aspectRatio];
 
   return (
@@ -73,7 +92,7 @@ export const SpatialMedia: React.FC<SpatialMediaProps> = ({
 
       {/* Fallback Intentional Designed Canvas if image fails to load */}
       {hasError ? (
-        <div className="relative z-10 w-full h-full flex flex-col items-center justify-center p-6 bg-slate-950 border border-slate-800/80 text-center select-none overflow-hidden">
+        <div className="relative z-10 w-full h-full min-h-[220px] flex flex-col items-center justify-center p-6 bg-slate-950 border border-slate-800/80 text-center select-none overflow-hidden">
           {/* Subtle Cyber Grid lines */}
           <div
             className="absolute inset-0 opacity-15 pointer-events-none"
@@ -106,8 +125,10 @@ export const SpatialMedia: React.FC<SpatialMediaProps> = ({
           </div>
         </div>
       ) : (
-        <div className="relative w-full h-full">
+        <div className="relative w-full h-full min-h-[220px]">
           <Image
+            key={src}
+            ref={imgRef}
             src={src}
             alt={alt}
             fill
