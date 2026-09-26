@@ -2,7 +2,7 @@
 
 import React, { ReactNode } from "react";
 
-export interface PerspectiveContainerProps {
+export interface PerspectiveContainerProps extends React.HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
   perspective?: number; // e.g. 1000px
   perspectiveOrigin?: string; // e.g. "50% 50%"
@@ -17,9 +17,11 @@ export const PerspectiveContainer: React.FC<PerspectiveContainerProps> = ({
   perspective = 1200,
   perspectiveOrigin = "50% 50%",
   className = "",
+  ...props
 }) => {
   return (
     <div
+      {...props}
       className={`relative ${className}`}
       style={{
         perspective: `${perspective}px`,

@@ -28,6 +28,9 @@ export const WorkPageClient: React.FC<WorkPageClientProps> = ({ projects }) => {
       ? projects
       : projects.filter((p) => p.category === selectedCategory);
 
+  const comparisonProject = projects.find((project) => project.slug === "aurora-commerce") ?? projects[0];
+  const comparisonMedia = comparisonProject?.media ?? [];
+
   return (
     <div className="flex flex-col min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-sky-500/30 selection:text-sky-200">
       <Header />
@@ -87,32 +90,34 @@ export const WorkPageClient: React.FC<WorkPageClientProps> = ({ projects }) => {
           </Container>
         </section>
 
-        <section className="py-16 md:py-24 bg-slate-950 border-b border-slate-900">
-          <Container>
-            <Reveal direction="up" duration={0.6}>
-              <div className="max-w-3xl mb-12">
-                <span className="text-xs font-mono uppercase tracking-widest text-sky-400 block mb-2">
-                  03 / SYSTEM EVOLUTION
-                </span>
-                <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-100 font-sans">
-                  Legacy Modernization & Optimization
-                </h2>
-                <p className="mt-3 text-slate-400 text-base leading-relaxed">
-                  Compare legacy storefront presentation against Snow’s high-performance spatial interface architecture. Drag the divider to explore the transformation.
-                </p>
-              </div>
-            </Reveal>
+        {comparisonMedia.length > 1 && (
+          <section className="py-16 md:py-24 bg-slate-950 border-b border-slate-900">
+            <Container>
+              <Reveal direction="up" duration={0.6}>
+                <div className="max-w-3xl mb-12">
+                  <span className="text-xs font-mono uppercase tracking-widest text-sky-400 block mb-2">
+                    03 / MEDIA STUDY
+                  </span>
+                  <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-100 font-sans">
+                    One system, multiple surfaces
+                  </h2>
+                  <p className="mt-3 text-slate-400 text-base leading-relaxed">
+                    Explore how the same project system adapts across the real media supplied to Snow&apos;s archive.
+                  </p>
+                </div>
+              </Reveal>
 
-            <Reveal direction="up" delay={0.2} duration={0.8}>
-              <BeforeAfterSlider
-                beforeImage="https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/snow-media/projects/aurora-commerce/desktop.webp"
-                afterImage="https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/snow-media/projects/aurora-commerce/hero.webp"
-                beforeLabel="Legacy Storefront (Slow & Generic)"
-                afterLabel="Snow Engineered Architecture"
-              />
-            </Reveal>
-          </Container>
-        </section>
+              <Reveal direction="up" delay={0.2} duration={0.8}>
+                <BeforeAfterSlider
+                  beforeImage={comparisonMedia[1].url}
+                  afterImage={comparisonMedia[0].url}
+                  beforeLabel={`${comparisonProject.title} / alternate surface`}
+                  afterLabel={`${comparisonProject.title} / hero surface`}
+                />
+              </Reveal>
+            </Container>
+          </section>
+        )}
 
         <section className="py-20 md:py-28 bg-gradient-to-b from-slate-950 to-slate-900/80">
           <Container>

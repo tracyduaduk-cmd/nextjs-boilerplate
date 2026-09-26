@@ -152,7 +152,17 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
 
         <section className="py-16 md:py-24 border-b border-slate-900 bg-slate-950">
           <Container>
-            <div className="max-w-3xl space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-[0.8fr_1.2fr] gap-12 lg:gap-20">
+              <div className="space-y-6">
+                <span className="text-xs font-mono uppercase tracking-widest text-lime-300 block">
+                  CAPABILITIES INVOLVED
+                </span>
+                <h2 className="text-3xl font-bold text-slate-100 font-sans">A focused system, not a template.</h2>
+                <p className="text-slate-400 leading-relaxed">
+                  This archive record is organized around the capabilities visible in the project brief and supplied media. It does not imply unverified outcomes.
+                </p>
+              </div>
+              <div className="max-w-3xl space-y-6">
               <span className="text-xs font-mono uppercase tracking-widest text-sky-400 block">
                 TECHNICAL FOUNDATION
               </span>
@@ -172,6 +182,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                     {tech}
                   </span>
                 ))}
+              </div>
               </div>
             </div>
           </Container>
