@@ -14,6 +14,7 @@ interface MobileNavProps {
   isOpen: boolean;
   onClose: () => void;
   navLinks: NavLink[];
+  secondaryNavLinks?: NavLink[];
   ctaLink: NavLink;
 }
 
@@ -21,9 +22,9 @@ export const MobileNav: React.FC<MobileNavProps> = ({
   isOpen,
   onClose,
   navLinks,
+  secondaryNavLinks = [],
   ctaLink,
 }) => {
-  // Handle Escape key to close mobile menu
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isOpen) {
@@ -79,19 +80,36 @@ export const MobileNav: React.FC<MobileNavProps> = ({
 
       {/* Mobile Nav Body */}
       <div className="flex-1 overflow-y-auto px-6 py-8 flex flex-col justify-between">
-        <nav className="flex flex-col space-y-6" aria-label="Mobile Navigation Links">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={onClose}
-              className="text-2xl font-semibold text-slate-200 hover:text-sky-400 transition-colors py-2 border-b border-slate-800/50 flex items-center justify-between"
-            >
-              <span>{link.label}</span>
-              <span className="text-slate-600 text-lg">→</span>
-            </Link>
-          ))}
-        </nav>
+        <div>
+          <nav className="flex flex-col space-y-4" aria-label="Mobile Primary Navigation Links">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={onClose}
+                className="text-xl font-semibold text-slate-200 hover:text-sky-400 transition-colors py-2 border-b border-slate-800/50 flex items-center justify-between"
+              >
+                <span>{link.label}</span>
+                <span className="text-slate-600 text-base">→</span>
+              </Link>
+            ))}
+          </nav>
+
+          {secondaryNavLinks.length > 0 && (
+            <nav className="flex flex-wrap gap-4 pt-6" aria-label="Mobile Secondary Navigation Links">
+              {secondaryNavLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={onClose}
+                  className="text-sm text-slate-400 hover:text-slate-200 transition-colors"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          )}
+        </div>
 
         <div className="pt-8 mt-8 border-t border-slate-800/80 flex flex-col space-y-4">
           <Button
@@ -105,7 +123,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
           </Button>
 
           <p className="text-xs text-slate-500 text-center pt-2">
-            Snow Technology Services • Modern Web & AI Partner
+            Snow Technology Studio • Kwang, Jos, Plateau State, Nigeria
           </p>
         </div>
       </div>
