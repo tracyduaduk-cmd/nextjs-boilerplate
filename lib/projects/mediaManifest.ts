@@ -42,9 +42,62 @@ export interface PortfolioAsset extends PortfolioAssetSource {
 }
 
 /**
- * Curated source metadata for the temporary portfolio layer.
- * Keep URLs null until a source has been reviewed and licensed for use.
+ * Curated source metadata for the temporary, conceptual portfolio layer.
+ * Each treatment is derived from the same approved Pexels master for its project.
  */
+const CURATED_PEXELS_LICENSE = "Pexels License: https://www.pexels.com/license/";
+
+const CURATED_SOURCE_BY_PROJECT: Record<PortfolioProjectSlug, PortfolioAssetSource> = {
+  "aurora-commerce": {
+    sourceUrl: "https://www.pexels.com/photo/headphones-near-laptop-20024582/",
+    provider: "Pexels",
+    attribution: "wutthichai charoenburi via Pexels",
+    licenseNote: CURATED_PEXELS_LICENSE,
+  },
+  "pulse-health": {
+    sourceUrl: "https://www.pexels.com/photo/modern-fitness-tracking-smartwatch-and-smartphone-32977239/",
+    provider: "Pexels",
+    attribution: "Andrey Matveev via Pexels",
+    licenseNote: CURATED_PEXELS_LICENSE,
+  },
+  "orbit-finance": {
+    sourceUrl: "https://www.pexels.com/photo/graph-displayed-on-laptop-screen-7567486/",
+    provider: "Pexels",
+    attribution: "Pexels source image; photographer credited on source page",
+    licenseNote: CURATED_PEXELS_LICENSE,
+  },
+  "nova-ai-assistant": {
+    sourceUrl: "https://www.pexels.com/photo/an-artist-s-illustration-of-artificial-intelligence-ai-this-image-represents-storage-of-collected-data-in-ai-it-was-created-by-wes-cockx-as-part-of-the-visualising-ai-project-launched-17486100/",
+    provider: "Pexels",
+    attribution: "Google DeepMind via Pexels; artwork by Wes Cockx",
+    licenseNote: CURATED_PEXELS_LICENSE,
+  },
+  "atlas-business-portal": {
+    sourceUrl: "https://www.pexels.com/photo/people-working-on-computers-in-an-office-12903173/",
+    provider: "Pexels",
+    attribution: "Mizuno K via Pexels",
+    licenseNote: CURATED_PEXELS_LICENSE,
+  },
+  "studio-landing": {
+    sourceUrl: "https://www.pexels.com/photo/architectural-design-studio-wall-with-blueprints-36809500/",
+    provider: "Pexels",
+    attribution: "Pexels source image; photographer credited on source page",
+    licenseNote: CURATED_PEXELS_LICENSE,
+  },
+  "local-services-platform": {
+    sourceUrl: "https://www.pexels.com/photo/navigating-the-city-with-the-phone-15949908/",
+    provider: "Pexels",
+    attribution: "Pexels source image; photographer credited on source page",
+    licenseNote: CURATED_PEXELS_LICENSE,
+  },
+  "secure-account-recovery": {
+    sourceUrl: "https://www.pexels.com/photo/a-laptop-over-a-round-table-4973899/",
+    provider: "Pexels",
+    attribution: "Dan Nelson via Pexels",
+    licenseNote: CURATED_PEXELS_LICENSE,
+  },
+};
+
 export const PORTFOLIO_ASSET_SOURCES: Record<
   PortfolioProjectSlug,
   Record<PortfolioAssetFilename, PortfolioAssetSource>
@@ -52,15 +105,7 @@ export const PORTFOLIO_ASSET_SOURCES: Record<
   PORTFOLIO_PROJECT_SLUGS.map((slug) => [
     slug,
     Object.fromEntries(
-      PORTFOLIO_ASSET_FILENAMES.map((filename) => [
-        filename,
-        {
-          sourceUrl: null,
-          provider: null,
-          attribution: null,
-          licenseNote: null,
-        },
-      ]),
+      PORTFOLIO_ASSET_FILENAMES.map((filename) => [filename, CURATED_SOURCE_BY_PROJECT[slug]]),
     ),
   ]),
 ) as Record<PortfolioProjectSlug, Record<PortfolioAssetFilename, PortfolioAssetSource>>;
