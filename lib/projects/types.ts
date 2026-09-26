@@ -1,5 +1,18 @@
 export type MediaType = "image" | "video" | "embed" | "screenshot";
 
+export const PORTFOLIO_PROJECT_SLUGS = [
+  "aurora-commerce",
+  "pulse-health",
+  "orbit-finance",
+  "nova-ai-assistant",
+  "atlas-business-portal",
+  "studio-landing",
+  "local-services-platform",
+  "secure-account-recovery",
+] as const;
+
+export type PortfolioProjectSlug = (typeof PORTFOLIO_PROJECT_SLUGS)[number];
+
 export interface ProjectMediaRecord {
   id: string;
   project_id: string;
