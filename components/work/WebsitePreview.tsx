@@ -122,9 +122,13 @@ export const WebsitePreview: React.FC<WebsitePreviewProps> = ({
               </div>
 
               <div className="flex items-center justify-between pt-2 border-t border-slate-800">
-                <span className="text-xs font-mono text-slate-400">
-                  Client: <strong className="text-slate-200 font-normal">{project.client_name || "Snow Concept"}</strong>
-                </span>
+                  {project.client_name ? (
+                    <span className="text-xs font-mono text-slate-400">
+                      Client: <strong className="text-slate-200 font-normal">{project.client_name}</strong>
+                    </span>
+                  ) : (
+                    <span className="text-xs font-mono text-slate-500">Archive record</span>
+                  )}
 
                 <Link
                   href={`/work/${project.slug}`}

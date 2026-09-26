@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { ProjectWithMedia } from "@/lib/projects/types";
 import { WebsitePreview } from "./WebsitePreview";
@@ -17,6 +17,23 @@ interface ProjectExplorerProps {
 export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({ projects }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const touchStartX = useRef<number | null>(null);
+  const reducedMotion = useReducedMotion();
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        handleNext();
+      }
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        handlePrev();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  });
 
   if (!projects || projects.length === 0) return null;
 
@@ -94,7 +111,7 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({ projects }) =>
                   initial={{ opacity: 0, x: 32, rotateY: -4, scale: 0.98 }}
                   animate={{ opacity: 1, x: 0, rotateY: 0, scale: 1 }}
                   exit={{ opacity: 0, x: -32, rotateY: 4, scale: 0.98 }}
-                  transition={{ duration: 0.45, ease: "easeOut" }}
+                  transition={{ duration: reducedMotion ? 0 : 0.45, ease: "easeOut" }}
                 >
                   <WebsitePreview project={currentProject} />
                 </motion.div>
