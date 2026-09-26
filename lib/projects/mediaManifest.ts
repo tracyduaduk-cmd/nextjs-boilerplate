@@ -23,13 +23,47 @@ export const PORTFOLIO_ASSET_FILENAMES = [
 
 export type PortfolioAssetFilename = (typeof PORTFOLIO_ASSET_FILENAMES)[number];
 
-export interface PortfolioAsset {
+export type PortfolioAssetRole = "hero" | "desktop" | "mobile";
+
+export interface PortfolioAssetSource {
+  sourceUrl: string | null;
+  provider: string | null;
+  attribution: string | null;
+  licenseNote: string | null;
+}
+
+export interface PortfolioAsset extends PortfolioAssetSource {
   projectSlug: PortfolioProjectSlug;
+  role: PortfolioAssetRole;
   filename: PortfolioAssetFilename;
   localPath: string;
   storagePath: string;
   publicUrl: string;
 }
+
+/**
+ * Curated source metadata for the temporary portfolio layer.
+ * Keep URLs null until a source has been reviewed and licensed for use.
+ */
+export const PORTFOLIO_ASSET_SOURCES: Record<
+  PortfolioProjectSlug,
+  Record<PortfolioAssetFilename, PortfolioAssetSource>
+> = Object.fromEntries(
+  PORTFOLIO_PROJECT_SLUGS.map((slug) => [
+    slug,
+    Object.fromEntries(
+      PORTFOLIO_ASSET_FILENAMES.map((filename) => [
+        filename,
+        {
+          sourceUrl: null,
+          provider: null,
+          attribution: null,
+          licenseNote: null,
+        },
+      ]),
+    ),
+  ]),
+) as Record<PortfolioProjectSlug, Record<PortfolioAssetFilename, PortfolioAssetSource>>;
 
 export function isPortfolioProjectSlug(slug: string): slug is PortfolioProjectSlug {
   return (PORTFOLIO_PROJECT_SLUGS as readonly string[]).includes(slug);
@@ -54,10 +88,12 @@ export function getLocalPath(slug: string, filename: PortfolioAssetFilename): st
 export function getProjectAssets(slug: PortfolioProjectSlug): PortfolioAsset[] {
   return PORTFOLIO_ASSET_FILENAMES.map((filename) => ({
     projectSlug: slug,
+    role: filename.replace(".webp", "") as PortfolioAssetRole,
     filename,
     localPath: getLocalPath(slug, filename),
     storagePath: getStoragePath(slug, filename),
     publicUrl: getPublicUrl(slug, filename),
+    ...PORTFOLIO_ASSET_SOURCES[slug][filename],
   }));
 }
 
