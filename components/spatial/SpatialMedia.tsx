@@ -28,7 +28,7 @@ export const SpatialMedia: React.FC<SpatialMediaProps> = ({
   showOverlay = true,
 }) => {
   const [hasError, setHasError] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const imgRef = useRef<HTMLImageElement | null>(null);
 
   useEffect(() => {
@@ -40,9 +40,16 @@ export const SpatialMedia: React.FC<SpatialMediaProps> = ({
         });
       } else {
         queueMicrotask(() => {
-          if (active) setIsLoading(false);
+          if (active) {
+            setHasError(false);
+            setIsLoading(false);
+          }
         });
       }
+    } else {
+      queueMicrotask(() => {
+        if (active) setHasError(false);
+      });
     }
     return () => {
       active = false;
@@ -82,7 +89,7 @@ export const SpatialMedia: React.FC<SpatialMediaProps> = ({
 
       {/* Image Loading State Indicator */}
       {isLoading && !hasError && (
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-sm">
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-sm pointer-events-none transition-opacity duration-300">
           <div className="w-6 h-6 border-2 border-sky-500/30 border-t-sky-400 rounded-full animate-spin mb-2" />
           <span className="font-mono text-[10px] tracking-widest text-slate-400 uppercase">
             Rendering Spatial Media...
@@ -134,10 +141,11 @@ export const SpatialMedia: React.FC<SpatialMediaProps> = ({
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             priority={priority}
-            className={`object-cover object-top transition-all duration-700 ease-out group-hover/spatial:scale-[1.03] ${
-              isLoading ? "scale-105 blur-sm opacity-0" : "scale-100 blur-0 opacity-100"
-            }`}
-            onLoad={() => setIsLoading(false)}
+            className="object-cover object-top transition-all duration-700 ease-out group-hover/spatial:scale-[1.03]"
+            onLoad={() => {
+              setIsLoading(false);
+              setHasError(false);
+            }}
             onError={() => {
               setIsLoading(false);
               setHasError(true);
