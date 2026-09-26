@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import { ProjectMediaRecord } from "@/lib/projects/types";
+import { SpatialMedia } from "@/components/spatial/SpatialMedia";
+import { Tilt } from "@/components/spatial/Tilt";
 
 interface MediaGalleryProps {
   mediaItems: ProjectMediaRecord[];
@@ -17,36 +19,39 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ mediaItems, projectT
     <div className="space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {mediaItems.map((item) => (
-          <div
-            key={item.id}
-            onClick={() => setSelectedMedia(item)}
-            className="group relative rounded-2xl border border-slate-800 bg-slate-900/60 overflow-hidden cursor-pointer hover:border-sky-500/50 transition-all duration-300 shadow-lg"
-          >
-            <div className="aspect-[16/10] w-full overflow-hidden bg-slate-950 relative">
-              <img
+          <Tilt key={item.id} maxRotation={5} className="w-full">
+            <div
+              onClick={() => setSelectedMedia(item)}
+              className="group relative rounded-2xl border border-slate-800 bg-slate-900/60 overflow-hidden cursor-pointer hover:border-sky-500/50 transition-all duration-300 shadow-xl"
+            >
+              <SpatialMedia
                 src={item.url}
                 alt={item.alt_text || `${projectTitle} media screenshot`}
-                loading="lazy"
-                className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                title={item.title || `${projectTitle} Screenshot`}
+                caption={item.alt_text}
+                category={item.media_type.toUpperCase()}
+                aspectRatio="video"
               />
-              <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                <span className="px-3 py-1.5 rounded-lg bg-slate-950/80 border border-slate-700 text-sky-400 text-xs font-mono">
+
+              <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-20 pointer-events-none">
+                <span className="px-3.5 py-2 rounded-xl bg-slate-950/90 border border-sky-500/40 text-sky-400 text-xs font-mono shadow-2xl backdrop-blur-md">
                   Expand View ↗
                 </span>
               </div>
+
+              {item.title && (
+                <div className="p-3 bg-slate-950/90 border-t border-slate-800 text-xs font-mono text-slate-300 truncate">
+                  {item.title}
+                </div>
+              )}
             </div>
-            {item.title && (
-              <div className="p-3 bg-slate-950/80 border-t border-slate-800 text-xs font-mono text-slate-300 truncate">
-                {item.title}
-              </div>
-            )}
-          </div>
+          </Tilt>
         ))}
       </div>
 
       {selectedMedia && (
         <div
-          className="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 sm:p-8 animate-in fade-in duration-200"
+          className="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-4 sm:p-8 animate-in fade-in duration-200"
           onClick={() => setSelectedMedia(null)}
         >
           <div
@@ -54,23 +59,27 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ mediaItems, projectT
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between p-4 border-b border-slate-800 bg-slate-950">
-              <span className="text-xs font-mono text-slate-300">
+              <span className="text-xs font-mono text-slate-300 uppercase tracking-widest">
                 {selectedMedia.title || `${projectTitle} Preview`}
               </span>
               <button
                 type="button"
                 onClick={() => setSelectedMedia(null)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 transition-colors"
                 aria-label="Close modal"
               >
                 ✕
               </button>
             </div>
-            <div className="p-2 sm:p-4 bg-slate-950 flex justify-center">
-              <img
+            <div className="p-4 bg-slate-950 flex justify-center">
+              <SpatialMedia
                 src={selectedMedia.url}
                 alt={selectedMedia.alt_text || projectTitle}
-                className="max-h-[80vh] w-auto object-contain rounded-lg"
+                title={selectedMedia.title || projectTitle}
+                caption={selectedMedia.alt_text}
+                aspectRatio="auto"
+                className="max-h-[80vh] w-full"
+                priority={true}
               />
             </div>
           </div>
