@@ -26,17 +26,17 @@ async function runUpload() {
 
   const supabaseUrl =
     process.env.NEXT_PUBLIC_SUPABASE_URL || `https://${SUPABASE_PROJECT_REF}.supabase.co`;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const serverKey = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  if (!isDryRun && !serviceRoleKey) {
-    console.error("❌ ERROR: SUPABASE_SERVICE_ROLE_KEY environment variable is required for upload.");
-    console.error("Please set SUPABASE_SERVICE_ROLE_KEY in your environment or .env file before running this script.");
+  if (!isDryRun && !serverKey) {
+    console.error("❌ ERROR: SUPABASE_SECRET_KEY (or legacy SUPABASE_SERVICE_ROLE_KEY) is required for upload.");
+    console.error("Configure the server-only Supabase secret in the project environment.");
     console.error("For local validation without credentials, run with: npm run media:upload -- --dry-run");
     process.exit(1);
   }
 
-  const supabase = serviceRoleKey
-    ? createClient(supabaseUrl, serviceRoleKey, {
+  const supabase = serverKey
+    ? createClient(supabaseUrl, serverKey, {
         auth: { persistSession: false, autoRefreshToken: false },
       })
     : null;
