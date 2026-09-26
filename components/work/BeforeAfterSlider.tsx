@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
+import { SpatialMedia } from "@/components/spatial/SpatialMedia";
 
 interface BeforeAfterSliderProps {
   beforeImage: string;
@@ -19,7 +20,20 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
 }) => {
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
+  const [containerWidth, setContainerWidth] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const updateWidth = () => {
+      if (containerRef.current) {
+        setContainerWidth(containerRef.current.offsetWidth);
+      }
+    };
+    updateWidth();
+    window.addEventListener("resize", updateWidth);
+    return () => window.removeEventListener("resize", updateWidth);
+  }, []);
 
   const handleMove = useCallback((clientX: number) => {
     if (!containerRef.current) return;
@@ -68,33 +82,40 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
       aria-valuemin={0}
       aria-valuemax={100}
     >
-      <img
+      <SpatialMedia
         src={afterImage}
         alt={afterLabel}
-        className="absolute inset-0 w-full h-full object-cover object-top"
+        title={afterLabel}
+        category="ENGINEERED"
+        aspectRatio="auto"
+        className="absolute inset-0 w-full h-full rounded-none border-none"
       />
 
       <div
-        className="absolute inset-0 overflow-hidden"
+        className="absolute inset-0 overflow-hidden z-10"
         style={{ width: `${sliderPosition}%` }}
       >
-        <img
-          src={beforeImage}
-          alt={beforeLabel}
-          className="absolute inset-0 w-full h-full object-cover object-top max-w-none"
-          style={{ width: containerRef.current?.offsetWidth || "100%" }}
-        />
+        <div style={{ width: containerWidth ? `${containerWidth}px` : "100%", height: "100%" }}>
+          <SpatialMedia
+            src={beforeImage}
+            alt={beforeLabel}
+            title={beforeLabel}
+            category="LEGACY"
+            aspectRatio="auto"
+            className="w-full h-full rounded-none border-none"
+          />
+        </div>
       </div>
 
-      <div className="absolute top-4 left-4 px-3 py-1 rounded bg-slate-950/80 backdrop-blur border border-slate-800 text-[11px] font-mono text-slate-300 pointer-events-none">
+      <div className="absolute top-4 left-4 px-3 py-1 rounded bg-slate-950/80 backdrop-blur border border-slate-800 text-[11px] font-mono text-slate-300 pointer-events-none z-20">
         {beforeLabel}
       </div>
-      <div className="absolute top-4 right-4 px-3 py-1 rounded bg-sky-950/80 backdrop-blur border border-sky-800 text-[11px] font-mono text-sky-300 pointer-events-none">
+      <div className="absolute top-4 right-4 px-3 py-1 rounded bg-sky-950/80 backdrop-blur border border-sky-800 text-[11px] font-mono text-sky-300 pointer-events-none z-20">
         {afterLabel}
       </div>
 
       <div
-        className="absolute top-0 bottom-0 w-0.5 bg-sky-400 cursor-ew-resize z-20 shadow-[0_0_12px_rgba(56,189,248,0.8)]"
+        className="absolute top-0 bottom-0 w-0.5 bg-sky-400 cursor-ew-resize z-30 shadow-[0_0_12px_rgba(56,189,248,0.8)]"
         style={{ left: `${sliderPosition}%` }}
       >
         <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-slate-950 border-2 border-sky-400 flex items-center justify-center text-sky-400 shadow-xl">

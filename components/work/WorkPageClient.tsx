@@ -105,8 +105,8 @@ export const WorkPageClient: React.FC<WorkPageClientProps> = ({ projects }) => {
 
             <Reveal direction="up" delay={0.2} duration={0.8}>
               <BeforeAfterSlider
-                beforeImage="https://placehold.co/1600x1000/1e293b/64748b.png?text=Legacy+Storefront+%7C+High+TTFB+%7C+Generic+Grid"
-                afterImage="https://placehold.co/1600x1000/0284c7/ffffff.png?text=Snow+Aurora+Commerce+%7C+Sub-100ms+%7C+Spatial+Depth"
+                beforeImage="https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/snow-media/projects/aurora-commerce/desktop.webp"
+                afterImage="https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/snow-media/projects/aurora-commerce/hero.webp"
                 beforeLabel="Legacy Storefront (Slow & Generic)"
                 afterLabel="Snow Engineered Architecture"
               />
