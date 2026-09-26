@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { ProjectWithMedia } from "@/lib/projects/types";
@@ -19,6 +19,16 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({ projects }) =>
   const touchStartX = useRef<number | null>(null);
   const reducedMotion = useReducedMotion();
 
+  const handleNext = useCallback(() => {
+    if (!projects || projects.length === 0) return;
+    setActiveIndex((prev) => (prev + 1) % projects.length);
+  }, [projects]);
+
+  const handlePrev = useCallback(() => {
+    if (!projects || projects.length === 0) return;
+    setActiveIndex((prev) => (prev - 1 + projects.length) % projects.length);
+  }, [projects]);
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "ArrowRight") {
@@ -33,19 +43,11 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({ projects }) =>
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  });
+  }, [handleNext, handlePrev]);
 
   if (!projects || projects.length === 0) return null;
 
   const currentProject = projects[activeIndex];
-
-  const handleNext = () => {
-    setActiveIndex((prev) => (prev + 1) % projects.length);
-  };
-
-  const handlePrev = () => {
-    setActiveIndex((prev) => (prev - 1 + projects.length) % projects.length);
-  };
 
   return (
     <section className="py-16 md:py-24 bg-slate-950 border-b border-slate-900 overflow-hidden relative">
