@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { siteConfig } from "@/config/site";
 import { Container } from "@/components/ui/Container";
 import { Logo } from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
@@ -14,17 +15,8 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ className = "" }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Links for sections/pages that exist or anchor sections
-  const navLinks = [
-    { label: "Services", href: "/#services" },
-    { label: "Capabilities", href: "/#problem-diagnostic" },
-    { label: "Request Estimate", href: "/request" },
-  ];
-
-  const ctaLink = {
-    label: "Start a Project",
-    href: "/request",
-  };
+  const navLinks = siteConfig.navLinks;
+  const ctaLink = siteConfig.ctaLink;
 
   return (
     <header
@@ -37,7 +29,7 @@ export const Header: React.FC<HeaderProps> = ({ className = "" }) => {
             <Logo size="md" />
 
             {/* Desktop Navigation Links */}
-            <nav className="hidden lg:flex items-center space-x-8" aria-label="Main Navigation">
+            <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8" aria-label="Main Navigation">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
@@ -60,7 +52,7 @@ export const Header: React.FC<HeaderProps> = ({ className = "" }) => {
           {/* Mobile Navigation Toggle Button */}
           <div className="flex lg:hidden items-center space-x-3">
             <Button href={ctaLink.href} variant="primary" size="sm" className="text-xs">
-              Contact
+              Request
             </Button>
 
             <button
@@ -95,6 +87,7 @@ export const Header: React.FC<HeaderProps> = ({ className = "" }) => {
         isOpen={mobileMenuOpen}
         onClose={() => setMobileMenuOpen(false)}
         navLinks={navLinks}
+        secondaryNavLinks={siteConfig.secondaryNavLinks}
         ctaLink={ctaLink}
       />
     </header>
