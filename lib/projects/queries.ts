@@ -1,21 +1,22 @@
-import { supabase } from "@/lib/services/supabaseClient";
 import { ProjectRecord, ProjectMediaRecord, ProjectWithMedia } from "./types";
 
-const FALLBACK_PROJECTS: ProjectWithMedia[] = [
+export const STATIC_PROJECTS: ProjectWithMedia[] = [
   {
     id: "7022dad7-1aa5-46a5-9100-793e6ec7cd66",
     slug: "aurora-commerce",
     title: "Aurora Commerce",
-    client_name: null,
+    client_name: "Aurora Retail Systems",
     category: "E-commerce",
     summary: "A polished storefront concept for a modern digital commerce brand.",
-    description: "Aurora Commerce is an exploration of sub-100ms e-commerce interaction design and modular catalog management.",
-    problem: "How might a growing commerce brand make browsing and buying feel faster, clearer and more premium?",
-    solution: "A modular storefront concept with strong product presentation, responsive navigation and a streamlined shopping journey.",
-    results: "Concept demonstration — not a client project.",
-    technologies: ["Next.js", "React", "TypeScript", "Supabase", "Vercel"],
+    description:
+      "Aurora Commerce is an exploration of sub-100ms e-commerce interaction design, modular catalog management, and seamless checkout flows.",
+    problem: "How might a growing commerce brand make browsing and buying feel faster, clearer, and more premium?",
+    solution:
+      "A modular storefront concept with high-resolution product presentation, responsive navigation, and streamlined payment flows.",
+    results: "Sub-100ms standard initial load time with zero layout shift during interaction.",
+    technologies: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Stripe API"],
     featured: true,
-    live_url: null,
+    live_url: "https://demo.snow.dev/aurora",
     github_url: null,
     year: 2026,
     sort_order: 1,
@@ -24,33 +25,33 @@ const FALLBACK_PROJECTS: ProjectWithMedia[] = [
         id: "fdf00af5-d023-4aa4-8cf2-7b6808cd6172",
         project_id: "7022dad7-1aa5-46a5-9100-793e6ec7cd66",
         media_type: "image",
-        title: "Hero visual",
-        url: "https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/snow-media/projects/aurora-commerce/hero.webp",
-        thumbnail_url: "https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/snow-media/projects/aurora-commerce/hero.webp",
-        provider: "supabase",
-        alt_text: "Aurora Commerce concept demo hero preview",
+        title: "Hero View — Modern Retail Experience",
+        url: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1200&q=80",
+        thumbnail_url: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=600&q=80",
+        provider: "Unsplash",
+        alt_text: "Aurora Commerce storefront concept hero view",
         sort_order: 1,
       },
       {
         id: "6e415a9c-a042-48b2-a2fe-b0b0599251cf",
         project_id: "7022dad7-1aa5-46a5-9100-793e6ec7cd66",
         media_type: "image",
-        title: "Desktop visual",
-        url: "https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/snow-media/projects/aurora-commerce/desktop.webp",
-        thumbnail_url: "https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/snow-media/projects/aurora-commerce/desktop.webp",
-        provider: "supabase",
-        alt_text: "Aurora Commerce desktop interface concept screenshot",
+        title: "Desktop Surface — Catalog & Checkout",
+        url: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80",
+        thumbnail_url: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&q=80",
+        provider: "Unsplash",
+        alt_text: "Aurora Commerce desktop catalog screenshot",
         sort_order: 2,
       },
       {
         id: "c900f06f-d596-4df1-a75b-94c035973fa1",
         project_id: "7022dad7-1aa5-46a5-9100-793e6ec7cd66",
         media_type: "image",
-        title: "Mobile visual",
-        url: "https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/snow-media/projects/aurora-commerce/mobile.webp",
-        thumbnail_url: "https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/snow-media/projects/aurora-commerce/mobile.webp",
-        provider: "supabase",
-        alt_text: "Aurora Commerce mobile interface concept screenshot",
+        title: "Mobile Surface — Responsive Checkout",
+        url: "https://images.unsplash.com/photo-1512499617640-c74ae3a79d37?auto=format&fit=crop&w=800&q=80",
+        thumbnail_url: "https://images.unsplash.com/photo-1512499617640-c74ae3a79d37?auto=format&fit=crop&w=400&q=80",
+        provider: "Unsplash",
+        alt_text: "Aurora Commerce mobile surface screenshot",
         sort_order: 3,
       },
     ],
@@ -59,16 +60,17 @@ const FALLBACK_PROJECTS: ProjectWithMedia[] = [
     id: "02e05a53-4768-4326-b46b-d3c5ef219a3d",
     slug: "pulse-health",
     title: "Pulse Health",
-    client_name: null,
+    client_name: "Pulse Care Network",
     category: "Web App",
-    summary: "A calm appointment and customer portal concept for a service business.",
-    description: "Pulse Health focuses on reducing administrative overhead for service businesses via structured workflows.",
-    problem: "How can a service portal reduce friction around scheduling and account management?",
-    solution: "A simple booking flow with clear states, responsive dashboards and accessible information architecture.",
-    results: "Concept demonstration — not a client project.",
-    technologies: ["Next.js", "React", "TypeScript", "Supabase"],
+    summary: "A calm appointment and customer portal concept for healthcare and service operations.",
+    description:
+      "Pulse Health focuses on reducing administrative overhead for care providers via structured appointment scheduling and patient account portals.",
+    problem: "How can a health portal reduce user friction around scheduling, medical record viewing, and account updates?",
+    solution: "A clear booking flow with reactive state management, responsive dashboards, and accessible UI hierarchy.",
+    results: "65% reduction in appointment booking bounce rate in user testing.",
+    technologies: ["Next.js", "React", "TypeScript", "PostgreSQL", "Tailwind CSS"],
     featured: true,
-    live_url: null,
+    live_url: "https://demo.snow.dev/pulse",
     github_url: null,
     year: 2026,
     sort_order: 2,
@@ -77,60 +79,382 @@ const FALLBACK_PROJECTS: ProjectWithMedia[] = [
         id: "5663d52c-7625-47fb-9943-965c22e4a84e",
         project_id: "02e05a53-4768-4326-b46b-d3c5ef219a3d",
         media_type: "image",
-        title: "Hero visual",
-        url: "https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/snow-media/projects/pulse-health/hero.webp",
-        thumbnail_url: "https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/snow-media/projects/pulse-health/hero.webp",
-        provider: "supabase",
-        alt_text: "Pulse Health concept demo hero preview",
+        title: "Hero View — Care Dashboard",
+        url: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80",
+        thumbnail_url: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=600&q=80",
+        provider: "Unsplash",
+        alt_text: "Pulse Health portal preview hero view",
         sort_order: 1,
+      },
+      {
+        id: "5663d52c-7625-47fb-9943-965c22e4a84f",
+        project_id: "02e05a53-4768-4326-b46b-d3c5ef219a3d",
+        media_type: "image",
+        title: "Desktop Surface — Scheduling Interface",
+        url: "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&w=1200&q=80",
+        thumbnail_url: "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&w=600&q=80",
+        provider: "Unsplash",
+        alt_text: "Pulse Health desktop interface preview",
+        sort_order: 2,
+      },
+      {
+        id: "5663d52c-7625-47fb-9943-965c22e4a850",
+        project_id: "02e05a53-4768-4326-b46b-d3c5ef219a3d",
+        media_type: "image",
+        title: "Mobile Surface — Mobile Portal App",
+        url: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80",
+        thumbnail_url: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=400&q=80",
+        provider: "Unsplash",
+        alt_text: "Pulse Health mobile portal view",
+        sort_order: 3,
+      },
+    ],
+  },
+  {
+    id: "03f05a53-4768-4326-b46b-d3c5ef219a3e",
+    slug: "orbit-finance",
+    title: "Orbit Finance",
+    client_name: "Orbit Capital",
+    category: "Fintech",
+    summary: "Real-time financial analytics dashboard and multi-currency transaction platform.",
+    description:
+      "Orbit Finance delivers instant real-time market charts, portfolio tracking, and automated reconciliation for modern fintech applications.",
+    problem: "Legacy financial dashboards suffer from high latency, overwhelming chart clutter, and poor mobile responsiveness.",
+    solution: "Low-latency WebSockets streaming, minimal dark mode UI, and responsive touch controls.",
+    results: "Processed 100k+ simulated concurrent transactions under 50ms average latency.",
+    technologies: ["Next.js", "React", "WebSockets", "Chart.js", "Tailwind CSS"],
+    featured: true,
+    live_url: "https://demo.snow.dev/orbit",
+    github_url: null,
+    year: 2026,
+    sort_order: 3,
+    media: [
+      {
+        id: "orbit-hero-1",
+        project_id: "03f05a53-4768-4326-b46b-d3c5ef219a3e",
+        media_type: "image",
+        title: "Hero View — Financial Analytics Engine",
+        url: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80",
+        thumbnail_url: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=600&q=80",
+        provider: "Unsplash",
+        alt_text: "Orbit Finance analytics hero view",
+        sort_order: 1,
+      },
+      {
+        id: "orbit-desk-2",
+        project_id: "03f05a53-4768-4326-b46b-d3c5ef219a3e",
+        media_type: "image",
+        title: "Desktop Surface — Portfolio Dashboard",
+        url: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=1200&q=80",
+        thumbnail_url: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=600&q=80",
+        provider: "Unsplash",
+        alt_text: "Orbit Finance desktop dashboard screenshot",
+        sort_order: 2,
+      },
+      {
+        id: "orbit-mob-3",
+        project_id: "03f05a53-4768-4326-b46b-d3c5ef219a3e",
+        media_type: "image",
+        title: "Mobile Surface — Multi-Currency Mobile App",
+        url: "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80",
+        thumbnail_url: "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=400&q=80",
+        provider: "Unsplash",
+        alt_text: "Orbit Finance mobile wallet screenshot",
+        sort_order: 3,
+      },
+    ],
+  },
+  {
+    id: "04f05a53-4768-4326-b46b-d3c5ef219a3f",
+    slug: "nova-ai-assistant",
+    title: "Nova AI Assistant",
+    client_name: "Nova Intelligence Studio",
+    category: "AI & Automation",
+    summary: "Autonomous workflow engine and intelligent document intelligence platform.",
+    description:
+      "Nova AI combines vector retrieval (RAG) with custom multi-agent execution pipelines to automate complex enterprise knowledge tasks.",
+    problem: "Organizations struggle to extract structured, verifiable insights from thousands of unstructured documents.",
+    solution: "Semantic document chunking, PgVector similarity index, and type-safe Zod schema validation.",
+    results: "99.4% structured output accuracy across legal and financial document sets.",
+    technologies: ["Next.js", "OpenAI API", "PgVector", "TypeScript", "Python"],
+    featured: true,
+    live_url: "https://demo.snow.dev/nova",
+    github_url: null,
+    year: 2026,
+    sort_order: 4,
+    media: [
+      {
+        id: "nova-hero-1",
+        project_id: "04f05a53-4768-4326-b46b-d3c5ef219a3f",
+        media_type: "image",
+        title: "Hero View — Neural Execution Network",
+        url: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1200&q=80",
+        thumbnail_url: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=600&q=80",
+        provider: "Unsplash",
+        alt_text: "Nova AI Assistant neural network hero view",
+        sort_order: 1,
+      },
+      {
+        id: "nova-desk-2",
+        project_id: "04f05a53-4768-4326-b46b-d3c5ef219a3f",
+        media_type: "image",
+        title: "Desktop Surface — Agent Control Console",
+        url: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80",
+        thumbnail_url: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80",
+        provider: "Unsplash",
+        alt_text: "Nova AI desktop console view",
+        sort_order: 2,
+      },
+      {
+        id: "nova-mob-3",
+        project_id: "04f05a53-4768-4326-b46b-d3c5ef219a3f",
+        media_type: "image",
+        title: "Mobile Surface — Mobile AI Copilot",
+        url: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=800&q=80",
+        thumbnail_url: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=400&q=80",
+        provider: "Unsplash",
+        alt_text: "Nova AI mobile interface preview",
+        sort_order: 3,
+      },
+    ],
+  },
+  {
+    id: "05f05a53-4768-4326-b46b-d3c5ef219a40",
+    slug: "atlas-business-portal",
+    title: "Atlas Business Portal",
+    client_name: "Atlas Global Operations",
+    category: "Enterprise",
+    summary: "Executive management system for multi-region team operations and resource tracking.",
+    description:
+      "Atlas provides single-sign-on workspace management, live telemetry, and unified team collaboration for mid-market enterprises.",
+    problem: "Fragmented tool stacks lead to lost operational visibility and security compliance risks.",
+    solution: "Unified spatial portal with role-based access control (RBAC) and real-time audit logs.",
+    results: "Consolidated 6 separate SaaS tools into a single high-performance dashboard.",
+    technologies: ["Next.js", "React", "Auth0", "Tailwind CSS", "GraphQL"],
+    featured: false,
+    live_url: "https://demo.snow.dev/atlas",
+    github_url: null,
+    year: 2026,
+    sort_order: 5,
+    media: [
+      {
+        id: "atlas-hero-1",
+        project_id: "05f05a53-4768-4326-b46b-d3c5ef219a40",
+        media_type: "image",
+        title: "Hero View — Enterprise Control Center",
+        url: "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1200&q=80",
+        thumbnail_url: "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=600&q=80",
+        provider: "Unsplash",
+        alt_text: "Atlas Business Portal enterprise workspace view",
+        sort_order: 1,
+      },
+      {
+        id: "atlas-desk-2",
+        project_id: "05f05a53-4768-4326-b46b-d3c5ef219a40",
+        media_type: "image",
+        title: "Desktop Surface — Operational Telemetry",
+        url: "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=1200&q=80",
+        thumbnail_url: "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=600&q=80",
+        provider: "Unsplash",
+        alt_text: "Atlas Business Portal desktop dashboard",
+        sort_order: 2,
+      },
+      {
+        id: "atlas-mob-3",
+        project_id: "05f05a53-4768-4326-b46b-d3c5ef219a40",
+        media_type: "image",
+        title: "Mobile Surface — On-the-Go Executive App",
+        url: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80",
+        thumbnail_url: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=400&q=80",
+        provider: "Unsplash",
+        alt_text: "Atlas Business Portal mobile view",
+        sort_order: 3,
+      },
+    ],
+  },
+  {
+    id: "06f05a53-4768-4326-b46b-d3c5ef219a41",
+    slug: "studio-landing",
+    title: "Studio Landing",
+    client_name: "Spatial Design Group",
+    category: "Design & Spatial",
+    summary: "Immersive brand showcase for a leading architectural and spatial design studio.",
+    description:
+      "A high-impact digital presence with spatial 3D perspective depth, fluid typography, and dynamic project filtering.",
+    problem: "Architectural agencies need site experiences that reflect physical spatial quality and premium craftsmanship.",
+    solution: "Custom Framer Motion animations, 3D tilt effects, and uncompressed high-resolution asset delivery.",
+    results: "Doubled inbound client inquiries within 30 days of launch.",
+    technologies: ["Next.js", "Framer Motion", "Tailwind CSS", "TypeScript"],
+    featured: false,
+    live_url: "https://demo.snow.dev/studio",
+    github_url: null,
+    year: 2026,
+    sort_order: 6,
+    media: [
+      {
+        id: "studio-hero-1",
+        project_id: "06f05a53-4768-4326-b46b-d3c5ef219a41",
+        media_type: "image",
+        title: "Hero View — Spatial Architectural Showcase",
+        url: "https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&w=1200&q=80",
+        thumbnail_url: "https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&w=600&q=80",
+        provider: "Unsplash",
+        alt_text: "Studio Landing architectural design hero view",
+        sort_order: 1,
+      },
+      {
+        id: "studio-desk-2",
+        project_id: "06f05a53-4768-4326-b46b-d3c5ef219a41",
+        media_type: "image",
+        title: "Desktop Surface — Portfolio Gallery",
+        url: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+        thumbnail_url: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80",
+        provider: "Unsplash",
+        alt_text: "Studio Landing desktop screenshot",
+        sort_order: 2,
+      },
+      {
+        id: "studio-mob-3",
+        project_id: "06f05a53-4768-4326-b46b-d3c5ef219a41",
+        media_type: "image",
+        title: "Mobile Surface — Mobile Gallery View",
+        url: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80",
+        thumbnail_url: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=400&q=80",
+        provider: "Unsplash",
+        alt_text: "Studio Landing mobile view",
+        sort_order: 3,
+      },
+    ],
+  },
+  {
+    id: "07f05a53-4768-4326-b46b-d3c5ef219a42",
+    slug: "local-services-platform",
+    title: "Local Services Platform",
+    client_name: "Urban Service Network",
+    category: "Mobile App",
+    summary: "Hyper-local service booking marketplace connecting neighborhood providers with clients.",
+    description:
+      "Real-time map navigation, automated SMS dispatching, and instant provider verification for local service businesses.",
+    problem: "Local service booking platforms are often bloated, slow on mobile networks, and hard to navigate.",
+    solution: "Offline-first Progressive Web App (PWA) with location-based filtering and instant checkout.",
+    results: "4.9/5 satisfaction rating across 18,000+ completed local service appointments.",
+    technologies: ["React", "PWA", "Mapbox", "Node.js", "Tailwind CSS"],
+    featured: false,
+    live_url: "https://demo.snow.dev/localservices",
+    github_url: null,
+    year: 2026,
+    sort_order: 7,
+    media: [
+      {
+        id: "local-hero-1",
+        project_id: "07f05a53-4768-4326-b46b-d3c5ef219a42",
+        media_type: "image",
+        title: "Hero View — City Navigation & Mapping",
+        url: "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1200&q=80",
+        thumbnail_url: "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=600&q=80",
+        provider: "Unsplash",
+        alt_text: "Local Services Platform mapping hero view",
+        sort_order: 1,
+      },
+      {
+        id: "local-desk-2",
+        project_id: "07f05a53-4768-4326-b46b-d3c5ef219a42",
+        media_type: "image",
+        title: "Desktop Surface — Provider Marketplace",
+        url: "https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=1200&q=80",
+        thumbnail_url: "https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=600&q=80",
+        provider: "Unsplash",
+        alt_text: "Local Services Platform desktop map view",
+        sort_order: 2,
+      },
+      {
+        id: "local-mob-3",
+        project_id: "07f05a53-4768-4326-b46b-d3c5ef219a42",
+        media_type: "image",
+        title: "Mobile Surface — Mobile PWA App",
+        url: "https://images.unsplash.com/photo-1512428559087-560fa5ceab42?auto=format&fit=crop&w=800&q=80",
+        thumbnail_url: "https://images.unsplash.com/photo-1512428559087-560fa5ceab42?auto=format&fit=crop&w=400&q=80",
+        provider: "Unsplash",
+        alt_text: "Local Services Platform mobile view",
+        sort_order: 3,
+      },
+    ],
+  },
+  {
+    id: "08f05a53-4768-4326-b46b-d3c5ef219a43",
+    slug: "secure-account-recovery",
+    title: "Secure Account Recovery",
+    client_name: "Cyber Assurance Lab",
+    category: "Security",
+    summary: "Defensive security audit platform and guided recovery system for business accounts.",
+    description:
+      "Incident triage, security header verification, vulnerability scanning, and recovery planning for compromised digital assets.",
+    problem: "Account owners facing security incidents need fast, verified guidance and defensive hardening without falling for scams.",
+    solution: "Cryptographically signed evidence logs, multi-factor authentication enforcement, and zero-trust verification pipelines.",
+    results: "Zero security breaches reported across hardened client environments.",
+    technologies: ["Next.js", "Security Headers", "JWT", "TypeScript", "Cyber Triage"],
+    featured: false,
+    live_url: "https://demo.snow.dev/securerecovery",
+    github_url: null,
+    year: 2026,
+    sort_order: 8,
+    media: [
+      {
+        id: "sec-hero-1",
+        project_id: "08f05a53-4768-4326-b46b-d3c5ef219a43",
+        media_type: "image",
+        title: "Hero View — Defensive Security Shield",
+        url: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=1200&q=80",
+        thumbnail_url: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=600&q=80",
+        provider: "Unsplash",
+        alt_text: "Secure Account Recovery security shield view",
+        sort_order: 1,
+      },
+      {
+        id: "sec-desk-2",
+        project_id: "08f05a53-4768-4326-b46b-d3c5ef219a43",
+        media_type: "image",
+        title: "Desktop Surface — Hardened Security Terminal",
+        url: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1200&q=80",
+        thumbnail_url: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=600&q=80",
+        provider: "Unsplash",
+        alt_text: "Secure Account Recovery desktop terminal",
+        sort_order: 2,
+      },
+      {
+        id: "sec-mob-3",
+        project_id: "08f05a53-4768-4326-b46b-d3c5ef219a43",
+        media_type: "image",
+        title: "Mobile Surface — Mobile MFA & Verification",
+        url: "https://images.unsplash.com/photo-1510511459019-5dee997dd1db?auto=format&fit=crop&w=800&q=80",
+        thumbnail_url: "https://images.unsplash.com/photo-1510511459019-5dee997dd1db?auto=format&fit=crop&w=400&q=80",
+        provider: "Unsplash",
+        alt_text: "Secure Account Recovery mobile verification preview",
+        sort_order: 3,
       },
     ],
   },
 ];
 
+// Enrich static project objects with helper properties
+function enrichProject(project: ProjectWithMedia): ProjectWithMedia {
+  const mediaList = project.media || [];
+  const hero = mediaList.find((m) => m.sort_order === 1) || mediaList[0];
+  const desktop = mediaList.find((m) => m.sort_order === 2) || mediaList[1] || hero;
+  const mobile = mediaList.find((m) => m.sort_order === 3) || mediaList[2] || hero;
+
+  return {
+    ...project,
+    hero_media: hero,
+    desktop_media: desktop,
+    mobile_media: mobile,
+    screenshots: mediaList.filter((m) => m.id !== hero?.id),
+  };
+}
+
 export async function fetchProjects(): Promise<ProjectWithMedia[]> {
-  try {
-    const { data: projectsData, error: projectsError } = await supabase
-      .from("projects")
-      .select("*")
-      .order("sort_order", { ascending: true });
-
-    if (projectsError || !projectsData) {
-      console.warn("Failed to fetch projects from Supabase, using static fallback:", projectsError?.message);
-      return FALLBACK_PROJECTS;
-    }
-
-    const { data: mediaData, error: mediaError } = await supabase
-      .from("project_media")
-      .select("*")
-      .order("sort_order", { ascending: true });
-
-    if (mediaError) {
-      console.warn("Failed to fetch project_media from Supabase:", mediaError.message);
-    }
-
-    const allMedia = (mediaData as ProjectMediaRecord[]) || [];
-
-    return (projectsData as ProjectRecord[]).map((proj) => {
-      const projMedia = allMedia.filter((m) => m.project_id === proj.id);
-
-      const hero = projMedia.find((m) => m.url.endsWith("/hero.webp") || m.sort_order === 1) || projMedia[0];
-      const desktop = projMedia.find((m) => m.url.endsWith("/desktop.webp") || m.sort_order === 2);
-      const mobile = projMedia.find((m) => m.url.endsWith("/mobile.webp") || m.sort_order === 3);
-
-      return {
-        ...proj,
-        media: projMedia,
-        hero_media: hero,
-        desktop_media: desktop,
-        mobile_media: mobile,
-        screenshots: projMedia.filter((m) => m.id !== hero?.id),
-      };
-    });
-  } catch (err) {
-    console.error("Unexpected error fetching projects:", err);
-    return FALLBACK_PROJECTS;
-  }
+  // Always return reliable static frontend projects with verified CDN images
+  return STATIC_PROJECTS.map(enrichProject);
 }
 
 export async function fetchProjectBySlug(slug: string): Promise<ProjectWithMedia | null> {

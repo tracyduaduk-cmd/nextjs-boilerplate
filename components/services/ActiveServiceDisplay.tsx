@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { ServiceRecord, CapabilityFamilyMeta } from "@/lib/services/types";
 import { Tilt } from "@/components/spatial/Tilt";
@@ -23,12 +24,50 @@ interface ActiveServiceDisplayProps {
   className?: string;
 }
 
+const FAMILY_VISUAL_MAP: Record<string, { image: string; caption: string }> = {
+  WEB: {
+    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80",
+    caption: "Full-Stack Web Engineering & Fast Spatial Interfaces",
+  },
+  "APPS & SOFTWARE": {
+    image: "https://images.unsplash.com/photo-1512499617640-c74ae3a79d37?auto=format&fit=crop&w=1200&q=80",
+    caption: "Cross-Platform Mobile Apps & Software Architecture",
+  },
+  AI: {
+    image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1200&q=80",
+    caption: "Autonomous LLM Pipelines & Document Intelligence",
+  },
+  "SECURITY & RECOVERY": {
+    image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=1200&q=80",
+    caption: "Defensive Security Hardening & Compromise Recovery",
+  },
+  INFRASTRUCTURE: {
+    image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&q=80",
+    caption: "Resilient Cloud Edge Networks & High-Availability APIs",
+  },
+  "DIGITAL GROWTH": {
+    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80",
+    caption: "Technical SEO, Telemetry & Conversion Engine",
+  },
+  "DEVICES & HARDWARE": {
+    image: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=1200&q=80",
+    caption: "Hardware Diagnostics, Workstations & Network Peripherals",
+  },
+  "BUSINESS IT": {
+    image: "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1200&q=80",
+    caption: "Managed Business IT, Cloud Workspaces & Administration",
+  },
+};
+
 export const ActiveServiceDisplay: React.FC<ActiveServiceDisplayProps> = ({
   service,
   familyMeta,
   onRequestService,
   className = "",
 }) => {
+  const visual =
+    FAMILY_VISUAL_MAP[service.capability_family] || FAMILY_VISUAL_MAP["WEB"];
+
   return (
     <AnimatePresence mode="wait">
       <motion.div
@@ -54,6 +93,22 @@ export const ActiveServiceDisplay: React.FC<ActiveServiceDisplayProps> = ({
               className="absolute -bottom-24 -left-24 w-72 h-72 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none"
               aria-hidden="true"
             />
+
+            {/* Dedicated High-Resolution Visual Asset Header */}
+            <div className="relative w-full h-48 sm:h-56 rounded-2xl overflow-hidden mb-6 border border-slate-800/80 shadow-inner">
+              <Image
+                src={visual.image}
+                alt={service.name}
+                fill
+                unoptimized
+                priority
+                className="object-cover object-center group-hover:scale-105 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
+              <div className="absolute bottom-3 left-3 px-3 py-1 rounded-lg bg-slate-950/90 border border-slate-800 text-xs font-mono text-sky-400 backdrop-blur-sm">
+                <span>{visual.caption}</span>
+              </div>
+            </div>
 
             {/* Header: Family Badge, Category, Status */}
             <div className="flex flex-wrap items-center justify-between gap-3 pb-6 border-b border-slate-800/80">
