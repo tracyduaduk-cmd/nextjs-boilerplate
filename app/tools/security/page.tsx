@@ -77,6 +77,7 @@ export default function SecurityPage() {
                 slug: "security",
                 description: "Snow provides defensive security reviews, security header hardening, SSL monitoring, and ethical recovery assistance.",
               },
+              careCategorySlug: "security-care",
               recommendedCarePlan: {
                 name: "Essential Care Plan",
                 href: "/care#care-plans",

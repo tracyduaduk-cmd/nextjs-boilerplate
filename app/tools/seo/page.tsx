@@ -77,6 +77,7 @@ export default function SeoPage() {
                 slug: "seo-digital-growth",
                 description: "Snow builds solid technical SEO foundations, schema markup, and crawlable site structures to grow organic search visibility.",
               },
+              careCategorySlug: "website-care",
               recommendedCarePlan: {
                 name: "Business Care Plan",
                 href: "/care#care-plans",

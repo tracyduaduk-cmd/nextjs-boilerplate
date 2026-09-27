@@ -436,6 +436,258 @@ export const SERVICE_RULES_CONFIGS: Record<string, ServiceRulesConfig> = {
       },
     ],
   },
+
+  // 9. Snow Care Platform
+  "snow-care": {
+    serviceSlug: "snow-care",
+    category: "Technical Maintenance & Care",
+    familyId: "WEB",
+    title: "Snow Care Technical Service",
+    pricingQuoteType: "request_estimate",
+    questions: [
+      {
+        id: "care_category",
+        label: "Which Care category best describes your requirement?",
+        type: "select",
+        required: true,
+        options: [
+          { value: "website-care", label: "Website Care", description: "Updates, bug fixes, content & maintenance" },
+          { value: "app-care", label: "App Care", description: "Mobile/web application fixes & release support" },
+          { value: "security-care", label: "Security Care", description: "Security review, access hardening & recovery" },
+          { value: "performance-care", label: "Performance Care", description: "Speed audit, Core Web Vitals & database tuning" },
+          { value: "infrastructure-care", label: "Infrastructure Care", description: "Deployments, hosting, databases & DNS" },
+          { value: "ongoing-development", label: "Ongoing Development", description: "Continuous feature sprints & iteration" },
+        ],
+      },
+      {
+        id: "target_url",
+        label: "What is the URL or address of the website or application?",
+        type: "url",
+        placeholder: "https://yourcompany.com",
+        helpText: "Provides immediate context for our engineering team.",
+      },
+      {
+        id: "operational_status",
+        label: "What is the current operational status of your system?",
+        type: "select",
+        required: true,
+        options: [
+          { value: "down", label: "System Down / Active Incident", description: "Critical outage requiring immediate triage" },
+          { value: "degraded", label: "Degraded Performance or Errors", description: "System functional but features failing or slow" },
+          { value: "stable", label: "Stable, Requesting Preventative Care", description: "Routine maintenance and updates" },
+          { value: "evolution", label: "Seeking Feature Iteration", description: "Continuous improvements and roadmap execution" },
+        ],
+      },
+      {
+        id: "care_objectives",
+        label: "What are your primary care objectives?",
+        type: "multiselect",
+        options: [
+          { value: "bug_investigation", label: "Bug Triage & Code Fixes" },
+          { value: "performance_tuning", label: "Loading Speed & Web Vitals Optimization" },
+          { value: "security_hardening", label: "Security Audit & Vulnerability Patching" },
+          { value: "dependency_maintenance", label: "Framework & Dependency Upgrades" },
+          { value: "hosting_deployment", label: "Hosting, Database & CI/CD Support" },
+          { value: "feature_sprints", label: "Continuous Feature Development" },
+        ],
+      },
+    ],
+  },
+  "website-care": {
+    serviceSlug: "website-care",
+    category: "Web Infrastructure",
+    familyId: "WEB",
+    title: "Website Care & Maintenance",
+    pricingQuoteType: "request_estimate",
+    questions: [
+      {
+        id: "site_url",
+        label: "What is your website URL?",
+        type: "url",
+        required: true,
+        placeholder: "https://yourcompany.com",
+      },
+      {
+        id: "cms_platform",
+        label: "What CMS or tech stack is your website built on?",
+        type: "select",
+        options: [
+          { value: "nextjs_react", label: "Next.js / React / Headless" },
+          { value: "wordpress", label: "WordPress / Elementor / WooCommerce" },
+          { value: "shopify", label: "Shopify / Custom E-Commerce" },
+          { value: "custom_html", label: "Custom HTML / CSS / JavaScript" },
+          { value: "unknown", label: "Unsure / Need Tech Stack Audit" },
+        ],
+      },
+      {
+        id: "website_care_needs",
+        label: "What specific care does your site require?",
+        type: "multiselect",
+        options: [
+          { value: "updates", label: "CMS & Plugin Software Updates" },
+          { value: "bug_fixes", label: "Fix Broken Layouts & Scripts" },
+          { value: "content", label: "Content Publishing & Page Updates" },
+          { value: "speed", label: "Performance & Loading Speed Remediation" },
+          { value: "backups", label: "Off-site Backup Strategy Setup" },
+        ],
+      },
+    ],
+  },
+  "app-care": {
+    serviceSlug: "app-care",
+    category: "Full-Stack Software",
+    familyId: "APPS & SOFTWARE",
+    title: "App Care & Software Support",
+    pricingQuoteType: "request_estimate",
+    questions: [
+      {
+        id: "app_platform",
+        label: "What platform is your application target?",
+        type: "select",
+        required: true,
+        options: [
+          { value: "web_app", label: "Web Application / SaaS Portal" },
+          { value: "mobile_ios_android", label: "Mobile App (iOS & Android)" },
+          { value: "cross_platform", label: "Full-Stack Web & Mobile" },
+          { value: "backend_api", label: "Backend API & Database" },
+        ],
+      },
+      {
+        id: "app_care_needs",
+        label: "What app care deliverables do you need?",
+        type: "multiselect",
+        options: [
+          { value: "bug_triage", label: "Application Bug Investigation" },
+          { value: "dependency_updates", label: "Runtime & Dependency Upgrades" },
+          { value: "feature_patches", label: "Minor Feature Enhancements" },
+          { value: "release_support", label: "App Store & Web Publishing Support" },
+          { value: "database_tuning", label: "Database Query Tuning" },
+        ],
+      },
+    ],
+  },
+  "security-care": {
+    serviceSlug: "security-care",
+    category: "Security & Defense",
+    familyId: "SECURITY & RECOVERY",
+    title: "Security Care & Hardening",
+    pricingQuoteType: "request_estimate",
+    securityNotice: "Snow Security Care operates within strictly safe, defensive boundaries. Never share passwords or private API tokens in this intake form.",
+    questions: [
+      {
+        id: "target_system",
+        label: "What asset requires security care?",
+        type: "select",
+        required: true,
+        options: [
+          { value: "website_security", label: "Public Website / Web Server" },
+          { value: "app_auth", label: "Web / Mobile App Authentication" },
+          { value: "account_recovery", label: "Platform Account Access Recovery" },
+          { value: "infrastructure_hardening", label: "Cloud Server & Domain Security" },
+        ],
+      },
+      {
+        id: "security_care_needs",
+        label: "Primary security objectives?",
+        type: "multiselect",
+        options: [
+          { value: "security_audit", label: "Defensive Security Posture Audit" },
+          { value: "auth_triage", label: "MFA & Authentication Triage" },
+          { value: "dependency_patch", label: "Vulnerability & Dependency Patching" },
+          { value: "headers_ssl", label: "Security Header & SSL Enforcement" },
+          { value: "malware_cleanup", label: "Malware Triage & Site Cleanup" },
+        ],
+      },
+    ],
+  },
+  "performance-care": {
+    serviceSlug: "performance-care",
+    category: "Speed & Optimization",
+    familyId: "WEB",
+    title: "Performance Care & Speed Optimization",
+    pricingQuoteType: "request_estimate",
+    questions: [
+      {
+        id: "perf_url",
+        label: "What is the URL to optimize?",
+        type: "url",
+        required: true,
+        placeholder: "https://yourcompany.com",
+      },
+      {
+        id: "performance_issues",
+        label: "What performance symptoms are you observing?",
+        type: "multiselect",
+        options: [
+          { value: "slow_lcp", label: "Slow Initial Paint (LCP)" },
+          { value: "layout_shifts", label: "Layout Shifts & Jumping Content (CLS)" },
+          { value: "heavy_assets", label: "Uncompressed Images & Large Asset Bundles" },
+          { value: "render_blocking", label: "Render-Blocking JavaScript & Styles" },
+          { value: "database_latency", label: "Slow Database / API Response Times" },
+        ],
+      },
+    ],
+  },
+  "infrastructure-care": {
+    serviceSlug: "infrastructure-care",
+    category: "Cloud & DevOps",
+    familyId: "INFRASTRUCTURE",
+    title: "Infrastructure & Deployment Care",
+    pricingQuoteType: "request_estimate",
+    questions: [
+      {
+        id: "hosting_environment",
+        label: "Where is your infrastructure currently hosted?",
+        type: "select",
+        options: [
+          { value: "vercel_netlify", label: "Vercel / Netlify / Supabase" },
+          { value: "aws_gcp_azure", label: "AWS / Google Cloud / Azure" },
+          { value: "vps_digitalocean", label: "DigitalOcean / Linode VPS" },
+          { value: "cpanel_shared", label: "cPanel / Shared Hosting" },
+          { value: "unsure", label: "Unsure / Need Audit" },
+        ],
+      },
+      {
+        id: "infra_care_needs",
+        label: "What infrastructure deliverables are required?",
+        type: "multiselect",
+        options: [
+          { value: "deploy_fixes", label: "Fix Broken Build or Deployment Pipeline" },
+          { value: "database_backup", label: "Database Backup & Storage Config" },
+          { value: "dns_ssl", label: "DNS, Domain & SSL Management" },
+          { value: "monitoring_alerts", label: "Technical Monitoring & Alert Setup" },
+          { value: "server_migration", label: "Server Migration & Setup" },
+        ],
+      },
+    ],
+  },
+  "ongoing-development": {
+    serviceSlug: "ongoing-development",
+    category: "Product Engineering",
+    familyId: "WEB",
+    title: "Ongoing Feature Development",
+    pricingQuoteType: "request_estimate",
+    questions: [
+      {
+        id: "dev_sprint_scope",
+        label: "What is your primary development goal?",
+        type: "select",
+        required: true,
+        options: [
+          { value: "feature_sprints", label: "Regular Feature Development Sprints" },
+          { value: "ui_modernization", label: "UI / UX Modernization" },
+          { value: "tech_debt", label: "Technical Debt Cleanup & Code Refactoring" },
+          { value: "dedicated_retainer", label: "Dedicated Engineering Support Hours" },
+        ],
+      },
+      {
+        id: "primary_tech_stack",
+        label: "What primary tech stack do you use?",
+        type: "text",
+        placeholder: "e.g., Next.js, React, Node.js, Python, PostgreSQL...",
+      },
+    ],
+  },
 };
 
 export const DEFAULT_SERVICE_RULE: ServiceRulesConfig = {
@@ -469,6 +721,25 @@ export function classifyProblemDescription(description: string): DiagnosticResul
       recommendedServiceName: "Web Engineering",
       explanation: "Let's gather details about your technical project so our engineering team can assist.",
       confidence: "low",
+    };
+  }
+
+  // Snow Care patterns
+  if (
+    text.includes("care") ||
+    text.includes("maintenance") ||
+    text.includes("maintain") ||
+    text.includes("ongoing") ||
+    text.includes("patch") ||
+    text.includes("snow care")
+  ) {
+    return {
+      detectedFamilyId: "WEB",
+      recommendedServiceSlug: "snow-care",
+      recommendedServiceName: "Snow Care Technical Service",
+      explanation:
+        "This sounds like an ongoing maintenance or care service request. Let's gather a few details so our technical team can assist.",
+      confidence: "high",
     };
   }
 

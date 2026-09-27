@@ -35,6 +35,8 @@ interface ServiceRequestFlowProps {
   initialServiceSlug?: string;
   initialMode?: EntryMode;
   initialProblemText?: string;
+  initialCategory?: string;
+  initialPlan?: string;
   onClose?: () => void;
   className?: string;
 }
@@ -68,6 +70,19 @@ const findMatchingService = (input: string | undefined, catalog: ServiceRecord[]
   if (lower.includes("mobile") || lower.includes("ios") || lower.includes("android")) {
     return catalog.find((s) => s.slug === "mobile-app-development");
   }
+  if (
+    lower.includes("snow-care") ||
+    lower.includes("care") ||
+    lower.includes("website-care") ||
+    lower.includes("app-care") ||
+    lower.includes("security-care") ||
+    lower.includes("performance-care") ||
+    lower.includes("infrastructure-care") ||
+    lower.includes("ongoing-development")
+  ) {
+    const careMatch = catalog.find((s) => s.slug === "snow-care");
+    if (careMatch) return careMatch;
+  }
   if (lower.includes("repair") || lower.includes("maintenance") || lower.includes("bug")) {
     return catalog.find((s) => s.slug === "website-repair-maintenance");
   }
@@ -100,6 +115,8 @@ export const ServiceRequestFlow: React.FC<ServiceRequestFlowProps> = ({
   initialServiceSlug,
   initialMode,
   initialProblemText,
+  initialCategory,
+  initialPlan,
   onClose,
   className = "",
 }) => {
@@ -121,7 +138,12 @@ export const ServiceRequestFlow: React.FC<ServiceRequestFlowProps> = ({
     initialProblemText || ""
   );
   const [diagnosticNote, setDiagnosticNote] = useState<string>("");
-  const [answers, setAnswers] = useState<Record<string, unknown>>({});
+  const [answers, setAnswers] = useState<Record<string, unknown>>(() => {
+    const init: Record<string, unknown> = {};
+    if (initialCategory) init.care_category = initialCategory;
+    if (initialPlan) init.care_plan = initialPlan;
+    return init;
+  });
   const [timeline, setTimeline] = useState<TimelineOption>("within_month");
   const [urgency] = useState<string>("normal");
   const [budgetRange, setBudgetRange] = useState<BudgetOption>("not_sure");

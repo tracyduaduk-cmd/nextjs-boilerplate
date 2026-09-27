@@ -15,11 +15,11 @@ export const ToolResult: React.FC<ToolResultProps> = ({ data }) => {
       <div className="p-6 rounded-2xl bg-slate-900/90 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>
           <p className="text-xs font-mono text-slate-400 uppercase">Target Analyzed</p>
-          <p className="text-base font-bold text-slate-100">{data.urlOrTarget || "Demonstration Baseline"}</p>
+          <p className="text-base font-bold text-slate-100 font-sans">{data.urlOrTarget || "Demonstration Baseline"}</p>
         </div>
         <div className="text-right">
           <p className="text-xs font-mono text-slate-400 uppercase">Overall Assessment</p>
-          <span className="text-sm font-semibold text-emerald-400">{data.overallStatus}</span>
+          <span className="text-sm font-semibold text-emerald-400 font-mono">{data.overallStatus}</span>
         </div>
       </div>
 
@@ -41,6 +41,9 @@ export const ToolResult: React.FC<ToolResultProps> = ({ data }) => {
         serviceDescription={data.recommendedService.description}
         carePlanName={data.recommendedCarePlan?.name}
         carePlanHref={data.recommendedCarePlan?.href}
+        targetUrl={data.urlOrTarget}
+        overallStatus={data.overallStatus}
+        careCategorySlug={data.careCategorySlug}
       />
     </div>
   );
