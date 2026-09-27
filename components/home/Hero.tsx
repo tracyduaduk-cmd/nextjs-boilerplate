@@ -15,8 +15,8 @@ export const Hero: React.FC = () => {
 
   return (
     <section className="relative min-h-screen w-full flex flex-col justify-center overflow-hidden pt-28 pb-16 px-6 md:px-12 lg:px-20 bg-black text-white">
-      {/* 3D Spatial Scene Container - pointer-events-none on parent, pointer-events-auto on canvas so user can drag in empty areas */}
-      <div className="absolute inset-0 z-0 opacity-60 pointer-events-none [&>div]:pointer-events-auto [&>div>canvas]:pointer-events-auto">
+      {/* Isolated 3D Spatial Instrument Container - positioned specifically behind central/right sculpture region */}
+      <div className="absolute top-1/2 left-1/2 lg:left-2/3 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-[600px] h-[500px] md:h-[600px] z-0 opacity-60 pointer-events-auto">
         <SpatialWebGLScene />
       </div>
 

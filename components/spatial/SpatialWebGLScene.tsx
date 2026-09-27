@@ -355,7 +355,7 @@ export function SpatialWebGLScene() {
     >
       <canvas
         ref={canvasRef}
-        className="w-full h-full cursor-grab active:cursor-grabbing touch-none focus:outline-none"
+        className="w-full h-full cursor-grab active:cursor-grabbing touch-pan-y focus:outline-none"
         aria-label="Interactive 3D Spatial Instrument Sculpture"
         tabIndex={0}
       />
@@ -368,7 +368,8 @@ export function SpatialWebGLScene() {
       >
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/70 border border-cyan-400/40 backdrop-blur-md text-[10px] font-mono text-cyan-300 shadow-lg tracking-widest uppercase">
           <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-          <span>[ GRAB / ROTATE 3D ]</span>
+          <span className="hidden md:inline">[ GRAB / ROTATE 3D ]</span>
+          <span className="inline md:hidden">[ DRAG 3D ]</span>
         </div>
       </div>
     </div>
