@@ -49,6 +49,53 @@ const STEP_LABELS = [
   "Review",
 ];
 
+// Helper to match initial service parameter against catalog or aliases
+const findMatchingService = (input: string | undefined, catalog: ServiceRecord[]): ServiceRecord | undefined => {
+  if (!input) return undefined;
+  const lower = input.toLowerCase().trim();
+  // 1. Direct slug match
+  let match = catalog.find((s) => s.slug.toLowerCase() === lower);
+  if (match) return match;
+
+  // 2. Exact or partial name match
+  match = catalog.find((s) => s.name.toLowerCase() === lower || lower.includes(s.name.toLowerCase()) || s.name.toLowerCase().includes(lower));
+  if (match) return match;
+
+  // 3. Known aliases from ServiceExplorer or external links
+  if (lower.includes("spatial") || lower.includes("web app") || lower.includes("commerce")) {
+    return catalog.find((s) => s.slug === "web-development");
+  }
+  if (lower.includes("mobile") || lower.includes("ios") || lower.includes("android")) {
+    return catalog.find((s) => s.slug === "mobile-app-development");
+  }
+  if (lower.includes("repair") || lower.includes("maintenance") || lower.includes("bug")) {
+    return catalog.find((s) => s.slug === "website-repair-maintenance");
+  }
+  if (lower.includes("ai") || lower.includes("rag") || lower.includes("agent")) {
+    return catalog.find((s) => s.slug === "ai-solutions");
+  }
+  if (lower.includes("security") || lower.includes("recovery") || lower.includes("account")) {
+    return catalog.find((s) => s.slug === "social-account-recovery");
+  }
+  if (lower.includes("seo") || lower.includes("growth")) {
+    return catalog.find((s) => s.slug === "seo-digital-growth");
+  }
+  if (lower.includes("design") || lower.includes("ui") || lower.includes("ux")) {
+    return catalog.find((s) => s.slug === "ui-ux-design");
+  }
+  if (lower.includes("cloud") || lower.includes("api") || lower.includes("infrastructure")) {
+    return catalog.find((s) => s.slug === "cloud-api-integrations");
+  }
+  if (lower.includes("hardware") || lower.includes("device")) {
+    return catalog.find((s) => s.slug === "devices-hardware-support");
+  }
+  if (lower.includes("business") || lower.includes("it") || lower.includes("managed")) {
+    return catalog.find((s) => s.slug === "business-it-managed-support");
+  }
+
+  return undefined;
+};
+
 export const ServiceRequestFlow: React.FC<ServiceRequestFlowProps> = ({
   initialServiceSlug,
   initialMode,
@@ -61,10 +108,15 @@ export const ServiceRequestFlow: React.FC<ServiceRequestFlowProps> = ({
   const [direction, setDirection] = useState<number>(1);
 
   const [entryMode, setEntryMode] = useState<EntryMode>(initialMode || "direct");
-  const [selectedFamilyId, setSelectedFamilyId] = useState<CapabilityFamilyId>("WEB");
-  const [selectedServiceSlug, setSelectedServiceSlug] = useState<string>(
-    initialServiceSlug || "web-development"
+
+  const initialMatch = findMatchingService(initialServiceSlug, FALLBACK_SERVICES);
+  const [selectedFamilyId, setSelectedFamilyId] = useState<CapabilityFamilyId>(
+    (initialMatch?.capability_family as CapabilityFamilyId) || "WEB"
   );
+  const [selectedServiceSlug, setSelectedServiceSlug] = useState<string>(
+    initialMatch?.slug || initialServiceSlug || "web-development"
+  );
+
   const [problemDescription, setProblemDescription] = useState<string>(
     initialProblemText || ""
   );
@@ -91,10 +143,17 @@ export const ServiceRequestFlow: React.FC<ServiceRequestFlowProps> = ({
       const data = await fetchServices();
       if (data && data.length > 0) {
         setServices(data);
+        if (initialServiceSlug) {
+          const matched = findMatchingService(initialServiceSlug, data);
+          if (matched) {
+            setSelectedServiceSlug(matched.slug);
+            setSelectedFamilyId(matched.capability_family as CapabilityFamilyId);
+          }
+        }
       }
     }
     loadData();
-  }, []);
+  }, [initialServiceSlug]);
 
   const activeService = services.find((s) => s.slug === selectedServiceSlug) || services[0];
 
@@ -249,17 +308,12 @@ export const ServiceRequestFlow: React.FC<ServiceRequestFlowProps> = ({
       id="service-request-flow"
       className={`relative w-full min-h-[600px] py-12 sm:py-20 bg-slate-950 text-slate-100 ${className}`}
     >
-      {/* Embedded Request Spatial Instrument */}
-      <div className="absolute top-8 right-6 sm:right-12 w-[220px] h-[220px] opacity-60 hidden sm:block pointer-events-auto z-0">
-        <SpatialInstrument mode="request" badgeLabel="[ SYSTEM SIGNAL READY ]" scale={0.85} />
-      </div>
-
       <div
         className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,rgba(56,189,248,0.06),transparent)] pointer-events-none"
         aria-hidden="true"
       />
 
-      <Container className="relative z-10 max-w-4xl mx-auto">
+      <Container className="relative z-10 max-w-6xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-sky-400 animate-pulse" />
@@ -290,143 +344,172 @@ export const ServiceRequestFlow: React.FC<ServiceRequestFlowProps> = ({
           </div>
         )}
 
-        <PerspectiveContainer perspective={1200} className="w-full min-h-[420px]">
-          <AnimatePresence mode="wait" custom={direction}>
-            <motion.div
-              key={step}
-              custom={direction}
-              variants={spatialVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{
-                duration: motionTokens.duration.normal,
-                ease: motionTokens.ease.outExponential,
-              }}
-              className="w-full bg-slate-900/60 border border-slate-800/80 rounded-3xl p-6 sm:p-10 shadow-2xl backdrop-blur-xl"
-            >
-              {step === 1 && (
-                <StepModeSelect
-                  selectedMode={entryMode}
-                  onSelectMode={handleSelectMode}
-                />
-              )}
-
-              {step === 2 && (
-                <>
-                  {entryMode === "diagnostic" ? (
-                    <ProblemStep
-                      value={problemDescription}
-                      onChange={handleProblemChange}
-                      onContinue={handleNext}
-                    />
-                  ) : (
-                    <ServiceStep
-                      services={services}
-                      selectedFamilyId={selectedFamilyId}
-                      selectedServiceSlug={selectedServiceSlug}
-                      onSelectFamily={setSelectedFamilyId}
-                      onSelectService={(s) => handleSelectServiceSlug(s.slug)}
+        {/* Two Column Composition on Desktop / Stacked on Mobile */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Primary Interactive Form Section */}
+          <div className="lg:col-span-8 space-y-6">
+            <PerspectiveContainer perspective={1200} className="w-full min-h-[420px]">
+              <AnimatePresence mode="wait" custom={direction}>
+                <motion.div
+                  key={step}
+                  custom={direction}
+                  variants={spatialVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{
+                    duration: motionTokens.duration.normal,
+                    ease: motionTokens.ease.outExponential,
+                  }}
+                  className="w-full bg-slate-900/60 border border-slate-800/80 rounded-3xl p-6 sm:p-10 shadow-2xl backdrop-blur-xl"
+                >
+                  {step === 1 && (
+                    <StepModeSelect
+                      selectedMode={entryMode}
+                      onSelectMode={handleSelectMode}
                     />
                   )}
-                </>
-              )}
 
-              {step === 3 && (
-                <ContextQuestionsStep
-                  serviceSlug={selectedServiceSlug}
-                  answers={answers}
-                  onAnswerChange={handleAnswerChange}
-                />
-              )}
+                  {step === 2 && (
+                    <>
+                      {entryMode === "diagnostic" ? (
+                        <ProblemStep
+                          value={problemDescription}
+                          onChange={handleProblemChange}
+                          onContinue={handleNext}
+                        />
+                      ) : (
+                        <ServiceStep
+                          services={services}
+                          selectedFamilyId={selectedFamilyId}
+                          selectedServiceSlug={selectedServiceSlug}
+                          onSelectFamily={setSelectedFamilyId}
+                          onSelectService={(s) => handleSelectServiceSlug(s.slug)}
+                        />
+                      )}
+                    </>
+                  )}
 
-              {step === 4 && (
-                <DetailsStep
-                  problemDescription={problemDescription}
-                  onDescriptionChange={setProblemDescription}
-                />
-              )}
+                  {step === 3 && (
+                    <ContextQuestionsStep
+                      serviceSlug={selectedServiceSlug}
+                      answers={answers}
+                      onAnswerChange={handleAnswerChange}
+                    />
+                  )}
 
-              {step === 5 && (
-                <TimelineStep
-                  timeline={timeline}
-                  onTimelineChange={setTimeline}
-                  budgetRange={budgetRange}
-                  onBudgetChange={setBudgetRange}
-                />
-              )}
+                  {step === 4 && (
+                    <DetailsStep
+                      problemDescription={problemDescription}
+                      onDescriptionChange={setProblemDescription}
+                    />
+                  )}
 
-              {step === 6 && (
-                <ContactStep
-                  contact={contact}
-                  onChange={setContact}
-                  isSecurityRequest={selectedFamilyId === "SECURITY & RECOVERY"}
-                />
-              )}
+                  {step === 5 && (
+                    <TimelineStep
+                      timeline={timeline}
+                      onTimelineChange={setTimeline}
+                      budgetRange={budgetRange}
+                      onBudgetChange={setBudgetRange}
+                    />
+                  )}
 
-              {step === 7 && (
-                <ReviewStep
-                  data={{
-                    entryMode,
-                    selectedFamilyId,
-                    selectedServiceSlug,
-                    selectedServiceId: activeService?.id,
-                    problemDescription,
-                    diagnosticNote,
-                    answers,
-                    timeline,
-                    urgency,
-                    budgetRange,
-                    contact,
-                  }}
-                  serviceName={activeService ? activeService.name : "Custom Service"}
-                  onJumpToStep={handleJumpToStep}
-                  onSubmit={handleSubmitRequest}
-                  isSubmitting={isSubmitting}
-                  errorMessage={errorMessage}
-                />
-              )}
+                  {step === 6 && (
+                    <ContactStep
+                      contact={contact}
+                      onChange={setContact}
+                      isSecurityRequest={selectedFamilyId === "SECURITY & RECOVERY"}
+                    />
+                  )}
 
-              {step === 8 && submissionRecord && (
-                <SuccessState record={submissionRecord} onReset={handleReset} />
-              )}
-            </motion.div>
-          </AnimatePresence>
-        </PerspectiveContainer>
+                  {step === 7 && (
+                    <ReviewStep
+                      data={{
+                        entryMode,
+                        selectedFamilyId,
+                        selectedServiceSlug,
+                        selectedServiceId: activeService?.id,
+                        problemDescription,
+                        diagnosticNote,
+                        answers,
+                        timeline,
+                        urgency,
+                        budgetRange,
+                        contact,
+                      }}
+                      serviceName={activeService ? activeService.name : "Custom Service"}
+                      onJumpToStep={handleJumpToStep}
+                      onSubmit={handleSubmitRequest}
+                      isSubmitting={isSubmitting}
+                      errorMessage={errorMessage}
+                    />
+                  )}
 
-        {errorMessage && step !== 7 && (
-          <div className="mt-4 p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-sans">
-            {errorMessage}
-          </div>
-        )}
+                  {step === 8 && submissionRecord && (
+                    <SuccessState record={submissionRecord} onReset={handleReset} />
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            </PerspectiveContainer>
 
-        {step <= 6 && (
-          <div className="mt-8 pt-6 border-t border-slate-800/80 flex items-center justify-between gap-4">
-            {step > 1 ? (
-              <button
-                type="button"
-                onClick={handleBack}
-                className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 font-mono text-xs flex items-center gap-2 border border-slate-800 transition-colors"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                <span>Back</span>
-              </button>
-            ) : (
-              <div />
+            {errorMessage && step !== 7 && (
+              <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-sans">
+                {errorMessage}
+              </div>
             )}
 
-            {step > 1 && (
-              <button
-                type="button"
-                onClick={handleNext}
-                className="px-6 py-3 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold font-mono text-xs flex items-center gap-2 shadow-lg shadow-sky-950/50 transition-all"
-              >
-                <span>Continue</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
+            {step <= 6 && (
+              <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between gap-4">
+                {step > 1 ? (
+                  <button
+                    type="button"
+                    onClick={handleBack}
+                    className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 font-mono text-xs flex items-center gap-2 border border-slate-800 transition-colors"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    <span>Back</span>
+                  </button>
+                ) : (
+                  <div />
+                )}
+
+                {step > 1 && (
+                  <button
+                    type="button"
+                    onClick={handleNext}
+                    className="px-6 py-3 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold font-mono text-xs flex items-center gap-2 shadow-lg shadow-sky-950/50 transition-all"
+                  >
+                    <span>Continue</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
             )}
           </div>
-        )}
+
+          {/* Dedicated 3D Spatial Instrument Side Column */}
+          <div className="lg:col-span-4 space-y-6">
+            <div className="p-6 rounded-3xl bg-slate-900/40 border border-slate-800/80 backdrop-blur-md flex flex-col items-center justify-center text-center space-y-4">
+              <div className="w-full h-[220px] relative flex items-center justify-center">
+                <SpatialInstrument mode="request" badgeLabel="[ INTAKE SYSTEM ACTIVE ]" scale={0.9} />
+              </div>
+
+              <div className="space-y-1">
+                <h4 className="text-sm font-bold text-slate-200 font-sans">
+                  Snow Spatial Intake System
+                </h4>
+                <p className="text-xs text-slate-400 font-sans leading-relaxed">
+                  Structured technical scoping for custom software, web engineering, mobile applications, and system recovery.
+                </p>
+              </div>
+
+              <div className="w-full pt-4 border-t border-slate-800/60 text-[11px] font-mono text-slate-500 flex items-center justify-between">
+                <span>STATUS: READY</span>
+                <span>REF: SNW-INTAKE</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </Container>
     </section>
   );
