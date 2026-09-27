@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 
 export type CursorType = 'DEFAULT' | 'LINK' | 'MAGNETIC' | 'MEDIA' | 'PROJECT' | 'DRAG';
@@ -20,7 +20,14 @@ export const useCursor = () => useContext(CursorContext);
 export function CursorProvider({ children }: { children: React.ReactNode }) {
   const [cursorType, setCursorType] = useState<CursorType>('DEFAULT');
   const [cursorLabel, setCursorLabel] = useState<string>('');
-  const [isTouchDevice, setIsTouchDevice] = useState<boolean>(false);
+  const [isTouchDevice] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return (
+      'ontouchstart' in window ||
+      navigator.maxTouchPoints > 0 ||
+      window.matchMedia('(pointer: coarse)').matches
+    );
+  });
   const [isVisible, setIsVisible] = useState<boolean>(false);
 
   const mouseX = useMotionValue(-100);
@@ -31,15 +38,7 @@ export function CursorProvider({ children }: { children: React.ReactNode }) {
   const cursorY = useSpring(mouseY, springConfig);
 
   useEffect(() => {
-    const isTouch =
-      'ontouchstart' in window ||
-      navigator.maxTouchPoints > 0 ||
-      window.matchMedia('(pointer: coarse)').matches;
-
-    if (isTouch) {
-      setTimeout(() => setIsTouchDevice(true), 0);
-      return;
-    }
+    if (typeof window === 'undefined' || isTouchDevice) return;
 
     const handleMouseMove = (e: MouseEvent) => {
       mouseX.set(e.clientX);
@@ -51,50 +50,29 @@ export function CursorProvider({ children }: { children: React.ReactNode }) {
       setIsVisible(false);
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
     document.body.addEventListener('mouseleave', handleMouseLeave);
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       document.body.removeEventListener('mouseleave', handleMouseLeave);
     };
-  }, [mouseX, mouseY]);
+  }, [mouseX, mouseY, isTouchDevice]);
 
-  const setCursorState = (type: CursorType, label: string = '') => {
+  const setCursorState = useCallback((type: CursorType, label: string = '') => {
     setCursorType(type);
     setCursorLabel(label);
-  };
+  }, []);
 
-  const resetCursorState = () => {
+  const resetCursorState = useCallback(() => {
     setCursorType('DEFAULT');
     setCursorLabel('');
-  };
-
-  if (isTouchDevice) {
-    return <CursorContext.Provider value={{ setCursorState, resetCursorState }}>{children}</CursorContext.Provider>;
-  }
-
-  const getCursorStyle = () => {
-    switch (cursorType) {
-      case 'LINK':
-        return 'w-8 h-8 bg-cyan-400/30 border border-cyan-400 backdrop-blur-xs scale-125';
-      case 'MAGNETIC':
-        return 'w-10 h-10 bg-cyan-400/40 border border-white scale-150 shadow-[0_0_20px_rgba(34,211,238,0.5)]';
-      case 'MEDIA':
-      case 'PROJECT':
-        return 'w-20 h-20 bg-cyan-500/90 text-black font-mono font-bold text-xs uppercase border border-white/40 scale-100 flex items-center justify-center text-center p-2 rounded-full shadow-[0_0_25px_rgba(6,182,212,0.6)]';
-      case 'DRAG':
-        return 'w-16 h-16 bg-white text-black font-mono font-bold text-xs uppercase border border-cyan-400/50 flex items-center justify-center rounded-full shadow-lg';
-      case 'DEFAULT':
-      default:
-        return 'w-3 h-3 bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.8)]';
-    }
-  };
+  }, []);
 
   return (
     <CursorContext.Provider value={{ setCursorState, resetCursorState }}>
       {children}
-      {isVisible && (
+      {!isTouchDevice && isVisible && (
         <motion.div
           className="fixed top-0 left-0 pointer-events-none z-9999 mix-blend-difference flex items-center justify-center rounded-full transition-all duration-200 ease-out"
           style={{
@@ -104,7 +82,7 @@ export function CursorProvider({ children }: { children: React.ReactNode }) {
             translateY: '-50%',
           }}
         >
-          <div className={`rounded-full transition-all duration-300 ease-out ${getCursorStyle()}`}>
+          <div className={`rounded-full transition-all duration-300 ease-out ${getCursorStyle(cursorType)}`}>
             {cursorLabel && (
               <span className="tracking-widest select-none leading-none">
                 {cursorLabel}
@@ -115,4 +93,21 @@ export function CursorProvider({ children }: { children: React.ReactNode }) {
       )}
     </CursorContext.Provider>
   );
+}
+
+function getCursorStyle(type: CursorType) {
+  switch (type) {
+    case 'LINK':
+      return 'w-8 h-8 bg-cyan-400/30 border border-cyan-400 backdrop-blur-xs scale-125';
+    case 'MAGNETIC':
+      return 'w-10 h-10 bg-cyan-400/40 border border-white scale-150 shadow-[0_0_20px_rgba(34,211,238,0.5)]';
+    case 'MEDIA':
+    case 'PROJECT':
+      return 'w-20 h-20 bg-cyan-500/90 text-black font-mono font-bold text-xs uppercase border border-white/40 scale-100 flex items-center justify-center text-center p-2 rounded-full shadow-[0_0_25px_rgba(6,182,212,0.6)]';
+    case 'DRAG':
+      return 'w-16 h-16 bg-white text-black font-mono font-bold text-xs uppercase border border-cyan-400/50 flex items-center justify-center rounded-full shadow-lg';
+    case 'DEFAULT':
+    default:
+      return 'w-3 h-3 bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.8)]';
+  }
 }

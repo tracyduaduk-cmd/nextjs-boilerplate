@@ -38,6 +38,9 @@ export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
 
     return () => {
       gsap.ticker.remove(updateGsap);
+      if (typeof window !== 'undefined') {
+        ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      }
       lenis.destroy();
     };
   }, []);

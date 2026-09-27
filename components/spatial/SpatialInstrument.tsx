@@ -532,6 +532,21 @@ export function SpatialInstrument({
       subMeshC = ringMesh;
     }
 
+    // WebGL Context Loss Handlers
+    let isContextLost = false;
+
+    const onContextLost = (e: Event) => {
+      e.preventDefault();
+      isContextLost = true;
+    };
+
+    const onContextRestored = () => {
+      isContextLost = false;
+    };
+
+    canvas.addEventListener('webglcontextlost', onContextLost, false);
+    canvas.addEventListener('webglcontextrestored', onContextRestored, false);
+
     // 4. Pointer Interaction Handlers (Bounded to Canvas)
     const onPointerDown = (e: PointerEvent) => {
       if (!interactive || (e.button !== 0 && e.pointerType === 'mouse')) return;
@@ -542,7 +557,11 @@ export function SpatialInstrument({
       velocityRef.current = { x: 0, y: 0 };
 
       setCursorState('DRAG', 'ROTATE');
-      canvas.setPointerCapture(e.pointerId);
+      try {
+        canvas.setPointerCapture(e.pointerId);
+      } catch {
+        // Ignore setPointerCapture failure
+      }
     };
 
     const onPointerMove = (e: PointerEvent) => {
@@ -646,7 +665,13 @@ export function SpatialInstrument({
         pointLight.intensity = 2.5 + Math.sin(now * 2.5) * 0.7;
       }
 
-      renderer.render(scene, camera);
+      if (!isContextLost) {
+        try {
+          renderer.render(scene, camera);
+        } catch {
+          // Ignore context render failures
+        }
+      }
     };
 
     renderLoop();
@@ -669,6 +694,8 @@ export function SpatialInstrument({
       cancelAnimationFrame(animId);
       resizeObserver.disconnect();
 
+      canvas.removeEventListener('webglcontextlost', onContextLost);
+      canvas.removeEventListener('webglcontextrestored', onContextRestored);
       canvas.removeEventListener('pointerdown', onPointerDown);
       canvas.removeEventListener('pointermove', onPointerMove);
       canvas.removeEventListener('pointerup', onPointerUp);
@@ -679,7 +706,11 @@ export function SpatialInstrument({
 
       geometriesToDispose.forEach((g) => g.dispose());
       materialsToDispose.forEach((m) => m.dispose());
-      renderer.dispose();
+      try {
+        renderer.dispose();
+      } catch {
+        // Ignore renderer disposal error
+      }
     };
   }, [mode, normalizedMode, interactive, autoRotate, scale, accentColor, setCursorState, resetCursorState]);
 

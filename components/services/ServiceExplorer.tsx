@@ -65,7 +65,7 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ className = ''
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-8">
           <div className="space-y-3">
             <span className="font-mono text-xs text-cyan-400 uppercase tracking-widest">&#47;&#47; CAPABILITY UNIVERSE</span>
-            <KineticText variant="velocity" className="text-4xl sm:text-6xl font-black uppercase tracking-tight text-white">
+            <KineticText variant="velocity" className="text-[clamp(2.25rem,5vw,4.25rem)] font-black uppercase tracking-tight text-white">
               SERVICE ARCHITECTURE
             </KineticText>
           </div>

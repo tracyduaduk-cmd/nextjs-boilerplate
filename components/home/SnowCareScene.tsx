@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { ArrowUpRight, Clock, Server, RefreshCw } from 'lucide-react';
 import { KineticText } from '@/components/spatial/KineticText';
 import { useCursor } from '@/components/spatial/CursorSystem';
@@ -15,7 +16,7 @@ export const SnowCareScene: React.FC = () => {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-cyan-500/20 pb-8">
           <div className="space-y-3">
             <span className="font-mono text-xs text-cyan-400 uppercase tracking-widest">{"// CONTINUOUS OPERATIONS"}</span>
-            <KineticText variant="velocity" className="text-4xl sm:text-6xl font-black uppercase tracking-tight text-white">
+            <KineticText variant="velocity" className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-white">
               SNOW CARE ENGINE
             </KineticText>
           </div>
@@ -25,7 +26,13 @@ export const SnowCareScene: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="p-8 rounded-2xl bg-black/40 border border-cyan-500/30 space-y-4">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="p-8 rounded-2xl bg-black/40 border border-cyan-500/30 space-y-4"
+          >
             <div className="p-3 rounded-xl bg-cyan-400/10 text-cyan-400 w-fit">
               <Clock size={24} />
             </div>
@@ -33,9 +40,15 @@ export const SnowCareScene: React.FC = () => {
             <p className="text-sm text-cyan-100/70 leading-relaxed">
               Immediate triage and rapid resolution for production application disruptions and infrastructure vulnerabilities.
             </p>
-          </div>
+          </motion.div>
 
-          <div className="p-8 rounded-2xl bg-black/40 border border-cyan-500/30 space-y-4">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="p-8 rounded-2xl bg-black/40 border border-cyan-500/30 space-y-4"
+          >
             <div className="p-3 rounded-xl bg-cyan-400/10 text-cyan-400 w-fit">
               <Server size={24} />
             </div>
@@ -43,9 +56,15 @@ export const SnowCareScene: React.FC = () => {
             <p className="text-sm text-cyan-100/70 leading-relaxed">
               Real-time telemetry, database optimization, SSL certificate renewals, and edge routing audits.
             </p>
-          </div>
+          </motion.div>
 
-          <div className="p-8 rounded-2xl bg-black/40 border border-cyan-500/30 space-y-4">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="p-8 rounded-2xl bg-black/40 border border-cyan-500/30 space-y-4"
+          >
             <div className="p-3 rounded-xl bg-cyan-400/10 text-cyan-400 w-fit">
               <RefreshCw size={24} />
             </div>
@@ -53,7 +72,7 @@ export const SnowCareScene: React.FC = () => {
             <p className="text-sm text-cyan-100/70 leading-relaxed">
               Scheduled monthly engineering capacity for new feature iteration, UI improvements, and API expansions.
             </p>
-          </div>
+          </motion.div>
         </div>
 
         <div className="flex justify-center pt-6">

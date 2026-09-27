@@ -35,6 +35,7 @@ export function PortfolioDeviceFrame({
   aspectRatio = 'auto',
 }: PortfolioDeviceFrameProps) {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
   const isMobileType = type === 'mobile' || type === 'phone';
@@ -67,17 +68,27 @@ export function PortfolioDeviceFrame({
 
           {/* Viewport Frame */}
           <div className={`relative w-full ${finalAspectRatio} rounded-[2rem] overflow-hidden bg-slate-950 border border-slate-800/60`}>
-            <Image
-              src={src}
-              alt={alt}
-              fill
-              priority={priority}
-              sizes="(max-width: 768px) 100vw, 400px"
-              className={`object-cover object-top transition-all duration-700 ${
-                isLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
-              } ${isHovered ? 'scale-105' : 'scale-100'}`}
-              onLoad={() => setIsLoaded(true)}
-            />
+            {!hasError ? (
+              <Image
+                src={src}
+                alt={alt}
+                fill
+                priority={priority}
+                sizes="(max-width: 768px) 100vw, 400px"
+                className={`object-cover object-top transition-all duration-700 ${
+                  isLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
+                } ${isHovered ? 'scale-105' : 'scale-100'}`}
+                onLoad={() => setIsLoaded(true)}
+                onError={() => setHasError(true)}
+              />
+            ) : (
+              <div className="w-full h-full flex flex-col items-center justify-center bg-slate-950 p-4 text-center">
+                <div className="w-10 h-10 rounded-full bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center font-mono text-cyan-400 text-[10px] mb-2">
+                  MOBILE
+                </div>
+                <p className="font-mono text-[11px] text-cyan-300 font-bold uppercase truncate max-w-[200px]">{alt}</p>
+              </div>
+            )}
 
             {/* Subtle gloss overlay */}
             <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent pointer-events-none z-10" />
@@ -141,17 +152,28 @@ export function PortfolioDeviceFrame({
 
         {/* Viewport Frame */}
         <div className={`relative w-full ${finalAspectRatio} overflow-hidden bg-slate-950`}>
-          <Image
-            src={src}
-            alt={alt}
-            fill
-            priority={priority}
-            sizes="(max-width: 1200px) 100vw, 1200px"
-            className={`object-cover object-top transition-all duration-700 ${
-              isLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-102'
-            } ${isHovered ? 'scale-[1.02]' : 'scale-100'}`}
-            onLoad={() => setIsLoaded(true)}
-          />
+          {!hasError ? (
+            <Image
+              src={src}
+              alt={alt}
+              fill
+              priority={priority}
+              sizes="(max-width: 1200px) 100vw, 1200px"
+              className={`object-cover object-top transition-all duration-700 ${
+                isLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-102'
+              } ${isHovered ? 'scale-[1.02]' : 'scale-100'}`}
+              onLoad={() => setIsLoaded(true)}
+              onError={() => setHasError(true)}
+            />
+          ) : (
+            <div className="w-full h-full flex flex-col items-center justify-center bg-slate-950 p-8 text-center">
+              <div className="w-12 h-12 rounded-full bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center font-mono text-cyan-400 text-xs mb-2">
+                SNOW
+              </div>
+              <p className="font-mono text-xs text-cyan-300 font-bold uppercase tracking-wider">{alt}</p>
+              <p className="font-mono text-[10px] text-slate-500 mt-1 uppercase">[DESKTOP INTERFACE MOCKUP]</p>
+            </div>
+          )}
 
           {/* Subtle reflection overlay */}
           <div className="absolute inset-0 bg-gradient-to-tr from-slate-950/20 via-transparent to-white/5 pointer-events-none z-10" />
