@@ -19,3 +19,5 @@ export * from "./Reveal";
 export * from "./SpatialMedia";
 export * from "./SplitText";
 export * from "./Tilt";
+export * from "./SpatialWebGLScene";
+export * from "./SpatialInstrument";

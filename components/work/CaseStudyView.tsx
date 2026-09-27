@@ -4,12 +4,11 @@ import React from "react";
 import Link from "next/link";
 import { ProjectWithMedia } from "@/lib/projects/types";
 import { Container } from "@/components/ui/Container";
-import { SpatialMedia } from "@/components/spatial/SpatialMedia";
-import { GlassSurface } from "@/components/spatial/GlassSurface";
-import { Tilt } from "@/components/spatial/Tilt";
 import { Reveal } from "@/components/spatial/Reveal";
-import { PointerGlow } from "@/components/spatial/PointerGlow";
+import { SpatialInstrument } from "@/components/spatial/SpatialInstrument";
+import { PortfolioDeviceFrame } from "@/components/work/PortfolioDeviceFrame";
 import { MediaGallery } from "@/components/work/MediaGallery";
+import { getPublicUrl, PortfolioProjectSlug } from "@/lib/projects/mediaManifest";
 
 interface CaseStudyViewProps {
   project: ProjectWithMedia;
@@ -17,18 +16,25 @@ interface CaseStudyViewProps {
 }
 
 export const CaseStudyView: React.FC<CaseStudyViewProps> = ({ project, nextProject }) => {
-  const heroUrl = project.hero_media?.url || project.media[0]?.url || "";
-  const desktopUrl = project.desktop_media?.url || heroUrl;
-  const mobileUrl = project.mobile_media?.url || heroUrl;
+  const slug = project.slug as PortfolioProjectSlug;
+  const heroUrl =
+    project.hero_media?.url ||
+    getPublicUrl(slug, "hero.webp");
+  const desktopUrl =
+    project.desktop_media?.url ||
+    getPublicUrl(slug, "desktop.webp");
+  const mobileUrl =
+    project.mobile_media?.url ||
+    getPublicUrl(slug, "mobile.webp");
 
   return (
     <article className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-sky-500/30 selection:text-sky-200">
-      {/* 1. PROJECT OPENING */}
+      {/* 1. PROJECT OPENING & SPATIAL INSTRUMENT */}
       <section className="relative pt-28 pb-16 md:pt-36 md:pb-24 overflow-hidden border-b border-slate-900 bg-slate-950">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(56,189,248,0.1)_0%,transparent_70%)] pointer-events-none" />
 
         <Container className="relative z-10">
-          <div className="mb-8">
+          <div className="mb-8 flex items-center justify-between">
             <Link
               href="/work"
               className="inline-flex items-center text-xs font-mono text-slate-400 hover:text-sky-400 transition-colors gap-2 group"
@@ -36,9 +42,13 @@ export const CaseStudyView: React.FC<CaseStudyViewProps> = ({ project, nextProje
               <span className="group-hover:-translate-x-1 transition-transform">←</span>
               <span>Back to Selected Work</span>
             </Link>
+
+            <span className="px-3 py-1 rounded-full bg-cyan-950/80 border border-cyan-500/30 text-[10px] font-mono text-cyan-300">
+              ORIGINAL CONCEPT DEMO
+            </span>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-end">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             <div className="lg:col-span-8 space-y-6">
               <Reveal direction="down">
                 <div className="flex flex-wrap items-center gap-3 font-mono text-xs">
@@ -75,96 +85,76 @@ export const CaseStudyView: React.FC<CaseStudyViewProps> = ({ project, nextProje
               )}
             </div>
 
-            {/* Header Metadata Glass Panel */}
-            <div className="lg:col-span-4">
-              <GlassSurface intensity="heavy" elevation="raised" className="p-6 space-y-4">
-                <div className="font-mono text-xs text-sky-400 uppercase tracking-widest">
-                  SYSTEM SPECIFICATION
-                </div>
-                <div className="space-y-2 text-xs font-mono text-slate-300">
-                  <div className="flex justify-between border-b border-slate-800/80 pb-2">
-                    <span className="text-slate-500">Domain</span>
-                    <span>{project.category}</span>
-                  </div>
-                  <div className="flex justify-between border-b border-slate-800/80 pb-2">
-                    <span className="text-slate-500">Type</span>
-                    <span>{project.project_type_label || "Digital Product"}</span>
-                  </div>
-                  <div className="flex justify-between border-b border-slate-800/80 pb-2">
-                    <span className="text-slate-500">Media Assets</span>
-                    <span className="text-sky-400">3 Roles (Canonical)</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Target Latency</span>
-                    <span className="text-emerald-400">&lt; 100ms</span>
-                  </div>
-                </div>
-              </GlassSurface>
+            {/* Embedded Project-Specific 3D Spatial Instrument */}
+            <div className="lg:col-span-4 flex flex-col items-center justify-center">
+              <div className="w-full max-w-[280px] sm:max-w-[320px] h-[280px] sm:h-[320px] rounded-3xl bg-slate-900/40 border border-slate-800/80 p-2 shadow-2xl relative">
+                <SpatialInstrument
+                  mode={project.slug}
+                  badgeLabel={`[ ${project.title.toUpperCase()} 3D INSTRUMENT ]`}
+                  scale={0.95}
+                />
+              </div>
             </div>
           </div>
 
-          {/* Opening Hero Media */}
+          {/* Opening Hero Media Device Frame */}
           <div className="mt-12">
-            <Tilt maxRotation={3} className="w-full">
-              <div className="relative rounded-3xl overflow-hidden border border-slate-800 shadow-2xl">
-                <SpatialMedia
-                  src={heroUrl}
-                  alt={`${project.title} Primary View`}
-                  title={project.title}
-                  category="PRIMARY HERO VIEW"
-                  aspectRatio="video"
-                  priority={true}
-                />
-              </div>
-            </Tilt>
+            <PortfolioDeviceFrame
+              type="browser"
+              src={heroUrl}
+              alt={`${project.title} Hero View`}
+              title={`${project.title} Hero Surface`}
+              caption={`Primary concept demonstration surface for ${project.title}`}
+              urlText={`https://snow.dev/case-study/${project.slug}`}
+              priority={true}
+            />
           </div>
         </Container>
       </section>
 
-      {/* 2. SPATIAL MEDIA MOMENT (Multi-Layer Depth) */}
+      {/* 2. MULTI-DEVICE RESPONSIVE PRESENTATION */}
       <section className="py-20 md:py-28 border-b border-slate-900 bg-slate-950/90 relative overflow-hidden">
         <Container>
           <div className="max-w-3xl mb-12 space-y-3">
             <span className="text-xs font-mono uppercase tracking-widest text-sky-400 block">
-              SPATIAL MEDIA COMPOSITION
+              MULTI-DEVICE INTERFACE COMPOSITION
             </span>
             <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-slate-100 font-sans">
-              Layered Interface Depth.
+              Desktop & Mobile Systems.
             </h2>
-            <p className="text-slate-400 text-base">
-              Desktop and mobile surfaces rendered with physical z-index spatial hierarchy to demonstrate responsive layout adaptation.
+            <p className="text-slate-400 text-base font-sans">
+              Real WebP assets served directly from Supabase Storage bucket <code className="text-cyan-400">snow-media</code>, presented in responsive device frames.
             </p>
           </div>
 
-          <div className="relative min-h-[420px] sm:min-h-[520px] rounded-3xl bg-slate-900/40 border border-slate-800/80 p-6 sm:p-12 flex items-center justify-center overflow-hidden">
-            <PointerGlow color="rgba(56, 189, 248, 0.15)" className="rounded-3xl" />
-
-            {/* Desktop Surface Layer */}
-            <div className="w-[88%] sm:w-[82%] rounded-2xl overflow-hidden border border-slate-700 shadow-2xl relative z-10">
-              <SpatialMedia
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            {/* Desktop Surface */}
+            <div className="lg:col-span-8">
+              <PortfolioDeviceFrame
+                type="browser"
                 src={desktopUrl}
-                alt={`${project.title} Desktop View`}
-                title="Desktop Environment View"
-                category="DESKTOP ENVIRONMENT"
-                aspectRatio="video"
+                alt={`${project.title} Desktop Screenshot`}
+                title="DESKTOP WORKSPACE"
+                caption="Web / Dashboard Application View"
+                urlText={`https://snow.dev/desktop/${project.slug}`}
               />
             </div>
 
-            {/* Mobile Surface Overlay Layer */}
-            <div className="absolute right-4 sm:right-12 bottom-4 sm:bottom-8 w-[42%] sm:w-[32%] z-20 rounded-2xl overflow-hidden border-2 border-slate-600 bg-slate-950 shadow-[0_25px_60px_rgba(0,0,0,0.9)]">
-              <SpatialMedia
+            {/* Mobile Surface */}
+            <div className="lg:col-span-4">
+              <PortfolioDeviceFrame
+                type="phone"
                 src={mobileUrl}
-                alt={`${project.title} Mobile View`}
-                title="Mobile Interface View"
-                category="MOBILE INTERFACE"
-                aspectRatio="portrait"
+                alt={`${project.title} Mobile Screenshot`}
+                title="MOBILE APP"
+                caption="Mobile Companion View"
               />
             </div>
           </div>
         </Container>
       </section>
 
-      {/* 3. PROJECT CONTEXT & CHALLENGE */}
+      {/* 3. PROJECT CONTEXT & NARRATIVE */}
       <section className="py-16 md:py-24 border-b border-slate-900 bg-slate-950">
         <Container>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
@@ -210,35 +200,18 @@ export const CaseStudyView: React.FC<CaseStudyViewProps> = ({ project, nextProje
         </Container>
       </section>
 
-      {/* 4. APPROACH */}
-      <section className="py-16 md:py-24 border-b border-slate-900 bg-slate-950">
+      {/* 4. HONEST PROVENANCE & CONCEPT DISCLOSURE */}
+      <section className="py-12 border-b border-slate-900 bg-slate-900/30">
         <Container>
-          <div className="max-w-4xl space-y-8">
-            <div>
-              <span className="text-xs font-mono uppercase tracking-widest text-sky-400 block mb-2">
-                METHODOLOGY & CRAFT
-              </span>
-              <h2 className="text-3xl sm:text-4xl font-bold text-slate-100 font-sans">
-                Engineering & Design Approach
-              </h2>
+          <div className="p-6 rounded-2xl bg-black/60 border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 font-mono text-xs text-slate-400">
+            <div className="space-y-1">
+              <span className="text-cyan-400 font-bold block">[ PROVENANCE DISCLOSURE ]</span>
+              <p className="text-slate-300 font-sans text-xs">
+                This project is an original concept interface / prototype developed internally by Snow for digital demonstration.
+              </p>
             </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-4">
-              <div className="p-6 rounded-2xl bg-slate-900/30 border border-slate-800 space-y-3">
-                <span className="text-xs font-mono text-sky-400 uppercase">01 // FRONTEND ARCHITECTURE</span>
-                <h4 className="text-lg font-bold text-slate-200">Responsive Spatial Hierarchy</h4>
-                <p className="text-xs text-slate-400 leading-relaxed font-sans">
-                  Constructed with atomic Next.js components, fluid CSS grid spatial layering, and sub-100ms interaction feedback loops.
-                </p>
-              </div>
-
-              <div className="p-6 rounded-2xl bg-slate-900/30 border border-slate-800 space-y-3">
-                <span className="text-xs font-mono text-emerald-400 uppercase">02 // DATA & MEDIA PIPELINE</span>
-                <h4 className="text-lg font-bold text-slate-200">Canonical Storage Delivery</h4>
-                <p className="text-xs text-slate-400 leading-relaxed font-sans">
-                  Assets delivered directly via Supabase snow-media bucket using webp compression and priority-based eager loading.
-                </p>
-              </div>
+            <div className="shrink-0 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-[11px] text-slate-400">
+              SUPABASE STORAGE: snow-media
             </div>
           </div>
         </Container>
@@ -254,9 +227,6 @@ export const CaseStudyView: React.FC<CaseStudyViewProps> = ({ project, nextProje
             <h2 className="text-3xl font-bold text-slate-100 font-sans">
               Technologies & Infrastructure
             </h2>
-            <p className="text-slate-400 text-sm">
-              Core technologies utilized in building this system study:
-            </p>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 pt-4">
               {project.technologies.map((tech) => (
@@ -264,7 +234,7 @@ export const CaseStudyView: React.FC<CaseStudyViewProps> = ({ project, nextProje
                   key={tech}
                   className="p-4 rounded-xl bg-slate-900 border border-slate-800 text-center font-mono text-xs text-slate-200 hover:border-sky-500/50 transition-colors"
                 >
-                  <span className="text-[10px] text-slate-500 block mb-1">TECH DEPLOYMENT</span>
+                  <span className="text-[10px] text-slate-500 block mb-1">DEPLOYED TECH</span>
                   <span className="font-semibold">{tech}</span>
                 </div>
               ))}
@@ -273,7 +243,7 @@ export const CaseStudyView: React.FC<CaseStudyViewProps> = ({ project, nextProje
         </Container>
       </section>
 
-      {/* 6. RESPONSIVE / PRODUCT GALLERY */}
+      {/* 6. FULL MEDIA SURFACE GALLERY */}
       {project.media && project.media.length > 0 && (
         <section className="py-16 md:py-24 border-b border-slate-900 bg-slate-950">
           <Container>
@@ -282,7 +252,7 @@ export const CaseStudyView: React.FC<CaseStudyViewProps> = ({ project, nextProje
                 INTERFACE BREAKDOWN
               </span>
               <h2 className="text-3xl font-bold text-slate-100 font-sans">
-                Full Media Surface Record
+                Canonical Storage Records
               </h2>
             </div>
 

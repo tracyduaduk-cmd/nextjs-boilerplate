@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { ServiceRequestRecord } from "@/lib/requests/types";
-import { CheckCircle2, ArrowRight, MessageSquare, Copy, Check } from "lucide-react";
+import { CheckCircle2, ArrowRight, Copy, Check } from "lucide-react";
 
 interface SuccessStateProps {
   record: ServiceRequestRecord;
@@ -76,7 +76,7 @@ export const SuccessState: React.FC<SuccessStateProps> = ({
       {/* What Happens Next Section */}
       <div className="p-6 rounded-3xl bg-slate-950/80 border border-slate-800 space-y-4">
         <h3 className="text-xs font-mono text-sky-400 font-bold uppercase tracking-wider">
-          // WHAT HAPPENS NEXT
+          &#47;&#47; WHAT HAPPENS NEXT
         </h3>
 
         <ol className="space-y-3 text-xs sm:text-sm text-slate-300 font-sans">
