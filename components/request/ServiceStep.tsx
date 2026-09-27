@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { ServiceRecord, CapabilityFamilyId } from "@/lib/services/types";
 import { CAPABILITY_FAMILIES } from "@/lib/services/capabilityFamilies";
 import { CapabilityFamilyNav } from "@/components/services/CapabilityFamilyNav";

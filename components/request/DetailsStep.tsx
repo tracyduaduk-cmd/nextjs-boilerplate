@@ -6,15 +6,11 @@ import { FileText } from "lucide-react";
 interface DetailsStepProps {
   problemDescription: string;
   onDescriptionChange: (val: string) => void;
-  additionalNotes?: string;
-  onNotesChange?: (val: string) => void;
 }
 
 export const DetailsStep: React.FC<DetailsStepProps> = ({
   problemDescription,
   onDescriptionChange,
-  additionalNotes = "",
-  onNotesChange,
 }) => {
   return (
     <div className="space-y-8">
