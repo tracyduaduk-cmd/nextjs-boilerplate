@@ -23,7 +23,7 @@ export const WebsitePreview: React.FC<WebsitePreviewProps> = ({
   const previewImage =
     project.hero_media?.url ||
     project.media?.[0]?.url ||
-    "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1200&q=80";
+    "";
 
   const altText = project.hero_media?.alt_text || `${project.title} interface preview`;
 

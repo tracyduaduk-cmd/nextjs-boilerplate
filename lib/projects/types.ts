@@ -1,5 +1,13 @@
 export type MediaType = "image" | "video" | "embed" | "screenshot";
 
+export type CompositionVariant =
+  | "featured"
+  | "editorial"
+  | "device-stack"
+  | "dark-lab"
+  | "minimal"
+  | "split-perspective";
+
 export interface ProjectMediaRecord {
   id: string;
   project_id: string;
@@ -30,6 +38,9 @@ export interface ProjectRecord {
   github_url: string | null;
   year: number | null;
   sort_order: number;
+  composition_variant?: CompositionVariant;
+  related_service_slug?: string;
+  project_type_label?: string;
   created_at?: string;
   updated_at?: string;
 }
