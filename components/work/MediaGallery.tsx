@@ -19,9 +19,18 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ mediaItems, projectT
     <div className="space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
         {mediaItems.map((item) => {
-          const isMobile = item.url.includes("mobile.webp");
-          const isDesktop = item.url.includes("desktop.webp");
-          const isHero = item.url.includes("hero.webp");
+          const isMobile =
+            item.sort_order === 3 ||
+            item.title?.toLowerCase().includes("mobile") ||
+            item.url.includes("mobile");
+          const isDesktop =
+            item.sort_order === 2 ||
+            item.title?.toLowerCase().includes("desktop") ||
+            item.url.includes("desktop");
+          const isHero =
+            item.sort_order === 1 ||
+            item.title?.toLowerCase().includes("hero") ||
+            item.url.includes("hero");
 
           const roleLabel = isHero
             ? "HERO VIEW"
@@ -93,7 +102,7 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ mediaItems, projectT
                 alt={selectedMedia.alt_text || projectTitle}
                 title={selectedMedia.title || projectTitle}
                 caption={selectedMedia.alt_text}
-                aspectRatio={selectedMedia.url.includes("mobile.webp") ? "portrait" : "auto"}
+                aspectRatio={selectedMedia.sort_order === 3 ? "portrait" : "auto"}
                 className="max-h-[75vh] w-auto max-w-full"
                 priority={true}
               />

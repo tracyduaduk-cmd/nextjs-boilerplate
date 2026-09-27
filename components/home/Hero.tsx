@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
@@ -13,7 +14,7 @@ import { SplitText } from "@/components/spatial/SplitText";
 import { Reveal } from "@/components/spatial/Reveal";
 import { heroMediaConfig, InteractiveModeConfig } from "@/config/hero-media";
 import { motionTokens } from "@/motion/tokens";
-import { Terminal, Cpu, ShieldCheck, Activity, ArrowUpRight, Zap, Sparkles } from "lucide-react";
+import { Terminal, Cpu, ShieldCheck, Activity, ArrowUpRight, Zap, Sparkles, Layers } from "lucide-react";
 
 export const Hero: React.FC = () => {
   const [activeModeId, setActiveModeId] = useState<"telemetry" | "ai" | "architecture">("telemetry");
@@ -129,17 +130,34 @@ export const Hero: React.FC = () => {
 
             {/* RIGHT COLUMN: 3D Spatial Interactive Console */}
             <div className="lg:col-span-5 relative mt-4 lg:mt-0">
-              {/* Background Parallax Depth Layer */}
+              {/* Background Parallax Depth Layer with High-Resolution 3D Render Asset */}
               <DepthLayer depth={-0.3} zDistance={-40} className="absolute inset-0 pointer-events-none">
                 <div className="w-full h-full rounded-3xl bg-gradient-to-tr from-sky-500/10 via-indigo-500/5 to-transparent blur-2xl opacity-60" />
               </DepthLayer>
 
               {/* Main Interactive Console Container */}
               <Tilt maxRotation={7} scaleOnHover={1.01} className="w-full">
-                <div className="relative rounded-2xl bg-slate-950/90 border border-slate-800/90 p-5 sm:p-7 shadow-2xl shadow-sky-950/30 backdrop-blur-xl group">
+                <div className="relative rounded-2xl bg-slate-950/90 border border-slate-800/90 p-5 sm:p-7 shadow-2xl shadow-sky-950/30 backdrop-blur-xl group overflow-hidden">
+
+                  {/* 3D Visual Asset Header Banner */}
+                  <div className="relative w-full h-36 rounded-xl overflow-hidden mb-5 border border-slate-800/80">
+                    <Image
+                      src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80"
+                      alt="3D Spatial Mesh Engine Render"
+                      fill
+                      unoptimized
+                      priority
+                      className="object-cover object-center group-hover:scale-105 transition-transform duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
+                    <div className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-slate-950/80 border border-slate-800 text-[10px] font-mono text-sky-400 backdrop-blur-sm flex items-center gap-1.5">
+                      <Layers className="w-3 h-3 text-sky-400" />
+                      <span>3D SPATIAL ENGINE v4.2</span>
+                    </div>
+                  </div>
 
                   {/* Console Header Tabs */}
-                  <div className="flex items-center justify-between pb-5 border-b border-slate-800/80">
+                  <div className="flex items-center justify-between pb-4 border-b border-slate-800/80">
                     <div className="flex items-center space-x-2">
                       <div className="w-3 h-3 rounded-full bg-rose-500/80" />
                       <div className="w-3 h-3 rounded-full bg-amber-500/80" />
@@ -208,7 +226,7 @@ export const Hero: React.FC = () => {
                   </div>
 
                   {/* Interactive Metric Cards */}
-                  <div className="mt-4 space-y-3 font-mono text-xs">
+                  <div className="mt-3 space-y-3 font-mono text-xs">
                     <AnimatePresence mode="wait">
                       {activeMode.metrics.map((metric) => {
                         const isSelected = selectedMetricId === metric.id;
@@ -290,7 +308,7 @@ export const Hero: React.FC = () => {
                   </div>
 
                   {/* Console Interactive Footer Details */}
-                  <div className="mt-5 pt-4 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono text-slate-500">
+                  <div className="mt-4 pt-4 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono text-slate-500">
                     <span className="flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                       SNOW CORE ENGINE • READY
