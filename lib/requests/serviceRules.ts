@@ -5,7 +5,6 @@ import {
   TimelineOption,
   BudgetOption,
 } from "./types";
-import { CapabilityFamilyId } from "@/lib/services/types";
 
 export const TIMELINE_OPTIONS: { value: TimelineOption; label: string; description: string }[] = [
   { value: "exploring", label: "Exploring / Early Planning", description: "Evaluating options for an upcoming project" },

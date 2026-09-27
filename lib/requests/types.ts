@@ -102,7 +102,7 @@ export interface ServiceRequestData {
   selectedServiceId?: string;
   problemDescription: string;
   diagnosticNote?: string;
-  answers: Record<string, any>;
+  answers: Record<string, unknown>;
   timeline: TimelineOption;
   urgency: string;
   budgetRange?: BudgetOption;

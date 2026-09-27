@@ -59,6 +59,8 @@ export function SpatialInstrument({
   const previousPointerRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const velocityRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const rotationRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const cameraDistanceRef = useRef<number>(6.0);
+  const targetCameraDistanceRef = useRef<number>(6.0);
 
   // Normalize mode string
   const normalizedMode = mode.toLowerCase();
@@ -86,7 +88,7 @@ export function SpatialInstrument({
     // 2. Three.js Scene Setup
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
-    camera.position.z = 6.0;
+    camera.position.z = cameraDistanceRef.current;
 
     const renderer = new THREE.WebGLRenderer({
       canvas,
@@ -136,6 +138,10 @@ export function SpatialInstrument({
       mainHex = 0xf43f5e; // Rose/Pink
       secondaryHex = 0x38bdf8;
       coreHex = 0xe11d48;
+    } else if (normalizedMode.includes('local')) {
+      mainHex = 0xf59e0b; // Amber / Warm Accent
+      secondaryHex = 0x38bdf8;
+      coreHex = 0xd97706;
     } else if (normalizedMode.includes('services')) {
       mainHex = 0x22c55e; // Green
       secondaryHex = 0x38bdf8;
@@ -296,7 +302,6 @@ export function SpatialInstrument({
         points.push(vec);
       }
 
-      // Interconnect nodes
       for (let i = 0; i < nodeCount; i++) {
         for (let j = i + 1; j < nodeCount; j++) {
           if (points[i].distanceTo(points[j]) < 2.2) {
@@ -346,6 +351,80 @@ export function SpatialInstrument({
       const innerLockMesh = new THREE.Mesh(innerLockGeo, innerLockMat);
       trackMesh(innerLockMesh);
       subMeshB = innerLockMesh;
+    } else if (normalizedMode.includes('business') || normalizedMode.includes('atlas')) {
+      // --- BUSINESS / ATLAS: Monolithic Layered Slab Array ---
+      const slabGeo = new THREE.BoxGeometry(2.2, 0.15, 1.4);
+      const slabMat = new THREE.MeshStandardMaterial({
+        color: mainHex,
+        emissive: coreHex,
+        emissiveIntensity: 0.3,
+        roughness: 0.2,
+        metalness: 0.7,
+      });
+      const slabMesh = new THREE.Mesh(slabGeo, slabMat);
+      trackMesh(slabMesh);
+      subMeshA = slabMesh;
+
+      const wireSlabGeo = new THREE.BoxGeometry(2.4, 0.8, 1.6);
+      const wireSlabMat = new THREE.MeshBasicMaterial({ color: secondaryHex, wireframe: true, transparent: true, opacity: 0.35 });
+      const wireSlabMesh = new THREE.Mesh(wireSlabGeo, wireSlabMat);
+      trackMesh(wireSlabMesh);
+      subMeshB = wireSlabMesh;
+
+      const ringGeo = new THREE.TorusGeometry(2.5, 0.02, 16, 80);
+      const ringMat = new THREE.MeshStandardMaterial({ color: mainHex, emissive: coreHex, emissiveIntensity: 0.6 });
+      const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+      ringMesh.rotation.x = Math.PI / 4;
+      trackMesh(ringMesh);
+      subMeshC = ringMesh;
+    } else if (normalizedMode.includes('design') || normalizedMode.includes('studio')) {
+      // --- DESIGN / STUDIO: Torus Knot Wireframe & Inner Sphere ---
+      const knotGeo = new THREE.TorusKnotGeometry(1.2, 0.18, 100, 16);
+      const knotMat = new THREE.MeshStandardMaterial({
+        color: mainHex,
+        emissive: coreHex,
+        emissiveIntensity: 0.5,
+        roughness: 0.1,
+        metalness: 0.8,
+        wireframe: true,
+      });
+      const knotMesh = new THREE.Mesh(knotGeo, knotMat);
+      trackMesh(knotMesh);
+      subMeshA = knotMesh;
+
+      const innerSphereGeo = new THREE.IcosahedronGeometry(0.8, 2);
+      const innerSphereMat = new THREE.MeshPhysicalMaterial({
+        color: secondaryHex,
+        transmission: 0.85,
+        roughness: 0.1,
+        transparent: true,
+        opacity: 0.8,
+      });
+      const innerSphereMesh = new THREE.Mesh(innerSphereGeo, innerSphereMat);
+      trackMesh(innerSphereMesh);
+      subMeshB = innerSphereMesh;
+    } else if (normalizedMode.includes('local')) {
+      // --- LOCAL SERVICES: Intersecting Gear Array & Core Box ---
+      const gearGeo = new THREE.CylinderGeometry(1.5, 1.5, 0.15, 12);
+      const gearMat = new THREE.MeshStandardMaterial({
+        color: mainHex,
+        emissive: coreHex,
+        emissiveIntensity: 0.4,
+        roughness: 0.3,
+        metalness: 0.6,
+        wireframe: true,
+      });
+      const gearMesh = new THREE.Mesh(gearGeo, gearMat);
+      gearMesh.rotation.x = Math.PI / 3;
+      trackMesh(gearMesh);
+      subMeshA = gearMesh;
+
+      const ringOuterGeo = new THREE.TorusGeometry(2.2, 0.03, 16, 80);
+      const ringOuterMat = new THREE.MeshStandardMaterial({ color: secondaryHex, emissive: mainHex, emissiveIntensity: 0.7 });
+      const ringOuterMesh = new THREE.Mesh(ringOuterGeo, ringOuterMat);
+      ringOuterMesh.rotation.y = Math.PI / 3;
+      trackMesh(ringOuterMesh);
+      subMeshB = ringOuterMesh;
     } else if (normalizedMode.includes('work-index')) {
       // --- WORK INDEX: Orbital Project System ---
       const ring1Geo = new THREE.TorusGeometry(2.0, 0.03, 16, 100);
@@ -373,6 +452,48 @@ export function SpatialInstrument({
       const orbMesh = new THREE.Mesh(orbGeo, orbMat);
       trackMesh(orbMesh);
       subMeshC = orbMesh;
+    } else if (normalizedMode.includes('services')) {
+      // --- SERVICES: Capability & Connection Instrument ---
+      const frame1Geo = new THREE.TorusGeometry(1.8, 0.04, 16, 60);
+      const frame1Mat = new THREE.MeshStandardMaterial({ color: mainHex, metalness: 0.8, roughness: 0.2 });
+      const frame1Mesh = new THREE.Mesh(frame1Geo, frame1Mat);
+      frame1Mesh.rotation.x = Math.PI / 2.5;
+      trackMesh(frame1Mesh);
+      subMeshA = frame1Mesh;
+
+      const frame2Geo = new THREE.BoxGeometry(1.8, 1.8, 1.8);
+      const frame2Mat = new THREE.MeshBasicMaterial({ color: secondaryHex, wireframe: true, transparent: true, opacity: 0.4 });
+      const frame2Mesh = new THREE.Mesh(frame2Geo, frame2Mat);
+      trackMesh(frame2Mesh);
+      subMeshB = frame2Mesh;
+
+      const coreMeshGeo = new THREE.OctahedronGeometry(0.8, 1);
+      const coreMeshMat = new THREE.MeshStandardMaterial({ color: mainHex, emissive: coreHex, emissiveIntensity: 0.7 });
+      const coreMesh = new THREE.Mesh(coreMeshGeo, coreMeshMat);
+      trackMesh(coreMesh);
+      subMeshC = coreMesh;
+    } else if (normalizedMode.includes('request')) {
+      // --- REQUEST: Restrained Signal / System Core ---
+      const signalGeo = new THREE.IcosahedronGeometry(1.1, 2);
+      const signalMat = new THREE.MeshPhysicalMaterial({
+        color: mainHex,
+        emissive: coreHex,
+        emissiveIntensity: 0.4,
+        roughness: 0.15,
+        transmission: 0.85,
+        transparent: true,
+        opacity: 0.9,
+      });
+      const signalMesh = new THREE.Mesh(signalGeo, signalMat);
+      trackMesh(signalMesh);
+      subMeshA = signalMesh;
+
+      const ringGeo = new THREE.TorusGeometry(1.9, 0.02, 16, 80);
+      const ringMat = new THREE.MeshStandardMaterial({ color: secondaryHex, emissive: mainHex, emissiveIntensity: 0.5 });
+      const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+      ringMesh.rotation.x = Math.PI / 3;
+      trackMesh(ringMesh);
+      subMeshB = ringMesh;
     } else {
       // --- DEFAULT / HOME: Crystalline Sculpture with Dual Rings ---
       const shellGeo = new THREE.IcosahedronGeometry(1.6, 1);
@@ -470,12 +591,21 @@ export function SpatialInstrument({
       }
     };
 
+    const onWheel = (e: WheelEvent) => {
+      if (!interactive) return;
+      e.preventDefault();
+      const zoomSensitivity = 0.003;
+      targetCameraDistanceRef.current += e.deltaY * zoomSensitivity;
+      targetCameraDistanceRef.current = Math.max(4.0, Math.min(9.0, targetCameraDistanceRef.current));
+    };
+
     canvas.addEventListener('pointerdown', onPointerDown);
     canvas.addEventListener('pointermove', onPointerMove);
     canvas.addEventListener('pointerup', onPointerUp);
     canvas.addEventListener('pointercancel', onPointerUp);
     canvas.addEventListener('pointerenter', onPointerEnter);
     canvas.addEventListener('pointerleave', onPointerLeave);
+    canvas.addEventListener('wheel', onWheel, { passive: false });
 
     // 5. Animation Loop
     let animId: number;
@@ -483,6 +613,10 @@ export function SpatialInstrument({
     const renderLoop = () => {
       animId = requestAnimationFrame(renderLoop);
       const now = performance.now() * 0.001;
+
+      // Smooth camera zoom
+      cameraDistanceRef.current += (targetCameraDistanceRef.current - cameraDistanceRef.current) * 0.1;
+      camera.position.z = cameraDistanceRef.current;
 
       if (!isDraggingRef.current) {
         // Apply inertia momentum
@@ -541,6 +675,7 @@ export function SpatialInstrument({
       canvas.removeEventListener('pointercancel', onPointerUp);
       canvas.removeEventListener('pointerenter', onPointerEnter);
       canvas.removeEventListener('pointerleave', onPointerLeave);
+      canvas.removeEventListener('wheel', onWheel);
 
       geometriesToDispose.forEach((g) => g.dispose());
       materialsToDispose.forEach((m) => m.dispose());

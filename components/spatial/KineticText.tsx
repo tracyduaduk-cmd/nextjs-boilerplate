@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import { motion, useScroll, useVelocity, useTransform, useSpring } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -29,7 +29,6 @@ export const KineticText: React.FC<KineticTextProps> = ({
   stagger = 0.03,
   delay = 0,
 }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useReducedMotion();
 
   // Scroll velocity tracking via framer-motion

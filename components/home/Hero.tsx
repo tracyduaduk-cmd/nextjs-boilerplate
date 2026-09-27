@@ -14,9 +14,9 @@ export const Hero: React.FC = () => {
   const orbitDesktop = getPublicUrl('orbit-finance', 'desktop.webp');
 
   return (
-    <section className="relative min-h-screen w-full flex flex-col justify-center overflow-hidden pt-28 pb-16 px-6 md:px-12 lg:px-20 bg-black text-white">
-      {/* Isolated 3D Spatial Instrument Container - positioned specifically behind central/right sculpture region */}
-      <div className="absolute top-1/2 left-1/2 lg:left-2/3 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-[600px] h-[500px] md:h-[600px] z-0 opacity-60 pointer-events-auto">
+    <section className="relative min-h-screen w-full flex flex-col justify-center overflow-hidden pt-28 pb-16 px-6 md:px-12 lg:px-20 bg-black text-white pointer-events-none">
+      {/* Compact 3D Spatial Instrument Positioned In Upper/Right Hero Area */}
+      <div className="absolute top-24 right-4 sm:right-8 lg:right-16 z-0 w-[260px] sm:w-[320px] md:w-[380px] h-[260px] sm:h-[320px] md:h-[380px] opacity-80 pointer-events-auto">
         <SpatialWebGLScene />
       </div>
 
@@ -26,7 +26,7 @@ export const Hero: React.FC = () => {
           <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-cyan-300 backdrop-blur-md">
             <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
             <span className="font-bold tracking-widest uppercase">SNOW</span>
-            <span className="text-neutral-500">//</span>
+            <span className="text-neutral-500">{"//"}</span>
             <span className="text-neutral-300 tracking-wider">EDITORIAL TECHNOLOGY STUDIO</span>
           </div>
 

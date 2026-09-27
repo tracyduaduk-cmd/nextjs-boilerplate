@@ -15,7 +15,7 @@ export const ContactStep: React.FC<ContactStepProps> = ({
   onChange,
   isSecurityRequest = false,
 }) => {
-  const updateField = (field: keyof ContactInformation, value: any) => {
+  const updateField = (field: keyof ContactInformation, value: string | PreferredContact | undefined) => {
     onChange({
       ...contact,
       [field]: value,

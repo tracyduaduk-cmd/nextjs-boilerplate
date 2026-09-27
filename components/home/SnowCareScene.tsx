@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowUpRight, ShieldCheck, Clock, Server, RefreshCw } from 'lucide-react';
+import { ArrowUpRight, Clock, Server, RefreshCw } from 'lucide-react';
 import { KineticText } from '@/components/spatial/KineticText';
 import { useCursor } from '@/components/spatial/CursorSystem';
 
@@ -14,7 +14,7 @@ export const SnowCareScene: React.FC = () => {
       <div className="max-w-7xl mx-auto space-y-16 relative z-10">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-cyan-500/20 pb-8">
           <div className="space-y-3">
-            <span className="font-mono text-xs text-cyan-400 uppercase tracking-widest">// CONTINUOUS OPERATIONS</span>
+            <span className="font-mono text-xs text-cyan-400 uppercase tracking-widest">{"// CONTINUOUS OPERATIONS"}</span>
             <KineticText variant="velocity" className="text-4xl sm:text-6xl font-black uppercase tracking-tight text-white">
               SNOW CARE ENGINE
             </KineticText>

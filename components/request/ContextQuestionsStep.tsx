@@ -7,8 +7,8 @@ import { HelpCircle, ShieldAlert, Check } from "lucide-react";
 
 interface ContextQuestionsStepProps {
   serviceSlug: string;
-  answers: Record<string, any>;
-  onAnswerChange: (questionId: string, value: any) => void;
+  answers: Record<string, unknown>;
+  onAnswerChange: (questionId: string, value: unknown) => void;
 }
 
 export const ContextQuestionsStep: React.FC<ContextQuestionsStepProps> = ({
@@ -112,7 +112,7 @@ export const ContextQuestionsStep: React.FC<ContextQuestionsStepProps> = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
                   {q.options.map((opt) => {
                     const selectedArray: string[] = Array.isArray(currentValue)
-                      ? currentValue
+                      ? (currentValue as string[])
                       : [];
                     const isChecked = selectedArray.includes(opt.value);
 
@@ -160,7 +160,7 @@ export const ContextQuestionsStep: React.FC<ContextQuestionsStepProps> = ({
               {q.type === "text" && (
                 <input
                   type="text"
-                  value={currentValue || ""}
+                  value={(currentValue as string) || ""}
                   onChange={(e) => onAnswerChange(q.id, e.target.value)}
                   placeholder={q.placeholder || "Enter details..."}
                   className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-sky-500 font-sans text-xs sm:text-sm"
@@ -170,7 +170,7 @@ export const ContextQuestionsStep: React.FC<ContextQuestionsStepProps> = ({
               {q.type === "url" && (
                 <input
                   type="url"
-                  value={currentValue || ""}
+                  value={(currentValue as string) || ""}
                   onChange={(e) => onAnswerChange(q.id, e.target.value)}
                   placeholder={q.placeholder || "https://example.com"}
                   className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-sky-500 font-sans text-xs sm:text-sm"
@@ -180,7 +180,7 @@ export const ContextQuestionsStep: React.FC<ContextQuestionsStepProps> = ({
               {q.type === "textarea" && (
                 <textarea
                   rows={3}
-                  value={currentValue || ""}
+                  value={(currentValue as string) || ""}
                   onChange={(e) => onAnswerChange(q.id, e.target.value)}
                   placeholder={q.placeholder || "Provide details..."}
                   className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-sky-500 font-sans text-xs sm:text-sm resize-none"

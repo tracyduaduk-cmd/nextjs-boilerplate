@@ -4,7 +4,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { KineticText } from '@/components/spatial/KineticText';
 import { useCursor } from '@/components/spatial/CursorSystem';
-import { Code2, Cpu, ShieldCheck, Zap, Globe, Database, Smartphone, Gauge } from 'lucide-react';
+import { Cpu, ShieldCheck, Zap, Globe, Database, Smartphone } from 'lucide-react';
 
 const capabilities = [
   {
@@ -53,7 +53,7 @@ export const CapabilityField: React.FC = () => {
       <div className="max-w-7xl mx-auto space-y-16">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-8">
           <div className="space-y-3">
-            <span className="font-mono text-xs text-cyan-400 uppercase tracking-widest">// CAPABILITY ARCHITECTURE</span>
+            <span className="font-mono text-xs text-cyan-400 uppercase tracking-widest">{"// CAPABILITY ARCHITECTURE"}</span>
             <KineticText variant="character" className="text-3xl sm:text-5xl font-black uppercase tracking-tight">
               ENGINEERING MATRIX
             </KineticText>

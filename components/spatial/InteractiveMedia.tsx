@@ -73,6 +73,7 @@ export const InteractiveMedia: React.FC<InteractiveMediaProps> = ({
         }}
         className="w-full h-full relative transform-gpu"
       >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={src}
           alt={alt}

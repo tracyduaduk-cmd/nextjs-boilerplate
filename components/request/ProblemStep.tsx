@@ -3,12 +3,12 @@
 import React from "react";
 import { DiagnosticResult } from "@/lib/requests/types";
 import { classifyProblemDescription } from "@/lib/requests/serviceRules";
-import { Sparkles, Terminal, ArrowRight, Lightbulb } from "lucide-react";
+import { Sparkles, Terminal, Lightbulb } from "lucide-react";
 
 interface ProblemStepProps {
   value: string;
   onChange: (text: string, classification: DiagnosticResult) => void;
-  onContinue: () => void;
+  onContinue?: () => void;
 }
 
 const EXAMPLE_PROMPTS = [
@@ -23,7 +23,6 @@ const EXAMPLE_PROMPTS = [
 export const ProblemStep: React.FC<ProblemStepProps> = ({
   value,
   onChange,
-  onContinue,
 }) => {
   const classification = classifyProblemDescription(value);
 
