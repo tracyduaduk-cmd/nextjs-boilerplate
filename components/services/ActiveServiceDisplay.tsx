@@ -8,6 +8,7 @@ import { Tilt } from "@/components/spatial/Tilt";
 import { Magnetic } from "@/components/spatial/Magnetic";
 import { Button } from "@/components/ui/Button";
 import { motionTokens } from "@/motion/tokens";
+import { getPublicUrl } from "@/lib/projects/mediaManifest";
 import {
   CheckCircle2,
   HelpCircle,
@@ -26,36 +27,36 @@ interface ActiveServiceDisplayProps {
 
 const FAMILY_VISUAL_MAP: Record<string, { image: string; caption: string }> = {
   WEB: {
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80",
+    image: getPublicUrl("aurora-commerce", "hero.webp"),
     caption: "Full-Stack Web Engineering & Fast Spatial Interfaces",
   },
   "APPS & SOFTWARE": {
-    image: "https://images.unsplash.com/photo-1512499617640-c74ae3a79d37?auto=format&fit=crop&w=1200&q=80",
-    caption: "Cross-Platform Mobile Apps & Software Architecture",
+    image: getPublicUrl("pulse-health", "desktop.webp"),
+    caption: "Cross-Platform Mobile Apps & Telemetry Architecture",
   },
   AI: {
-    image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1200&q=80",
-    caption: "Autonomous LLM Pipelines & Document Intelligence",
+    image: getPublicUrl("nova-ai-assistant", "hero.webp"),
+    caption: "Autonomous LLM Workspace & Intelligent Agent Pipelines",
   },
   "SECURITY & RECOVERY": {
-    image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=1200&q=80",
-    caption: "Defensive Security Hardening & Compromise Recovery",
+    image: getPublicUrl("secure-account-recovery", "hero.webp"),
+    caption: "Zero-Trust Defensive Audit & Recovery Terminal",
   },
   INFRASTRUCTURE: {
-    image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&q=80",
-    caption: "Resilient Cloud Edge Networks & High-Availability APIs",
+    image: getPublicUrl("atlas-business-portal", "desktop.webp"),
+    caption: "Resilient Cloud Edge Networks & High-Availability Telemetry",
   },
   "DIGITAL GROWTH": {
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80",
-    caption: "Technical SEO, Telemetry & Conversion Engine",
+    image: getPublicUrl("studio-landing", "hero.webp"),
+    caption: "Spatial Design, SEO & High-Performance Web Engine",
   },
   "DEVICES & HARDWARE": {
-    image: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=1200&q=80",
-    caption: "Hardware Diagnostics, Workstations & Network Peripherals",
+    image: getPublicUrl("orbit-finance", "desktop.webp"),
+    caption: "High-Frequency Workstations & Multi-Screen Trading Systems",
   },
   "BUSINESS IT": {
-    image: "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1200&q=80",
-    caption: "Managed Business IT, Cloud Workspaces & Administration",
+    image: getPublicUrl("atlas-business-portal", "hero.webp"),
+    caption: "Enterprise Operations Portal & Access Control Management",
   },
 };
 
