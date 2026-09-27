@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowUpRight, Sparkles, Terminal, Layers } from 'lucide-react';
+import { ArrowUpRight, Terminal, Layers } from 'lucide-react';
 import { KineticText } from '@/components/spatial/KineticText';
 import { SpatialWebGLScene } from '@/components/spatial/SpatialWebGLScene';
 import { InteractiveMedia } from '@/components/spatial/InteractiveMedia';
@@ -15,14 +15,14 @@ export const Hero: React.FC = () => {
 
   return (
     <section className="relative min-h-screen w-full flex flex-col justify-center overflow-hidden pt-28 pb-16 px-6 md:px-12 lg:px-20 bg-black text-white">
-      {/* Background WebGL Spatial Scene */}
-      <div className="absolute inset-0 pointer-events-none opacity-40 z-0">
+      {/* 3D Spatial Scene Container - pointer-events-none on parent, pointer-events-auto on canvas so user can drag in empty areas */}
+      <div className="absolute inset-0 z-0 opacity-60 pointer-events-none [&>div]:pointer-events-auto [&>div>canvas]:pointer-events-auto">
         <SpatialWebGLScene />
       </div>
 
       <div className="relative z-10 w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
         {/* Left Column: Kinetic Typography & Hero Statement */}
-        <div className="lg:col-span-7 space-y-8">
+        <div className="lg:col-span-7 space-y-8 pointer-events-auto">
           <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-cyan-300 backdrop-blur-md">
             <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
             <span className="font-bold tracking-widest uppercase">SNOW</span>
@@ -75,13 +75,13 @@ export const Hero: React.FC = () => {
             </div>
             <div className="flex items-center gap-2 text-cyan-400">
               <Terminal size={14} />
-              <span>SUB-100MS PERFORMANCE ENGINE</span>
+              <span>HIGH-THROUGHPUT PERFORMANCE ENGINE</span>
             </div>
           </div>
         </div>
 
         {/* Right Column: Interactive Spatial Media Showcase */}
-        <div className="lg:col-span-5 relative">
+        <div className="lg:col-span-5 relative pointer-events-auto">
           <div className="relative z-10 rounded-2xl overflow-hidden border border-white/20 shadow-2xl shadow-cyan-950/40">
             <InteractiveMedia
               src={orbitDesktop}
