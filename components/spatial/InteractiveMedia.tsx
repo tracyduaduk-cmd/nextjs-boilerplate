@@ -25,6 +25,7 @@ export const InteractiveMedia: React.FC<InteractiveMediaProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const { setCursorState, resetCursorState } = useCursor();
   const [isHovered, setIsHovered] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   // Mouse tilt tracking
   const mouseX = useMotionValue(0);
@@ -71,15 +72,26 @@ export const InteractiveMedia: React.FC<InteractiveMediaProps> = ({
           scale,
           transformStyle: 'preserve-3d',
         }}
-        className="w-full h-full relative transform-gpu"
+        className="w-full h-full relative transform-gpu bg-slate-950"
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={src}
-          alt={alt}
-          className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-          loading="lazy"
-        />
+        {!hasError ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={src}
+            alt={alt}
+            onError={() => setHasError(true)}
+            className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            loading="lazy"
+          />
+        ) : (
+          <div className="w-full h-full flex flex-col items-center justify-center bg-slate-950 p-6 text-center border border-cyan-500/20">
+            <div className="w-12 h-12 rounded-full bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center font-mono text-cyan-400 text-xs mb-2">
+              SNOW
+            </div>
+            <p className="font-mono text-xs text-cyan-300 font-bold uppercase tracking-widest">{alt}</p>
+            <p className="font-mono text-[10px] text-slate-500 mt-1 uppercase">[CANONICAL DIGITAL INTERFACE]</p>
+          </div>
+        )}
 
         {/* Dynamic Light Overlay */}
         <div

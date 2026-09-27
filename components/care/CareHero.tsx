@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React from "react";
 import Link from "next/link";
@@ -30,13 +30,13 @@ export const CareHero: React.FC = () => {
           </Reveal>
 
           <Reveal direction="up" delay={100}>
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-100 leading-[1.08] mb-8">
+            <h1 className="text-[clamp(2.25rem,5vw,4.5rem)] font-extrabold tracking-tight text-slate-100 leading-[1.08] mb-8">
               Your technology should not be left alone <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-sky-400">after launch.</span>
             </h1>
           </Reveal>
 
           <Reveal direction="up" delay={200}>
-            <p className="text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed mb-10">
+            <p className="text-base sm:text-lg text-slate-300 max-w-3xl mx-auto leading-relaxed mb-10">
               Snow Care keeps websites, applications and business technology maintained, monitored and continuously improving long after the initial build is complete.
             </p>
           </Reveal>

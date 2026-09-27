@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 import { KineticText } from '@/components/spatial/KineticText';
 import { InteractiveMedia } from '@/components/spatial/InteractiveMedia';
@@ -44,7 +45,7 @@ export const WorkShowcaseScene: React.FC = () => {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-8">
           <div className="space-y-3">
             <span className="font-mono text-xs text-cyan-400 uppercase tracking-widest">{"// SELECTED PRODUCTIONS"}</span>
-            <KineticText variant="velocity" className="text-4xl sm:text-6xl font-black uppercase tracking-tight">
+            <KineticText variant="velocity" className="text-3xl sm:text-5xl font-black uppercase tracking-tight">
               FEATURED WORK
             </KineticText>
           </div>
@@ -64,8 +65,12 @@ export const WorkShowcaseScene: React.FC = () => {
           {showcaseProjects.map((project, idx) => {
             const isEven = idx % 2 === 0;
             return (
-              <div
+              <motion.div
                 key={project.slug}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
                 className={`grid grid-cols-1 lg:grid-cols-12 gap-12 items-center ${
                   isEven ? '' : 'lg:grid-flow-dense'
                 }`}
@@ -86,7 +91,7 @@ export const WorkShowcaseScene: React.FC = () => {
                     PRODUCTION // 0{idx + 1} — {project.category}
                   </span>
 
-                  <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-white uppercase">
+                  <h3 className="text-2xl sm:text-4xl font-black tracking-tight text-white uppercase">
                     {project.title}
                   </h3>
 
@@ -106,7 +111,7 @@ export const WorkShowcaseScene: React.FC = () => {
                     </Link>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>
