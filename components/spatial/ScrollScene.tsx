@@ -30,7 +30,7 @@ export const ScrollScene: React.FC<ScrollSceneProps> = ({
     const trigger = triggerRef.current;
     const target = targetRef.current;
 
-    let ctx = gsap.context(() => {
+    const ctx = gsap.context(() => {
       if (horizontal) {
         const scrollWidth = target.scrollWidth - trigger.clientWidth;
         if (scrollWidth > 0) {

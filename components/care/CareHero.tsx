@@ -8,11 +8,17 @@ import { DepthLayer } from "@/components/spatial/DepthLayer";
 import { Tilt } from "@/components/spatial/Tilt";
 import { Reveal } from "@/components/spatial/Reveal";
 import { PointerGlow } from "@/components/spatial/PointerGlow";
+import { SpatialInstrument } from "@/components/spatial/SpatialInstrument";
 
 export const CareHero: React.FC = () => {
   return (
     <section className="relative pt-24 pb-16 lg:pt-32 lg:pb-24 overflow-hidden border-b border-slate-800/60">
       <PointerGlow color="rgba(16, 185, 129, 0.12)" size={600} />
+
+      {/* Embedded Care Spatial Instrument */}
+      <div className="absolute top-12 right-6 lg:right-24 w-[280px] h-[280px] pointer-events-auto opacity-75 hidden lg:block z-0">
+        <SpatialInstrument mode="care" badgeLabel="[ DIAGNOSTIC NODE ]" scale={0.9} accentColor="#10b981" />
+      </div>
 
       <Container className="relative z-10">
         <PerspectiveContainer perspective={1200} className="max-w-5xl mx-auto text-center">

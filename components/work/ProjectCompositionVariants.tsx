@@ -3,11 +3,11 @@
 import React from "react";
 import Link from "next/link";
 import { ProjectWithMedia } from "@/lib/projects/types";
-import { SpatialMedia } from "@/components/spatial/SpatialMedia";
+import { PortfolioDeviceFrame } from "@/components/work/PortfolioDeviceFrame";
 import { GlassSurface } from "@/components/spatial/GlassSurface";
-import { Tilt } from "@/components/spatial/Tilt";
 import { Reveal } from "@/components/spatial/Reveal";
 import { PointerGlow } from "@/components/spatial/PointerGlow";
+import { getPublicUrl, PortfolioProjectSlug } from "@/lib/projects/mediaManifest";
 
 interface ProjectVariantProps {
   project: ProjectWithMedia;
@@ -15,18 +15,21 @@ interface ProjectVariantProps {
 
 /**
  * Variant 1: FEATURED SPATIAL
- * Large dominant hero media with floating offset glass metadata plane.
- * High contrast spatial layout with perspective tilt.
  */
 export const FeaturedSpatialProject: React.FC<ProjectVariantProps> = ({ project }) => {
-  const heroUrl = project.hero_media?.url || project.media[0]?.url || "";
+  const slug = project.slug as PortfolioProjectSlug;
+  const heroUrl =
+    project.hero_media?.url ||
+    getPublicUrl(slug, "hero.webp");
+  const desktopUrl =
+    project.desktop_media?.url ||
+    getPublicUrl(slug, "desktop.webp");
 
   return (
     <Reveal direction="up" duration={0.8} className="w-full">
       <div className="relative group rounded-3xl border border-slate-800/90 bg-gradient-to-b from-slate-900/90 to-slate-950 p-6 md:p-10 overflow-hidden shadow-2xl hover:border-sky-500/40 transition-all duration-500">
         <PointerGlow color="rgba(56, 189, 248, 0.12)" className="rounded-3xl pointer-events-none" />
 
-        {/* Header Metadata */}
         <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
           <div className="flex items-center gap-3 font-mono text-xs">
             <span className="px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-400 font-semibold tracking-wide">
@@ -37,25 +40,18 @@ export const FeaturedSpatialProject: React.FC<ProjectVariantProps> = ({ project 
           <span className="font-mono text-xs text-slate-500">{project.project_type_label || "Concept System"} ({project.year})</span>
         </div>
 
-        {/* Asymmetric Spatial Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          {/* Main Hero Visual Surface */}
           <div className="lg:col-span-7 relative z-10">
-            <Tilt maxRotation={6} className="w-full">
-              <div className="relative rounded-2xl overflow-hidden border border-slate-700/60 shadow-2xl">
-                <SpatialMedia
-                  src={heroUrl}
-                  alt={project.title}
-                  title={project.title}
-                  category={project.category}
-                  aspectRatio="video"
-                  priority={true}
-                />
-              </div>
-            </Tilt>
+            <PortfolioDeviceFrame
+              type="browser"
+              src={desktopUrl || heroUrl}
+              alt={`${project.title} Desktop View`}
+              title={project.title}
+              urlText={`https://snow.dev/work/${project.slug}`}
+              priority={true}
+            />
           </div>
 
-          {/* Floating Glass Metadata Panel */}
           <div className="lg:col-span-5 relative z-20 space-y-6">
             <GlassSurface intensity="heavy" elevation="floating" className="p-6 md:p-8 space-y-5">
               <div>
@@ -82,7 +78,6 @@ export const FeaturedSpatialProject: React.FC<ProjectVariantProps> = ({ project 
                 </div>
               )}
 
-              {/* Stack tags */}
               <div className="flex flex-wrap gap-2 pt-1">
                 {project.technologies.slice(0, 4).map((tech) => (
                   <span
@@ -116,11 +111,15 @@ export const FeaturedSpatialProject: React.FC<ProjectVariantProps> = ({ project 
 
 /**
  * Variant 2: DEVICE STACK
- * Desktop interface floating behind a responsive mobile device with true 3D z-index layering.
  */
 export const DeviceStackProject: React.FC<ProjectVariantProps> = ({ project }) => {
-  const desktopUrl = project.desktop_media?.url || project.hero_media?.url || "";
-  const mobileUrl = project.mobile_media?.url || project.hero_media?.url || "";
+  const slug = project.slug as PortfolioProjectSlug;
+  const desktopUrl =
+    project.desktop_media?.url ||
+    getPublicUrl(slug, "desktop.webp");
+  const mobileUrl =
+    project.mobile_media?.url ||
+    getPublicUrl(slug, "mobile.webp");
 
   return (
     <Reveal direction="up" duration={0.8} className="w-full">
@@ -128,7 +127,6 @@ export const DeviceStackProject: React.FC<ProjectVariantProps> = ({ project }) =
         <PointerGlow color="rgba(125, 211, 252, 0.08)" className="rounded-3xl pointer-events-none" />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          {/* Text Metadata Side */}
           <div className="lg:col-span-5 space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-xs font-mono text-slate-300">
               <span>SYSTEM #{project.sort_order.toString().padStart(2, "0")}</span>
@@ -173,27 +171,23 @@ export const DeviceStackProject: React.FC<ProjectVariantProps> = ({ project }) =
             </div>
           </div>
 
-          {/* Layered Device Stack Side */}
-          <div className="lg:col-span-7 relative min-h-[340px] sm:min-h-[420px] flex items-center justify-center p-4">
-            {/* Desktop Canvas (Background Layer) */}
-            <div className="w-[85%] sm:w-[88%] transform -rotate-1 group-hover:rotate-0 transition-transform duration-700 shadow-2xl relative z-10 rounded-2xl overflow-hidden border border-slate-700/80">
-              <SpatialMedia
+          <div className="lg:col-span-7 relative min-h-[380px] sm:min-h-[460px] flex items-center justify-center p-2 sm:p-4">
+            <div className="w-[85%] sm:w-[88%] transform -rotate-1 group-hover:rotate-0 transition-transform duration-700 shadow-2xl relative z-10">
+              <PortfolioDeviceFrame
+                type="browser"
                 src={desktopUrl}
                 alt={`${project.title} Desktop View`}
-                title={`${project.title} Desktop Surface`}
-                category="DESKTOP"
-                aspectRatio="video"
+                title={`${project.title} Desktop`}
+                urlText={`https://snow.dev/app/${project.slug}`}
               />
             </div>
 
-            {/* Mobile Device (Foreground Layer Overlap) */}
-            <div className="absolute right-2 sm:right-6 bottom-2 sm:bottom-4 w-[40%] sm:w-[35%] z-20 transform translate-y-2 group-hover:translate-y-0 group-hover:-rotate-1 transition-all duration-700 drop-shadow-[0_20px_40px_rgba(0,0,0,0.8)] rounded-2xl overflow-hidden border-2 border-slate-600 bg-slate-950">
-              <SpatialMedia
+            <div className="absolute right-0 sm:right-4 bottom-0 sm:bottom-2 w-[45%] sm:w-[38%] z-20 transform translate-y-2 group-hover:translate-y-0 transition-all duration-700 drop-shadow-[0_25px_50px_rgba(0,0,0,0.9)]">
+              <PortfolioDeviceFrame
+                type="phone"
                 src={mobileUrl}
                 alt={`${project.title} Mobile View`}
-                title={`${project.title} Mobile`}
-                category="MOBILE"
-                aspectRatio="portrait"
+                title="MOBILE"
               />
             </div>
           </div>
@@ -205,15 +199,16 @@ export const DeviceStackProject: React.FC<ProjectVariantProps> = ({ project }) =
 
 /**
  * Variant 3: DARK LAB
- * Near-black spatial laboratory treatment with cyan/ice highlights and glass metadata panel.
  */
 export const DarkLabProject: React.FC<ProjectVariantProps> = ({ project }) => {
-  const heroUrl = project.hero_media?.url || project.media[0]?.url || "";
+  const slug = project.slug as PortfolioProjectSlug;
+  const desktopUrl =
+    project.desktop_media?.url ||
+    getPublicUrl(slug, "desktop.webp");
 
   return (
     <Reveal direction="up" duration={0.8} className="w-full">
       <div className="relative group rounded-3xl border border-sky-900/30 bg-slate-950 p-6 md:p-10 overflow-hidden shadow-2xl hover:border-sky-500/50 transition-all duration-500">
-        {/* Background Lab Grid & Glow */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(14,165,233,0.15),transparent_70%)] pointer-events-none" />
 
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6 relative z-10">
@@ -228,17 +223,13 @@ export const DarkLabProject: React.FC<ProjectVariantProps> = ({ project }) => {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
           <div className="lg:col-span-7">
-            <Tilt maxRotation={4} className="w-full">
-              <div className="rounded-2xl overflow-hidden border border-sky-800/40 shadow-2xl shadow-sky-950/50">
-                <SpatialMedia
-                  src={heroUrl}
-                  alt={project.title}
-                  title={project.title}
-                  category="LAB SPEC"
-                  aspectRatio="video"
-                />
-              </div>
-            </Tilt>
+            <PortfolioDeviceFrame
+              type="browser"
+              src={desktopUrl}
+              alt={`${project.title} Laboratory View`}
+              title="LAB SPEC"
+              urlText={`https://snow.dev/protocol/${project.slug}`}
+            />
           </div>
 
           <div className="lg:col-span-5 space-y-6">
@@ -287,10 +278,12 @@ export const DarkLabProject: React.FC<ProjectVariantProps> = ({ project }) => {
 
 /**
  * Variant 4: EDITORIAL
- * Oversized typography intersecting cropped visual media layout.
  */
 export const EditorialProject: React.FC<ProjectVariantProps> = ({ project }) => {
-  const desktopUrl = project.desktop_media?.url || project.hero_media?.url || "";
+  const slug = project.slug as PortfolioProjectSlug;
+  const desktopUrl =
+    project.desktop_media?.url ||
+    getPublicUrl(slug, "desktop.webp");
 
   return (
     <Reveal direction="up" duration={0.8} className="w-full">
@@ -324,15 +317,13 @@ export const EditorialProject: React.FC<ProjectVariantProps> = ({ project }) => 
           </div>
 
           <div className="lg:col-span-6 relative">
-            <div className="rounded-2xl overflow-hidden border border-slate-800 shadow-2xl transform lg:rotate-1 group-hover:rotate-0 transition-transform duration-500">
-              <SpatialMedia
-                src={desktopUrl}
-                alt={project.title}
-                title={project.title}
-                category="EDITORIAL"
-                aspectRatio="video"
-              />
-            </div>
+            <PortfolioDeviceFrame
+              type="browser"
+              src={desktopUrl}
+              alt={project.title}
+              title="EDITORIAL"
+              urlText={`https://snow.dev/editorial/${project.slug}`}
+            />
           </div>
         </div>
       </div>
@@ -342,11 +333,15 @@ export const EditorialProject: React.FC<ProjectVariantProps> = ({ project }) => 
 
 /**
  * Variant 5: SPLIT PERSPECTIVE
- * Dual-plane perspective showing desktop and mobile interface interaction side-by-side.
  */
 export const SplitPerspectiveProject: React.FC<ProjectVariantProps> = ({ project }) => {
-  const desktopUrl = project.desktop_media?.url || project.hero_media?.url || "";
-  const mobileUrl = project.mobile_media?.url || project.hero_media?.url || "";
+  const slug = project.slug as PortfolioProjectSlug;
+  const desktopUrl =
+    project.desktop_media?.url ||
+    getPublicUrl(slug, "desktop.webp");
+  const mobileUrl =
+    project.mobile_media?.url ||
+    getPublicUrl(slug, "mobile.webp");
 
   return (
     <Reveal direction="up" duration={0.8} className="w-full">
@@ -369,23 +364,22 @@ export const SplitPerspectiveProject: React.FC<ProjectVariantProps> = ({ project
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-          <div className="md:col-span-8 rounded-2xl overflow-hidden border border-slate-800 shadow-2xl">
-            <SpatialMedia
+          <div className="md:col-span-8">
+            <PortfolioDeviceFrame
+              type="browser"
               src={desktopUrl}
               alt={`${project.title} Desktop View`}
-              title="Desktop View"
-              category="DESKTOP VIEW"
-              aspectRatio="video"
+              title="DESKTOP VIEW"
+              urlText={`https://snow.dev/desktop/${project.slug}`}
             />
           </div>
 
-          <div className="md:col-span-4 rounded-2xl overflow-hidden border border-slate-800 shadow-2xl">
-            <SpatialMedia
+          <div className="md:col-span-4">
+            <PortfolioDeviceFrame
+              type="phone"
               src={mobileUrl}
               alt={`${project.title} Mobile View`}
-              title="Mobile View"
-              category="MOBILE VIEW"
-              aspectRatio="portrait"
+              title="MOBILE VIEW"
             />
           </div>
         </div>
@@ -409,10 +403,12 @@ export const SplitPerspectiveProject: React.FC<ProjectVariantProps> = ({ project
 
 /**
  * Variant 6: MINIMAL EDITORIAL
- * Clean light architectural editorial layout with high contrast, crisp typography and elegant whitespace.
  */
 export const MinimalProject: React.FC<ProjectVariantProps> = ({ project }) => {
-  const heroUrl = project.hero_media?.url || project.media[0]?.url || "";
+  const slug = project.slug as PortfolioProjectSlug;
+  const heroUrl =
+    project.hero_media?.url ||
+    getPublicUrl(slug, "hero.webp");
 
   return (
     <Reveal direction="up" duration={0.8} className="w-full">
@@ -454,15 +450,13 @@ export const MinimalProject: React.FC<ProjectVariantProps> = ({ project }) => {
           </div>
 
           <div className="lg:col-span-7">
-            <div className="rounded-2xl overflow-hidden border border-slate-300 shadow-xl">
-              <SpatialMedia
-                src={heroUrl}
-                alt={project.title}
-                title={project.title}
-                category="STUDIO VIEW"
-                aspectRatio="video"
-              />
-            </div>
+            <PortfolioDeviceFrame
+              type="browser"
+              src={heroUrl}
+              alt={project.title}
+              title="STUDIO VIEW"
+              urlText={`https://snow.dev/studio/${project.slug}`}
+            />
           </div>
         </div>
       </div>

@@ -7,6 +7,7 @@ import { CapabilityFamilyId } from '@/lib/services/types';
 import { CAPABILITY_FAMILIES } from '@/lib/services/capabilityFamilies';
 import { KineticText } from '@/components/spatial/KineticText';
 import { useCursor } from '@/components/spatial/CursorSystem';
+import { SpatialInstrument } from '@/components/spatial/SpatialInstrument';
 
 interface ServiceExplorerProps {
   className?: string;
@@ -63,7 +64,7 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ className = ''
       <div className="max-w-7xl mx-auto space-y-16">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-8">
           <div className="space-y-3">
-            <span className="font-mono text-xs text-cyan-400 uppercase tracking-widest">// CAPABILITY UNIVERSE</span>
+            <span className="font-mono text-xs text-cyan-400 uppercase tracking-widest">&#47;&#47; CAPABILITY UNIVERSE</span>
             <KineticText variant="velocity" className="text-4xl sm:text-6xl font-black uppercase tracking-tight text-white">
               SERVICE ARCHITECTURE
             </KineticText>
@@ -92,7 +93,7 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ className = ''
                     : 'bg-white/5 border-white/10 text-neutral-300 hover:border-cyan-400/50 hover:bg-white/10'
                 }`}
               >
-                <span className="text-[10px] opacity-70">// 0{idx + 1}</span>
+                <span className="text-[10px] opacity-70">&#47;&#47; 0{idx + 1}</span>
                 <span className="uppercase tracking-tight leading-snug">{fam.badge}</span>
               </button>
             );
@@ -105,7 +106,7 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ className = ''
           <div className="lg:col-span-5 space-y-4">
             <div className="p-4 rounded-xl bg-cyan-400/10 border border-cyan-400/30">
               <span className="font-mono text-xs text-cyan-400 font-bold uppercase tracking-wider block">
-                {activeFamily.name} // DOMAIN
+                {activeFamily.name} &#47;&#47; DOMAIN
               </span>
               <p className="text-xs text-neutral-300 mt-1">{activeFamily.description}</p>
             </div>
@@ -137,7 +138,12 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ className = ''
           </div>
 
           {/* Active Service Spatial Detail Display */}
-          <div className="lg:col-span-7 p-8 rounded-2xl bg-white/[0.03] border border-white/10 space-y-8">
+          <div className="lg:col-span-7 p-8 rounded-2xl bg-white/[0.03] border border-white/10 space-y-8 relative overflow-hidden">
+            {/* Embedded 3D Service Spatial Instrument */}
+            <div className="absolute top-4 right-4 w-[160px] h-[160px] opacity-70 pointer-events-auto hidden sm:block">
+              <SpatialInstrument mode="services" scale={0.7} />
+            </div>
+
             <div className="flex items-center justify-between">
               <span className="font-mono text-xs text-cyan-400 font-bold px-3 py-1 rounded-full bg-cyan-400/10 border border-cyan-400/30">
                 {activeService.tag}
@@ -147,7 +153,7 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ className = ''
 
             <h3 className="text-2xl sm:text-3xl font-black text-white">{activeService.name}</h3>
 
-            <p className="text-neutral-300 leading-relaxed text-base">{activeService.desc}</p>
+            <p className="text-neutral-300 leading-relaxed text-base max-w-lg">{activeService.desc}</p>
 
             <div className="space-y-3">
               <span className="font-mono text-xs text-neutral-400 uppercase tracking-widest block">STACK & TECHNOLOGIES</span>

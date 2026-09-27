@@ -139,7 +139,7 @@ export const GlassNav: React.FC<GlassNavProps> = ({ className = '', activeHref }
           >
             <div className="flex flex-col space-y-8">
               <div className="font-mono text-xs text-cyan-400 uppercase tracking-widest border-b border-white/10 pb-4">
-                // NAVIGATION ARCHITECTURE
+                &#47;&#47; NAVIGATION ARCHITECTURE
               </div>
 
               <nav className="flex flex-col space-y-6">

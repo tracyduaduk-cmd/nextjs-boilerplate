@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 
 export type CursorType = 'DEFAULT' | 'LINK' | 'MAGNETIC' | 'MEDIA' | 'PROJECT' | 'DRAG';
@@ -26,30 +26,25 @@ export function CursorProvider({ children }: { children: React.ReactNode }) {
   const mouseX = useMotionValue(-100);
   const mouseY = useMotionValue(-100);
 
-  // Smooth physics spring for cursor motion
   const springConfig = { damping: 28, stiffness: 350, mass: 0.5 };
   const cursorX = useSpring(mouseX, springConfig);
   const cursorY = useSpring(mouseY, springConfig);
 
   useEffect(() => {
-    // Detect touch capability
-    const touchCheck = () => {
-      return (
-        'ontouchstart' in window ||
-        navigator.maxTouchPoints > 0 ||
-        window.matchMedia('(pointer: coarse)').matches
-      );
-    };
+    const isTouch =
+      'ontouchstart' in window ||
+      navigator.maxTouchPoints > 0 ||
+      window.matchMedia('(pointer: coarse)').matches;
 
-    if (touchCheck()) {
-      setIsTouchDevice(true);
+    if (isTouch) {
+      setTimeout(() => setIsTouchDevice(true), 0);
       return;
     }
 
     const handleMouseMove = (e: MouseEvent) => {
       mouseX.set(e.clientX);
       mouseY.set(e.clientY);
-      if (!isVisible) setIsVisible(true);
+      setIsVisible(true);
     };
 
     const handleMouseLeave = () => {
@@ -63,7 +58,7 @@ export function CursorProvider({ children }: { children: React.ReactNode }) {
       window.removeEventListener('mousemove', handleMouseMove);
       document.body.removeEventListener('mouseleave', handleMouseLeave);
     };
-  }, [mouseX, mouseY, isVisible]);
+  }, [mouseX, mouseY]);
 
   const setCursorState = (type: CursorType, label: string = '') => {
     setCursorType(type);
@@ -79,7 +74,6 @@ export function CursorProvider({ children }: { children: React.ReactNode }) {
     return <CursorContext.Provider value={{ setCursorState, resetCursorState }}>{children}</CursorContext.Provider>;
   }
 
-  // Dynamic visual sizing and styling based on cursorType
   const getCursorStyle = () => {
     switch (cursorType) {
       case 'LINK':

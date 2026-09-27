@@ -2,10 +2,16 @@
 
 import React from 'react';
 import { KineticText } from '@/components/spatial/KineticText';
+import { SpatialInstrument } from '@/components/spatial/SpatialInstrument';
 
 export const WorkHero: React.FC = () => {
   return (
     <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 bg-black text-white border-b border-white/10 overflow-hidden">
+      {/* Background Spatial Instrument for Work Index */}
+      <div className="absolute top-1/2 right-6 lg:right-20 -translate-y-1/2 w-[320px] sm:w-[420px] h-[320px] sm:h-[420px] pointer-events-auto opacity-70 z-0 hidden md:block">
+        <SpatialInstrument mode="work-index" badgeLabel="[ WORK ARCHIVE INSTRUMENT ]" scale={1.1} />
+      </div>
+
       <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20 space-y-8 relative z-10">
         <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-cyan-400">
           <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
@@ -16,7 +22,7 @@ export const WorkHero: React.FC = () => {
           SELECTED WORK.
         </KineticText>
 
-        <p className="text-xl sm:text-2xl text-neutral-300 font-light max-w-3xl leading-relaxed">
+        <p className="text-xl sm:text-2xl text-neutral-300 font-light max-w-2xl leading-relaxed">
           Digital products, spatial Web platforms, high-throughput applications, and AI systems built for demanding operational environments.
         </p>
 

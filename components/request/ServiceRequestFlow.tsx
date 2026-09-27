@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Container } from "@/components/ui/Container";
 import { PerspectiveContainer } from "@/components/spatial/PerspectiveContainer";
+import { SpatialInstrument } from "@/components/spatial/SpatialInstrument";
 import { RequestProgress } from "./RequestProgress";
 import { StepModeSelect } from "./StepModeSelect";
 import { ProblemStep } from "./ProblemStep";
@@ -28,7 +29,7 @@ import { ServiceRecord, CapabilityFamilyId } from "@/lib/services/types";
 import { fetchServices, FALLBACK_SERVICES } from "@/lib/services/fetchServices";
 import { submitServiceRequest } from "@/lib/requests/queries";
 import { motionTokens } from "@/motion/tokens";
-import { ArrowLeft, ArrowRight, Shield, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, X } from "lucide-react";
 
 interface ServiceRequestFlowProps {
   initialServiceSlug?: string;
@@ -57,7 +58,7 @@ export const ServiceRequestFlow: React.FC<ServiceRequestFlowProps> = ({
 }) => {
   const [services, setServices] = useState<ServiceRecord[]>(FALLBACK_SERVICES);
   const [step, setStep] = useState<number>(initialMode || initialServiceSlug ? 2 : 1);
-  const [direction, setDirection] = useState<number>(1); // 1 = next, -1 = back
+  const [direction, setDirection] = useState<number>(1);
 
   const [entryMode, setEntryMode] = useState<EntryMode>(initialMode || "direct");
   const [selectedFamilyId, setSelectedFamilyId] = useState<CapabilityFamilyId>("WEB");
@@ -68,9 +69,9 @@ export const ServiceRequestFlow: React.FC<ServiceRequestFlowProps> = ({
     initialProblemText || ""
   );
   const [diagnosticNote, setDiagnosticNote] = useState<string>("");
-  const [answers, setAnswers] = useState<Record<string, any>>({});
+  const [answers, setAnswers] = useState<Record<string, unknown>>({});
   const [timeline, setTimeline] = useState<TimelineOption>("within_month");
-  const [urgency, setUrgency] = useState<string>("normal");
+  const [urgency] = useState<string>("normal");
   const [budgetRange, setBudgetRange] = useState<BudgetOption>("not_sure");
   const [contact, setContact] = useState<ContactInformation>({
     name: "",
@@ -95,15 +96,15 @@ export const ServiceRequestFlow: React.FC<ServiceRequestFlowProps> = ({
     loadData();
   }, []);
 
-  // Update selected family if service changes
-  useEffect(() => {
-    const matching = services.find((s) => s.slug === selectedServiceSlug);
+  const activeService = services.find((s) => s.slug === selectedServiceSlug) || services[0];
+
+  const handleSelectServiceSlug = (slug: string) => {
+    setSelectedServiceSlug(slug);
+    const matching = services.find((s) => s.slug === slug);
     if (matching) {
       setSelectedFamilyId(matching.capability_family as CapabilityFamilyId);
     }
-  }, [selectedServiceSlug, services]);
-
-  const activeService = services.find((s) => s.slug === selectedServiceSlug) || services[0];
+  };
 
   // Handle Mode Selection in STEP 1
   const handleSelectMode = (mode: EntryMode) => {
@@ -117,7 +118,7 @@ export const ServiceRequestFlow: React.FC<ServiceRequestFlowProps> = ({
     setProblemDescription(text);
     setDiagnosticNote(classification.explanation);
     if (classification.recommendedServiceSlug) {
-      setSelectedServiceSlug(classification.recommendedServiceSlug);
+      handleSelectServiceSlug(classification.recommendedServiceSlug);
     }
     if (classification.detectedFamilyId) {
       setSelectedFamilyId(classification.detectedFamilyId);
@@ -125,7 +126,7 @@ export const ServiceRequestFlow: React.FC<ServiceRequestFlowProps> = ({
   };
 
   // Handle Answer Changes in STEP 3
-  const handleAnswerChange = (qId: string, val: any) => {
+  const handleAnswerChange = (qId: string, val: unknown) => {
     setAnswers((prev) => ({
       ...prev,
       [qId]: val,
@@ -206,7 +207,7 @@ export const ServiceRequestFlow: React.FC<ServiceRequestFlowProps> = ({
 
     if (res.success && res.record) {
       setSubmissionRecord(res.record);
-      setStep(8); // Success state
+      setStep(8);
     } else {
       setErrorMessage(res.error || "Failed to submit request. Please try again.");
     }
@@ -248,14 +249,17 @@ export const ServiceRequestFlow: React.FC<ServiceRequestFlowProps> = ({
       id="service-request-flow"
       className={`relative w-full min-h-[600px] py-12 sm:py-20 bg-slate-950 text-slate-100 ${className}`}
     >
-      {/* Background Lighting */}
+      {/* Embedded Request Spatial Instrument */}
+      <div className="absolute top-8 right-6 sm:right-12 w-[220px] h-[220px] opacity-60 hidden sm:block pointer-events-auto z-0">
+        <SpatialInstrument mode="request" badgeLabel="[ SYSTEM SIGNAL READY ]" scale={0.85} />
+      </div>
+
       <div
         className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,rgba(56,189,248,0.06),transparent)] pointer-events-none"
         aria-hidden="true"
       />
 
       <Container className="relative z-10 max-w-4xl mx-auto">
-        {/* Top Header Controls */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-sky-400 animate-pulse" />
@@ -276,7 +280,6 @@ export const ServiceRequestFlow: React.FC<ServiceRequestFlowProps> = ({
           )}
         </div>
 
-        {/* Spatial Progress Indicator (hidden on step 8 success) */}
         {step <= 7 && (
           <div className="mb-10">
             <RequestProgress
@@ -287,7 +290,6 @@ export const ServiceRequestFlow: React.FC<ServiceRequestFlowProps> = ({
           </div>
         )}
 
-        {/* Spatial 3D Step Stage */}
         <PerspectiveContainer perspective={1200} className="w-full min-h-[420px]">
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
@@ -303,7 +305,6 @@ export const ServiceRequestFlow: React.FC<ServiceRequestFlowProps> = ({
               }}
               className="w-full bg-slate-900/60 border border-slate-800/80 rounded-3xl p-6 sm:p-10 shadow-2xl backdrop-blur-xl"
             >
-              {/* STEP 1: Entry Mode Select */}
               {step === 1 && (
                 <StepModeSelect
                   selectedMode={entryMode}
@@ -311,7 +312,6 @@ export const ServiceRequestFlow: React.FC<ServiceRequestFlowProps> = ({
                 />
               )}
 
-              {/* STEP 2: Service Select OR Free-Text Diagnostic */}
               {step === 2 && (
                 <>
                   {entryMode === "diagnostic" ? (
@@ -326,13 +326,12 @@ export const ServiceRequestFlow: React.FC<ServiceRequestFlowProps> = ({
                       selectedFamilyId={selectedFamilyId}
                       selectedServiceSlug={selectedServiceSlug}
                       onSelectFamily={setSelectedFamilyId}
-                      onSelectService={(s) => setSelectedServiceSlug(s.slug)}
+                      onSelectService={(s) => handleSelectServiceSlug(s.slug)}
                     />
                   )}
                 </>
               )}
 
-              {/* STEP 3: Context-Aware Questions */}
               {step === 3 && (
                 <ContextQuestionsStep
                   serviceSlug={selectedServiceSlug}
@@ -341,7 +340,6 @@ export const ServiceRequestFlow: React.FC<ServiceRequestFlowProps> = ({
                 />
               )}
 
-              {/* STEP 4: Scope & Details */}
               {step === 4 && (
                 <DetailsStep
                   problemDescription={problemDescription}
@@ -349,7 +347,6 @@ export const ServiceRequestFlow: React.FC<ServiceRequestFlowProps> = ({
                 />
               )}
 
-              {/* STEP 5: Timeline & Budget */}
               {step === 5 && (
                 <TimelineStep
                   timeline={timeline}
@@ -359,7 +356,6 @@ export const ServiceRequestFlow: React.FC<ServiceRequestFlowProps> = ({
                 />
               )}
 
-              {/* STEP 6: Contact Information */}
               {step === 6 && (
                 <ContactStep
                   contact={contact}
@@ -368,7 +364,6 @@ export const ServiceRequestFlow: React.FC<ServiceRequestFlowProps> = ({
                 />
               )}
 
-              {/* STEP 7: Review & Summary */}
               {step === 7 && (
                 <ReviewStep
                   data={{
@@ -392,7 +387,6 @@ export const ServiceRequestFlow: React.FC<ServiceRequestFlowProps> = ({
                 />
               )}
 
-              {/* STEP 8: Success State */}
               {step === 8 && submissionRecord && (
                 <SuccessState record={submissionRecord} onReset={handleReset} />
               )}
@@ -400,14 +394,12 @@ export const ServiceRequestFlow: React.FC<ServiceRequestFlowProps> = ({
           </AnimatePresence>
         </PerspectiveContainer>
 
-        {/* Error Notice */}
         {errorMessage && step !== 7 && (
           <div className="mt-4 p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-sans">
             {errorMessage}
           </div>
         )}
 
-        {/* Bottom Navigation Toolbar (For Steps 1 through 6) */}
         {step <= 6 && (
           <div className="mt-8 pt-6 border-t border-slate-800/80 flex items-center justify-between gap-4">
             {step > 1 ? (
