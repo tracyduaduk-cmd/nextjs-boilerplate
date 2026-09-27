@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { SmoothScrollProvider } from "@/components/spatial/SmoothScrollProvider";
+import { CursorProvider } from "@/components/spatial/CursorSystem";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,27 +16,26 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Snow — Modern Technology Services & Software Partner",
+    default: "Snow — Interactive Technology & Design Studio",
     template: "%s | Snow",
   },
   description:
-    "Snow helps businesses and individuals build scalable web applications, integrate custom AI workflows, optimize performance, and resolve complex software friction.",
+    "Snow is an editorial technology magazine and spatial digital laboratory engineering web, AI, software, and interactive experiences.",
   keywords: [
     "Snow",
-    "Web Application Development",
-    "Website Design",
+    "Spatial Web",
     "Software Engineering",
     "AI Integrations",
-    "Business Automation",
-    "Technical Troubleshooting",
-    "Performance Optimization",
+    "Interaction Design",
+    "WebGL",
+    "Digital Studio",
   ],
-  authors: [{ name: "Snow Technology Services" }],
-  creator: "Snow Technology Services",
+  authors: [{ name: "Snow Technology Studio" }],
+  creator: "Snow Technology Studio",
   openGraph: {
-    title: "Snow — Modern Technology Services & Software Partner",
+    title: "Snow — Interactive Technology & Design Studio",
     description:
-      "Snow builds scalable web applications, custom AI integrations, and automated digital systems for modern businesses.",
+      "Snow builds spatial web applications, WebGL visual systems, and custom AI integrations.",
     type: "website",
     locale: "en_US",
     siteName: "Snow",
@@ -46,7 +47,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#090a0f",
+  themeColor: "#000000",
   colorScheme: "dark",
   width: "device-width",
   initialScale: 1,
@@ -60,17 +61,18 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} dark antialiased scroll-smooth`}
+      className={`${geistSans.variable} ${geistMono.variable} dark antialiased`}
     >
-      <body className="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans">
-        {/* Skip to main content link for keyboard accessibility */}
+      <body className="bg-black text-white min-h-screen flex flex-col font-sans selection:bg-cyan-400 selection:text-black">
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 z-50 px-4 py-2 bg-sky-400 text-slate-950 font-bold rounded-lg shadow-lg"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 z-50 px-4 py-2 bg-cyan-400 text-black font-mono font-bold rounded-full shadow-lg"
         >
           Skip to main content
         </a>
-        {children}
+        <SmoothScrollProvider>
+          <CursorProvider>{children}</CursorProvider>
+        </SmoothScrollProvider>
       </body>
     </html>
   );

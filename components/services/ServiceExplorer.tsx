@@ -1,266 +1,179 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect, useMemo, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { Container } from "@/components/ui/Container";
-import { Reveal } from "@/components/spatial/Reveal";
-import { SplitText } from "@/components/spatial/SplitText";
-import { PerspectiveContainer } from "@/components/spatial/PerspectiveContainer";
-import { PointerGlow } from "@/components/spatial/PointerGlow";
-import { CapabilityFamilyNav } from "./CapabilityFamilyNav";
-import { ActiveServiceDisplay } from "./ActiveServiceDisplay";
-import { ProblemDiagnostic } from "./ProblemDiagnostic";
-import { ServiceRecord, CapabilityFamilyId, ProblemOption } from "@/lib/services/types";
-import { CAPABILITY_FAMILIES } from "@/lib/services/capabilityFamilies";
-import { fetchServices, FALLBACK_SERVICES } from "@/lib/services/fetchServices";
-import {
-  Globe,
-  Smartphone,
-  Cloud,
-  ShieldCheck,
-  Sparkles,
-  HardDrive,
-  Briefcase,
-  ChartNoAxesCombined,
-  Wrench,
-  LockKeyhole,
-  PenTool,
-  ArrowRight,
-} from "lucide-react";
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { ArrowUpRight } from 'lucide-react';
+import { CapabilityFamilyId } from '@/lib/services/types';
+import { CAPABILITY_FAMILIES } from '@/lib/services/capabilityFamilies';
+import { KineticText } from '@/components/spatial/KineticText';
+import { useCursor } from '@/components/spatial/CursorSystem';
 
 interface ServiceExplorerProps {
   className?: string;
 }
 
-const iconMap: Record<string, React.ElementType> = {
-  Globe,
-  Smartphone,
-  Cloud,
-  ShieldCheck,
-  Sparkles,
-  HardDrive,
-  Briefcase,
-  ChartNoAxesCombined,
-  Wrench,
-  LockKeyhole,
-  PenTool,
-};
-
-export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({
-  className = "",
-}) => {
+export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ className = '' }) => {
   const router = useRouter();
-  const [services, setServices] = useState<ServiceRecord[]>(FALLBACK_SERVICES);
-  const [selectedFamilyId, setSelectedFamilyId] = useState<CapabilityFamilyId>("WEB");
-  const [activeServiceSlug, setActiveServiceSlug] = useState<string>("web-development");
-  const [activeDiagnosticOptionId, setActiveDiagnosticOptionId] = useState<string | null>(null);
+  const { setCursorState, resetCursorState } = useCursor();
+  const [activeFamilyId, setActiveFamilyId] = useState<CapabilityFamilyId>('WEB');
+  const [activeServiceIndex, setActiveServiceIndex] = useState<number>(0);
 
-  const explorerRef = useRef<HTMLElement>(null);
+  const familyList = CAPABILITY_FAMILIES;
+  const activeFamily = familyList.find((f) => f.id === activeFamilyId) || familyList[0];
 
-  // Fetch services from Supabase on mount
-  useEffect(() => {
-    async function loadData() {
-      const data = await fetchServices();
-      if (data && data.length > 0) {
-        setServices(data);
-      }
-    }
-    loadData();
-  }, []);
-
-  // Filter services by active capability family
-  const familyServices = useMemo(() => {
-    return services.filter((s) => s.capability_family === selectedFamilyId);
-  }, [services, selectedFamilyId]);
-
-  // Active family metadata
-  const currentFamilyMeta = useMemo(() => {
-    return (
-      CAPABILITY_FAMILIES.find((f) => f.id === selectedFamilyId) ||
-      CAPABILITY_FAMILIES[0]
-    );
-  }, [selectedFamilyId]);
-
-  // Active service record
-  const currentActiveService = useMemo(() => {
-    const found = familyServices.find((s) => s.slug === activeServiceSlug);
-    if (found) return found;
-    return familyServices[0] || services[0];
-  }, [familyServices, activeServiceSlug, services]);
-
-  // Handle family change
-  const handleSelectFamily = (familyId: CapabilityFamilyId) => {
-    setSelectedFamilyId(familyId);
-    const matching = services.filter((s) => s.capability_family === familyId);
-    if (matching.length > 0) {
-      setActiveServiceSlug(matching[0].slug);
-    }
+  const servicesByFamily: Record<CapabilityFamilyId, Array<{ name: string; tag: string; desc: string; tech: string[] }>> = {
+    'WEB': [
+      { name: 'Spatial Web Applications', tag: 'WEB-01', desc: 'Custom Next.js applications featuring WebGL, 3D CSS layering, sub-100ms LCP, and real-time state sync.', tech: ['Next.js 16', 'Three.js', 'Tailwind', 'TypeScript'] },
+      { name: 'E-Commerce Platforms', tag: 'WEB-02', desc: 'High-converting headless storefronts with instant global search and automated checkout pipelines.', tech: ['Shopify Headless', 'Stripe', 'GraphQL', 'Next.js'] },
+      { name: 'Editorial Design Systems', tag: 'WEB-03', desc: 'Bespoke UI component libraries engineered for magazine-grade typography and kinetic interactions.', tech: ['Framer Motion', 'GSAP', 'CSS Modules', 'Radix'] },
+    ],
+    'APPS & SOFTWARE': [
+      { name: 'Cross-Platform Mobile Apps', tag: 'APP-01', desc: 'Native-feel iOS and Android applications built with React Native and offline-first database sync.', tech: ['React Native', 'Expo', 'SQLite', 'WebSockets'] },
+      { name: 'PWA Web Software', tag: 'APP-02', desc: 'Progressive Web Apps with background sync, push notifications, and instant install capability.', tech: ['PWA', 'Workbox', 'Service Workers', 'IndexedDB'] },
+    ],
+    'AI': [
+      { name: 'Autonomous AI Agents', tag: 'AI-01', desc: 'LLM agents integrated into customer support, internal search, and automated data entry workflows.', tech: ['OpenAI', 'LangChain', 'Pinecone', 'Python'] },
+      { name: 'RAG & Vector Search Systems', tag: 'AI-02', desc: 'High-density document ingestion pipelines for contextual enterprise search.', tech: ['pgvector', 'Supabase', 'Embeddings', 'TypeScript'] },
+    ],
+    'SECURITY & RECOVERY': [
+      { name: 'Security Header & Triage Audit', tag: 'SEC-01', desc: 'Defensive security analysis, vulnerability scans, and CSP hardening for web applications.', tech: ['OWASP', 'CSP Hardening', 'JWT Audit', 'SSL/TLS'] },
+      { name: 'Account Recovery Guidance', tag: 'SEC-02', desc: 'Guided forensic analysis and cryptographically signed incident reports for compromise recovery.', tech: ['Cryptography', 'Evidence Logs', 'MFA Enforcement', 'DNS SEC'] },
+    ],
+    'INFRASTRUCTURE': [
+      { name: 'Supabase Postgres Pipelines', tag: 'INF-01', desc: 'Database migration, row-level security policy design, and real-time channel setup.', tech: ['PostgreSQL', 'RLS', 'Edge Functions', 'Storage'] },
+      { name: 'Global Edge & CDN Routing', tag: 'INF-02', desc: 'Sub-second global content routing, DNS optimization, and automated Netlify/Vercel deployments.', tech: ['Vercel Edge', 'Netlify', 'Cloudflare', 'DNS'] },
+    ],
+    'DIGITAL GROWTH': [
+      { name: 'Performance & Speed Tuning', tag: 'GRW-01', desc: 'Rigorous bundle size reduction, image optimization, and Core Web Vitals score maxing.', tech: ['Lighthouse', 'Bundle Analyzer', 'Web Workers', 'Edge Caching'] },
+      { name: 'Technical SEO & Metadata', tag: 'GRW-02', desc: 'JSON-LD schema structured data, automated sitemaps, and search index optimization.', tech: ['Schema.org', 'OpenGraph', 'Next.js Metadata API'] },
+    ],
+    'DEVICES & HARDWARE': [
+      { name: 'Hardware & Peripheral Integration', tag: 'DEV-01', desc: 'Web Bluetooth and Web Serial API bridges connecting web apps directly to physical hardware.', tech: ['Web Bluetooth', 'Web Serial', 'IoT', 'WebSockets'] },
+    ],
+    'BUSINESS IT': [
+      { name: 'Enterprise Workflow Automation', tag: 'BUS-01', desc: 'Webhook orchestration, email infrastructure, and automated multi-service pipelines.', tech: ['Zapier', 'Make', 'REST API', 'Node.js'] },
+    ],
   };
 
-  // Handle problem diagnostic selection
-  const handleDiagnosticSelect = (option: ProblemOption) => {
-    setActiveDiagnosticOptionId(option.id);
-    if (option.id === "not-sure") {
-      router.push("/request?mode=diagnostic");
-      return;
-    }
-
-    setSelectedFamilyId(option.capabilityFamily);
-    if (option.recommendedSlug) {
-      setActiveServiceSlug(option.recommendedSlug);
-    }
-
-    // Smooth scroll down to explorer stage
-    if (explorerRef.current) {
-      explorerRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  };
-
-  // Handle request CTA -> navigate to /request?service=slug
-  const handleRequestService = (service: ServiceRecord) => {
-    router.push(`/request?service=${encodeURIComponent(service.slug)}`);
-  };
+  const currentServices = servicesByFamily[activeFamilyId] || servicesByFamily['WEB'];
+  const activeService = currentServices[activeServiceIndex] || currentServices[0];
 
   return (
-    <div className={`w-full bg-slate-950 text-slate-100 ${className}`}>
-      {/* 1. Problem Diagnostic Entry Point */}
-      <ProblemDiagnostic
-        onSelectOption={handleDiagnosticSelect}
-        activeOptionId={activeDiagnosticOptionId}
-      />
-
-      {/* 2. Main Services / Capabilities Explorer */}
-      <section
-        ref={explorerRef}
-        id="services"
-        className="relative py-20 sm:py-28 bg-[#07090e] border-b border-slate-900 overflow-hidden"
-      >
-        <PointerGlow color="rgba(56, 189, 248, 0.1)" size={600} />
-
-        {/* Ambient Grid Background */}
-        <div
-          className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b12_1px,transparent_1px),linear-gradient(to_bottom,#1e293b12_1px,transparent_1px)] bg-[size:3.5rem_3.5rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none"
-          aria-hidden="true"
-        />
-
-        <Container className="relative z-10 w-full">
-          {/* Section Header */}
-          <div className="max-w-3xl mb-12 sm:mb-16 space-y-4">
-            <Reveal direction="down">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-xs font-mono text-sky-400 font-medium">
-                <span>CAPABILITY EXPLORER</span>
-                <span className="text-slate-700">•</span>
-                <span className="text-slate-300">SPATIAL SERVICE SYSTEM</span>
-              </div>
-            </Reveal>
-
-            <SplitText
-              text="Explore Technology Capabilities"
-              className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-100 tracking-tight font-sans"
-              delay={0.15}
-            />
-
-            <Reveal direction="up" delay={0.25}>
-              <p className="text-base sm:text-lg text-slate-400 font-sans leading-relaxed">
-                Snow is organized across 8 major capability families. Explore our service universe below, review engineering details, or request direct technical support.
-              </p>
-            </Reveal>
+    <section className={`relative py-32 px-6 md:px-12 lg:px-20 bg-slate-950 text-white overflow-hidden border-t border-white/10 ${className}`}>
+      <div className="max-w-7xl mx-auto space-y-16">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-8">
+          <div className="space-y-3">
+            <span className="font-mono text-xs text-cyan-400 uppercase tracking-widest">// CAPABILITY UNIVERSE</span>
+            <KineticText variant="velocity" className="text-4xl sm:text-6xl font-black uppercase tracking-tight text-white">
+              SERVICE ARCHITECTURE
+            </KineticText>
           </div>
+          <p className="font-mono text-xs text-neutral-400 max-w-sm">
+            SELECT A CAPABILITY FAMILY TO REVEAL SPATIAL SERVICE SPECIFICATIONS AND ENGINEERING DETAILS.
+          </p>
+        </div>
 
-          {/* Capability Family Tab Selector */}
-          <div className="mb-10">
-            <CapabilityFamilyNav
-              selectedFamilyId={selectedFamilyId}
-              onSelectFamily={handleSelectFamily}
-            />
-          </div>
+        {/* Capability Families Universe Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+          {familyList.map((fam, idx) => {
+            const isActive = fam.id === activeFamilyId;
+            return (
+              <button
+                key={fam.id}
+                onClick={() => {
+                  setActiveFamilyId(fam.id);
+                  setActiveServiceIndex(0);
+                }}
+                onMouseEnter={() => setCursorState('LINK')}
+                onMouseLeave={resetCursorState}
+                className={`p-4 rounded-xl border text-left transition-all duration-300 font-mono text-xs flex flex-col justify-between h-28 ${
+                  isActive
+                    ? 'bg-cyan-400 text-black border-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.5)] font-bold scale-105'
+                    : 'bg-white/5 border-white/10 text-neutral-300 hover:border-cyan-400/50 hover:bg-white/10'
+                }`}
+              >
+                <span className="text-[10px] opacity-70">// 0{idx + 1}</span>
+                <span className="uppercase tracking-tight leading-snug">{fam.badge}</span>
+              </button>
+            );
+          })}
+        </div>
 
-          {/* Spatial 3D Composition Area */}
-          <PerspectiveContainer perspective={1400} className="w-full">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-
-              {/* Left Column: List of Services in Selected Family */}
-              <div className="lg:col-span-4 space-y-3">
-                <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800/80 backdrop-blur-md mb-4">
-                  <h3 className="text-xs font-mono text-sky-400 font-bold uppercase tracking-wider">
-                    {"// "}{currentFamilyMeta.name}
-                  </h3>
-                  <p className="text-xs text-slate-400 mt-1 font-sans">
-                    {currentFamilyMeta.description}
-                  </p>
-                </div>
-
-                <div className="space-y-2.5" role="tablist" aria-label="Services List">
-                  {familyServices.map((service) => {
-                    const isActive = currentActiveService?.slug === service.slug;
-                    const IconComp = (service.icon && iconMap[service.icon]) || Globe;
-
-                    return (
-                      <button
-                        key={service.id}
-                        type="button"
-                        role="tab"
-                        aria-selected={isActive}
-                        onClick={() => setActiveServiceSlug(service.slug)}
-                        className={`w-full text-left p-4 rounded-2xl border transition-all duration-300 flex items-center justify-between group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 ${
-                          isActive
-                            ? "bg-slate-900 border-sky-500/60 shadow-lg shadow-sky-950/40"
-                            : "bg-slate-950/80 border-slate-800/80 hover:bg-slate-900/60 hover:border-slate-700/80"
-                        }`}
-                      >
-                        <div className="flex items-center gap-3.5 pr-2">
-                          <div
-                            className={`p-2.5 rounded-xl border transition-colors ${
-                              isActive
-                                ? "bg-sky-500/20 text-sky-300 border-sky-500/40"
-                                : "bg-slate-900 text-slate-400 border-slate-800 group-hover:text-slate-200"
-                            }`}
-                          >
-                            <IconComp className="w-4 h-4" />
-                          </div>
-
-                          <div>
-                            <div className="text-sm font-bold font-sans text-slate-200 group-hover:text-sky-300 transition-colors">
-                              {service.name}
-                            </div>
-                            <div className="text-[11px] font-mono text-slate-500">
-                              {service.category}
-                            </div>
-                          </div>
-                        </div>
-
-                        <ArrowRight
-                          className={`w-4 h-4 shrink-0 transition-transform ${
-                            isActive
-                              ? "text-sky-400 translate-x-1"
-                              : "text-slate-600 group-hover:text-slate-400"
-                          }`}
-                        />
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Right Column: Spatial Stage for Active Service Details */}
-              <div className="lg:col-span-8">
-                {currentActiveService ? (
-                  <ActiveServiceDisplay
-                    service={currentActiveService}
-                    familyMeta={currentFamilyMeta}
-                    onRequestService={handleRequestService}
-                  />
-                ) : (
-                  <div className="p-8 rounded-3xl bg-slate-950 border border-slate-800 text-center text-slate-500 font-mono text-xs">
-                    Select a service to view details.
-                  </div>
-                )}
-              </div>
-
+        {/* Active Family & Service Interactive Stage */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start p-8 rounded-3xl bg-black/60 border border-white/10 backdrop-blur-2xl">
+          {/* Sub-services Selector Column */}
+          <div className="lg:col-span-5 space-y-4">
+            <div className="p-4 rounded-xl bg-cyan-400/10 border border-cyan-400/30">
+              <span className="font-mono text-xs text-cyan-400 font-bold uppercase tracking-wider block">
+                {activeFamily.name} // DOMAIN
+              </span>
+              <p className="text-xs text-neutral-300 mt-1">{activeFamily.description}</p>
             </div>
-          </PerspectiveContainer>
-        </Container>
-      </section>
-    </div>
+
+            <div className="space-y-3">
+              {currentServices.map((srv, idx) => {
+                const selected = idx === activeServiceIndex;
+                return (
+                  <button
+                    key={srv.tag}
+                    onClick={() => setActiveServiceIndex(idx)}
+                    onMouseEnter={() => setCursorState('LINK')}
+                    onMouseLeave={resetCursorState}
+                    className={`w-full p-4 rounded-xl border text-left transition-all duration-200 flex items-center justify-between ${
+                      selected
+                        ? 'bg-white/10 border-cyan-400 text-white shadow-md'
+                        : 'bg-white/[0.02] border-white/5 text-neutral-400 hover:bg-white/5 hover:text-white'
+                    }`}
+                  >
+                    <div>
+                      <span className="font-mono text-[10px] text-cyan-400 block">{srv.tag}</span>
+                      <span className="font-sans font-bold text-sm">{srv.name}</span>
+                    </div>
+                    <ArrowUpRight size={16} className={selected ? 'text-cyan-400' : 'text-neutral-600'} />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Active Service Spatial Detail Display */}
+          <div className="lg:col-span-7 p-8 rounded-2xl bg-white/[0.03] border border-white/10 space-y-8">
+            <div className="flex items-center justify-between">
+              <span className="font-mono text-xs text-cyan-400 font-bold px-3 py-1 rounded-full bg-cyan-400/10 border border-cyan-400/30">
+                {activeService.tag}
+              </span>
+              <span className="font-mono text-xs text-neutral-500">SPECIFICATION READY</span>
+            </div>
+
+            <h3 className="text-2xl sm:text-3xl font-black text-white">{activeService.name}</h3>
+
+            <p className="text-neutral-300 leading-relaxed text-base">{activeService.desc}</p>
+
+            <div className="space-y-3">
+              <span className="font-mono text-xs text-neutral-400 uppercase tracking-widest block">STACK & TECHNOLOGIES</span>
+              <div className="flex flex-wrap gap-2">
+                {activeService.tech.map((t) => (
+                  <span key={t} className="px-3 py-1 rounded-md bg-white/5 border border-white/10 font-mono text-xs text-cyan-300">
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className="pt-6 border-t border-white/10">
+              <button
+                onClick={() => router.push(`/request?service=${encodeURIComponent(activeService.name)}`)}
+                onMouseEnter={() => setCursorState('MAGNETIC', 'REQUEST')}
+                onMouseLeave={resetCursorState}
+                className="w-full flex items-center justify-center gap-2 py-4 rounded-full bg-cyan-400 text-black font-mono font-bold text-sm tracking-wider hover:bg-white transition-all shadow-[0_0_20px_rgba(34,211,238,0.4)]"
+              >
+                <span>REQUEST THIS CAPABILITY</span>
+                <ArrowUpRight size={18} />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 };
