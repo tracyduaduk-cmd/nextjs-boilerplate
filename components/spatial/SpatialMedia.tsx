@@ -28,28 +28,28 @@ export const SpatialMedia: React.FC<SpatialMediaProps> = ({
   showOverlay = true,
 }) => {
   const [hasError, setHasError] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [prevSrc, setPrevSrc] = useState(src);
+
+  if (src !== prevSrc) {
+    setPrevSrc(src);
+    setHasError(false);
+    setIsLoading(true);
+  }
+
   const imgRef = useRef<HTMLImageElement | null>(null);
 
   useEffect(() => {
     let active = true;
     if (imgRef.current && imgRef.current.complete) {
-      if (imgRef.current.naturalWidth === 0) {
-        queueMicrotask(() => {
-          if (active) setHasError(true);
-        });
-      } else {
-        queueMicrotask(() => {
+      if (imgRef.current.naturalWidth > 0) {
+        requestAnimationFrame(() => {
           if (active) {
-            setHasError(false);
             setIsLoading(false);
+            setHasError(false);
           }
         });
       }
-    } else {
-      queueMicrotask(() => {
-        if (active) setHasError(false);
-      });
     }
     return () => {
       active = false;
