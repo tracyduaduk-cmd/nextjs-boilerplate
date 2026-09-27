@@ -5,9 +5,7 @@
 ▲ Next.js 16.2.4 (Turbopack)
 - Local:         http://localhost:3000
 - Network:       http://192.168.0.2:3000
-✓ Ready in 536ms
+✓ Ready in 537ms
 
 ○ Compiling / ...
-You're attempting to animate multiple children within AnimatePresence, but its mode is set to "wait". This will lead to odd visual behaviour.
- HEAD / 200 in 6.1s (next.js: 5.5s, application-code: 590ms)
- GET /design-system 200 in 1574ms (next.js: 1315ms, application-code: 259ms)
+ GET / 200 in 8.5s (next.js: 7.2s, application-code: 1285ms)
