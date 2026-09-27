@@ -37,4 +37,6 @@ export interface ToolResultData {
     name: string;
     href: string;
   };
+  careCategorySlug?: string;
+  problemSummary?: string;
 }

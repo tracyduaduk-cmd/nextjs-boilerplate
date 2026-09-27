@@ -77,6 +77,7 @@ export default function SpeedPage() {
                 slug: "performance-optimization",
                 description: "Snow eliminates loading bottlenecks, optimizes media pipelines, and refactors script execution to achieve exceptional speed scores.",
               },
+              careCategorySlug: "performance-care",
               recommendedCarePlan: {
                 name: "Business Care Plan",
                 href: "/care#care-plans",

@@ -77,6 +77,7 @@ export default function WebsiteHealthPage() {
                 slug: "website-development",
                 description: "Snow provides technical health maintenance, code refactoring, and performance optimizations to keep web applications running flawlessly.",
               },
+              careCategorySlug: "website-care",
               recommendedCarePlan: {
                 name: "Essential Care Plan",
                 href: "/care#care-plans",
