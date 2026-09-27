@@ -26,7 +26,7 @@ export type PortfolioAssetFilename = (typeof PORTFOLIO_ASSET_FILENAMES)[number];
 export type PortfolioAssetRole = "hero" | "desktop" | "mobile";
 
 export interface PortfolioAssetSource {
-  sourceUrl: string | null;
+  sourceUrl?: string | null;
   provider: string | null;
   attribution: string | null;
   licenseNote: string | null;
@@ -41,55 +41,56 @@ export interface PortfolioAsset extends PortfolioAssetSource {
   publicUrl: string;
 }
 
-const SNOW_CONCEPT_LICENSE = "Snow Studio Open Concept License — High-fidelity UI demonstration concept.";
+const SNOW_CONCEPT_LICENSE =
+  "Original fictional interface created by Snow for portfolio demonstration. Not represented as a third-party client deliverable.";
 
 const CURATED_SOURCE_BY_PROJECT: Record<PortfolioProjectSlug, PortfolioAssetSource> = {
   "aurora-commerce": {
-    sourceUrl: "https://snow.studio/work/aurora-commerce",
-    provider: "Snow Web & Spatial Studio",
-    attribution: "Snow Studio Original Interface Concept",
+    sourceUrl: null,
+    provider: "Snow — Original Concept Interface",
+    attribution: "Original Snow concept interface — generated internally for portfolio demonstration.",
     licenseNote: SNOW_CONCEPT_LICENSE,
   },
   "pulse-health": {
-    sourceUrl: "https://snow.studio/work/pulse-health",
-    provider: "Snow Web & Spatial Studio",
-    attribution: "Snow Studio Original Interface Concept",
+    sourceUrl: null,
+    provider: "Snow — Original Concept Interface",
+    attribution: "Original Snow concept interface — generated internally for portfolio demonstration.",
     licenseNote: SNOW_CONCEPT_LICENSE,
   },
   "orbit-finance": {
-    sourceUrl: "https://snow.studio/work/orbit-finance",
-    provider: "Snow Web & Spatial Studio",
-    attribution: "Snow Studio Original Interface Concept",
+    sourceUrl: null,
+    provider: "Snow — Original Concept Interface",
+    attribution: "Original Snow concept interface — generated internally for portfolio demonstration.",
     licenseNote: SNOW_CONCEPT_LICENSE,
   },
   "nova-ai-assistant": {
-    sourceUrl: "https://snow.studio/work/nova-ai-assistant",
-    provider: "Snow Web & Spatial Studio",
-    attribution: "Snow Studio Original Interface Concept",
+    sourceUrl: null,
+    provider: "Snow — Original Concept Interface",
+    attribution: "Original Snow concept interface — generated internally for portfolio demonstration.",
     licenseNote: SNOW_CONCEPT_LICENSE,
   },
   "atlas-business-portal": {
-    sourceUrl: "https://snow.studio/work/atlas-business-portal",
-    provider: "Snow Web & Spatial Studio",
-    attribution: "Snow Studio Original Interface Concept",
+    sourceUrl: null,
+    provider: "Snow — Original Concept Interface",
+    attribution: "Original Snow concept interface — generated internally for portfolio demonstration.",
     licenseNote: SNOW_CONCEPT_LICENSE,
   },
   "studio-landing": {
-    sourceUrl: "https://snow.studio/work/studio-landing",
-    provider: "Snow Web & Spatial Studio",
-    attribution: "Snow Studio Original Interface Concept",
+    sourceUrl: null,
+    provider: "Snow — Original Concept Interface",
+    attribution: "Original Snow concept interface — generated internally for portfolio demonstration.",
     licenseNote: SNOW_CONCEPT_LICENSE,
   },
   "local-services-platform": {
-    sourceUrl: "https://snow.studio/work/local-services-platform",
-    provider: "Snow Web & Spatial Studio",
-    attribution: "Snow Studio Original Interface Concept",
+    sourceUrl: null,
+    provider: "Snow — Original Concept Interface",
+    attribution: "Original Snow concept interface — generated internally for portfolio demonstration.",
     licenseNote: SNOW_CONCEPT_LICENSE,
   },
   "secure-account-recovery": {
-    sourceUrl: "https://snow.studio/work/secure-account-recovery",
-    provider: "Snow Web & Spatial Studio",
-    attribution: "Snow Studio Original Interface Concept",
+    sourceUrl: null,
+    provider: "Snow — Original Concept Interface",
+    attribution: "Original Snow concept interface — generated internally for portfolio demonstration.",
     licenseNote: SNOW_CONCEPT_LICENSE,
   },
 };

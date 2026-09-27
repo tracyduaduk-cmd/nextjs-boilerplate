@@ -20,10 +20,10 @@ export const MEDIA_SOURCING_RECORDS: SourcingRecordEntry[] = PORTFOLIO_PROJECT_S
       role,
       filename,
       publicUrl: getPublicUrl(slug, filename),
-      source: "Snow Engineering & Design Studio Custom Interface Engine",
-      license: "Snow Studio Open Concept License (Internal Product Demo)",
+      source: "Snow — Original Concept Interface",
+      license: "Original fictional interface created by Snow for portfolio demonstration. Not represented as a third-party client deliverable.",
       dateCreated: "2026-09-27",
-      usageNote: `Custom rendered ${role} view displaying high-fidelity web/app interface mockup for ${slug}.`,
+      usageNote: "Original Snow concept interface — generated internally for portfolio demonstration.",
     };
   });
 });
