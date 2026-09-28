@@ -1,4 +1,4 @@
-import { OperatorInfo, ShortCodeEntry } from "./telecomTypes";
+import { OperatorInfo } from "./telecomTypes";
 import { HARMONIZED_SHORT_CODES } from "./harmonizedCodes";
 
 export const OPERATOR_LIST: OperatorInfo[] = [

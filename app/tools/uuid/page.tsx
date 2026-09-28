@@ -47,6 +47,7 @@ export default function UuidToolPage() {
       list.push(id);
     }
     return list;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quantity, uppercase, hyphens, seed]);
 
   const outputText = uuids.join("\n");

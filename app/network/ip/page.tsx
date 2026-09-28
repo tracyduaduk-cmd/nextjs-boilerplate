@@ -13,7 +13,6 @@ import { Container } from "@/components/ui/Container";
 import {
   Wifi,
   Globe,
-  Shield,
   RefreshCw,
   Copy,
   Check,
@@ -176,7 +175,10 @@ export default function PublicIpPage() {
   }, []);
 
   useEffect(() => {
-    fetchIpInfo();
+    const timer = setTimeout(() => {
+      fetchIpInfo();
+    }, 0);
+    return () => clearTimeout(timer);
   }, [fetchIpInfo]);
 
   const handleCopy = (text: string, label: string) => {
@@ -389,7 +391,7 @@ export default function PublicIpPage() {
                 <Lock className="w-4 h-4 text-amber-400" /> Geolocation & Privacy Guarantee
               </h4>
               <p className="leading-relaxed">
-                <strong>Approximate Geolocation:</strong> IP-based location is estimated at the city or regional level based on your Internet Service Provider's network routing hub. It does <em>NOT</em> represent an exact physical or street address.
+                <strong>Approximate Geolocation:</strong> IP-based location is estimated at the city or regional level based on your Internet Service Provider&apos;s network routing hub. It does <em>NOT</em> represent an exact physical or street address.
               </p>
               <p className="leading-relaxed">
                 <strong>Zero Backend Retention:</strong> Snow does not store, retain, or log your IP address in any database. All enrichment is queried on-demand directly from your client browser.
@@ -411,7 +413,7 @@ export default function PublicIpPage() {
               <div className="space-y-2 text-xs font-sans text-slate-300">
                 <p className="font-semibold text-slate-200">Autonomous System Routing</p>
                 <p className="text-slate-400 leading-relaxed">
-                  Your requests travel through BGP (Border Gateway Protocol) routes advertised by your ISP's Autonomous System Number (ASN).
+                  Your requests travel through BGP (Border Gateway Protocol) routes advertised by your ISP&apos;s Autonomous System Number (ASN).
                 </p>
               </div>
             </ToolVisualStage>

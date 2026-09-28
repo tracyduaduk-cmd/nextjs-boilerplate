@@ -85,7 +85,7 @@ export default function NetworkLandingPage() {
               Practical connection analysis with <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-teal-300 to-emerald-400">zero tracking.</span>
             </h2>
             <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-sans">
-              Snow's Network Diagnostics suite gives you direct visibility into domain resolution, IP routing, client environment specs, and network performance. Every tool executes directly in your browser or queries transparent, public DNS endpoints without logging or storing your personal network footprint.
+              Snow&apos;s Network Diagnostics suite gives you direct visibility into domain resolution, IP routing, client environment specs, and network performance. Every tool executes directly in your browser or queries transparent, public DNS endpoints without logging or storing your personal network footprint.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
@@ -94,7 +94,7 @@ export default function NetworkLandingPage() {
                 <div>
                   <h4 className="text-xs font-bold font-mono text-slate-200 uppercase tracking-wider">Zero Data Retention</h4>
                   <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                    IP addresses, fingerprints, and test results are never saved to Snow's database.
+                    IP addresses, fingerprints, and test results are never saved to Snow&apos;s database.
                   </p>
                 </div>
               </div>
