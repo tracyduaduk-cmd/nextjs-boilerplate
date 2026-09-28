@@ -23,6 +23,7 @@ import {
   Laptop,
   Network,
   Command,
+  Navigation,
   ChevronRight,
   Camera,
   FileSearch,
@@ -40,6 +41,7 @@ export interface ToolNavItem {
 export const TOOLS_LIST: ToolNavItem[] = [
   // NETWORK SUITE
   { slug: "/network", name: "Network Hub", shortName: "Network", category: "NETWORK", icon: Network, badge: "Live" },
+  { slug: "/network/find", name: "Find My Device", shortName: "Find Device", category: "NETWORK", icon: Navigation, badge: "GPS" },
   { slug: "/network/dns", name: "DNS Lookup", shortName: "DNS", category: "NETWORK", icon: Globe },
   { slug: "/network/ip", name: "Public IP", shortName: "IP Info", category: "NETWORK", icon: Wifi },
   { slug: "/network/device", name: "Device Diagnostics", shortName: "Device", category: "NETWORK", icon: Laptop },

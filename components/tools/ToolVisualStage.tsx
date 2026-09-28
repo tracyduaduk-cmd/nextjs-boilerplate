@@ -29,7 +29,8 @@ export interface ToolVisualStageProps {
     | "ip"
     | "device"
     | "speed"
-    | "network";
+    | "network"
+    | "find";
   mode?: SpatialInstrumentMode;
   statusLabel?: string;
   metricLabel?: string;

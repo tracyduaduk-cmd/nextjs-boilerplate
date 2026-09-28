@@ -12,6 +12,7 @@ import { Reveal } from "@/components/spatial/Reveal";
 import { Tilt } from "@/components/spatial/Tilt";
 import {
   Globe,
+  Navigation,
   Wifi,
   Laptop,
   Gauge,
@@ -22,6 +23,16 @@ import {
 } from "lucide-react";
 
 const NETWORK_TOOLS = [
+  {
+    id: "find",
+    name: "Find My Device & Spatial Location",
+    slug: "/network/find",
+    badge: "GPS / Spatial",
+    purpose: "Real-time browser GPS location, device recovery simulator, session location trail, and interactive spatial earth views.",
+    icon: Navigation,
+    highlights: ["Browser-native GPS geolocation", "Device recovery simulator & demo", "Session location trail & distance", "Google Maps & Spatial Earth views"],
+  },
+
   {
     id: "dns",
     name: "DNS Lookup",
@@ -117,7 +128,7 @@ export default function NetworkLandingPage() {
               mode="services"
               statusLabel="NETWORK LAYER ACTIVE"
               metricLabel="DIAGNOSTIC SUITE"
-              metricValue="4 UTILITIES"
+              metricValue="5 UTILITIES"
               accentColor="#38bdf8"
             >
               <div className="space-y-2 text-xs font-sans text-slate-300">
@@ -137,7 +148,7 @@ export default function NetworkLandingPage() {
               <span className="text-xs font-mono uppercase tracking-widest text-sky-400 block">DIAGNOSTIC UTILITIES</span>
               <h2 className="text-2xl font-bold text-slate-100 tracking-tight">Available Network Tools</h2>
             </div>
-            <span className="text-xs font-mono text-slate-500">4 ACTIVE UTILITIES</span>
+            <span className="text-xs font-mono text-slate-500">5 ACTIVE UTILITIES</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
