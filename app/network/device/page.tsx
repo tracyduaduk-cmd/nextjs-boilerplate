@@ -139,6 +139,7 @@ export default function DeviceDiagnosticsPage() {
 
   const runDiagnostics = useCallback(async () => {
     const scanId = ++activeScanIdRef.current;
+    setScanStatus("SCANNING");
     let missingProps = 0;
 
     try {

@@ -13,11 +13,8 @@ import { Container } from "@/components/ui/Container";
 import {
   Gauge,
   Activity,
-  Wifi,
   Play,
   Square,
-  RefreshCw,
-  CheckCircle2,
   AlertTriangle,
   Info,
   Zap,

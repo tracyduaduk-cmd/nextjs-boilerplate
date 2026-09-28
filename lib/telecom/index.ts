@@ -1,5 +1,4 @@
 import { HARMONIZED_SHORT_CODES } from "./harmonizedCodes";
-import { OPERATOR_LIST } from "./operators";
 import { ShortCodeEntry, NetworkId, DndCommand, QuickActionItem } from "./telecomTypes";
 
 export * from "./telecomTypes";

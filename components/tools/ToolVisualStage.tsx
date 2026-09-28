@@ -17,7 +17,6 @@ import {
   Laptop,
   Gauge,
   Activity,
-  AlertTriangle,
   Radio,
 } from "lucide-react";
 

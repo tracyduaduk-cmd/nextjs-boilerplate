@@ -39,7 +39,7 @@ export default function DnsLookupPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [records, setRecords] = useState<DnsRecord[] | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [dnsStatus, setDnsStatus] = useState<string>("NOERROR");
+  const [, setDnsStatus] = useState<string>("NOERROR");
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   const cleanDomainInput = (input: string) => {
@@ -300,7 +300,7 @@ export default function DnsLookupPage() {
                 </div>
               ) : records && records.length === 0 ? (
                 <div className="p-8 text-center font-mono text-xs text-slate-400 space-y-2">
-                  <p className="text-slate-300 font-semibold">No {selectedType} records found for '{domain}'</p>
+                  <p className="text-slate-300 font-semibold">No {selectedType} records found for &apos;{domain}&apos;</p>
                   <p className="text-slate-500">The domain exists, but no active DNS records match the selected record type.</p>
                 </div>
               ) : records && records.length > 0 ? (
@@ -349,7 +349,7 @@ export default function DnsLookupPage() {
                 </div>
               ) : (
                 <div className="p-10 text-center font-mono text-xs text-slate-500 space-y-2">
-                  <p>Enter a domain name above and click "Lookup DNS" to fetch authoritative DNS records.</p>
+                  <p>Enter a domain name above and click &quot;Lookup DNS&quot; to fetch authoritative DNS records.</p>
                 </div>
               )}
             </ToolOutputPanel>
@@ -360,7 +360,7 @@ export default function DnsLookupPage() {
                 <Globe className="w-4 h-4 text-sky-400" /> Resolver Scope & Caching Notice
               </h4>
               <p className="leading-relaxed text-slate-400 font-sans">
-                DNS queries are resolved using Cloudflare's global DNS-over-HTTPS (DoH) recursive resolver endpoint. Results reflect current records cached or fetched by Cloudflare's infrastructure.
+                DNS queries are resolved using Cloudflare&apos;s global DNS-over-HTTPS (DoH) recursive resolver endpoint. Results reflect current records cached or fetched by Cloudflare&apos;s infrastructure.
               </p>
               <p className="leading-relaxed text-slate-400 font-sans">
                 <em>Note:</em> Results do not represent every private or localized DNS server worldwide. Cache TTL (Time To Live) dictates how long records persist across public recursive resolvers.
