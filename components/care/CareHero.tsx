@@ -8,7 +8,7 @@ import { DepthLayer } from "@/components/spatial/DepthLayer";
 import { Tilt } from "@/components/spatial/Tilt";
 import { Reveal } from "@/components/spatial/Reveal";
 import { PointerGlow } from "@/components/spatial/PointerGlow";
-import { SpatialInstrument } from "@/components/spatial/SpatialInstrument";
+import { CareSystemVisual } from "@/components/care/CareSystemVisual";
 import { ShieldCheck, Activity, Wrench, Zap, RefreshCw, ArrowRight } from "lucide-react";
 
 export const CareHero: React.FC = () => {
@@ -96,28 +96,10 @@ export const CareHero: React.FC = () => {
             </PerspectiveContainer>
           </div>
 
-          {/* Right Column: Dedicated Spatial Instrument territory */}
+          {/* Right Column: Snow Care Technical System Pipeline Visual */}
           <div className="lg:col-span-5 flex flex-col items-center justify-center">
             <Reveal direction="up" delay={150}>
-              <div className="p-6 rounded-3xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-xl shadow-2xl w-full max-w-md mx-auto text-center space-y-4 relative z-10">
-                <div className="w-full h-[260px] sm:h-[300px] relative flex items-center justify-center touch-pan-y">
-                  <SpatialInstrument mode="care" badgeLabel="[ CARE NODE ACTIVE ]" scale={0.95} accentColor="#10b981" />
-                </div>
-
-                <div className="space-y-1">
-                  <h3 className="text-sm font-bold text-slate-200 font-sans">
-                    Snow Technical Care Node
-                  </h3>
-                  <p className="text-xs text-slate-400 font-sans leading-relaxed">
-                    Interactive 3D status visualizer demonstrating structural balance and diagnostic readiness.
-                  </p>
-                </div>
-
-                <div className="w-full pt-3 border-t border-slate-800/80 text-[11px] font-mono text-slate-500 flex items-center justify-between">
-                  <span>NODE: CARE-01</span>
-                  <span>STATUS: ONLINE</span>
-                </div>
-              </div>
+              <CareSystemVisual />
             </Reveal>
           </div>
         </div>

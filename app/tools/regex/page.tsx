@@ -105,7 +105,7 @@ export default function RegexToolPage() {
         title="Regex Tester & Matcher"
         description="Test regular expressions in real-time, inspect capture groups, and visualize matches with zero server execution."
         category="BUILD UTILITY"
-        badge="Catastrophic ReDoS Safe"
+        badge="Safe Client Execution"
       />
       <ToolNavigation />
 
@@ -224,7 +224,7 @@ export default function RegexToolPage() {
 
           {/* Right Visual / System Info Column */}
           <div className="lg:col-span-4 space-y-6">
-            <ToolVisualStage
+            <ToolVisualStage visualType="regex"
               mode="security"
               statusLabel={regexAnalysis.error ? "PATTERN SYNTAX ERROR" : "MATCH SCAN COMPLETE"}
               metricLabel="TOTAL MATCHES"
@@ -232,9 +232,9 @@ export default function RegexToolPage() {
               accentColor={regexAnalysis.error ? "#f43f5e" : "#38bdf8"}
             >
               <div className="space-y-2 text-xs font-sans text-slate-300">
-                <p className="font-semibold text-slate-200">ReDoS Safeguard Guarantee</p>
+                <p className="font-semibold text-slate-200">Bounded Evaluation Safeguard</p>
                 <p className="text-slate-400 leading-relaxed">
-                  Regex evaluation is limited to local client execution with a strict loop safeguard, preventing infinite backtracking or ReDoS browser freezes.
+                  Regex evaluation executes locally in your browser with strict iteration caps (max 500 global matches) to prevent main-thread hangs during complex pattern matching.
                 </p>
               </div>
             </ToolVisualStage>

@@ -161,7 +161,7 @@ export default function EncodeToolPage() {
 
           {/* Right Visual / System Info Column */}
           <div className="lg:col-span-4 space-y-6">
-            <ToolVisualStage
+            <ToolVisualStage visualType="encode"
               mode="security"
               statusLabel={result.error ? "DECODE ERROR" : "TRANSFORMATION READY"}
               metricLabel="MODE"

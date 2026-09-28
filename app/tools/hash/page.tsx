@@ -58,7 +58,7 @@ export default function HashToolPage() {
     <ToolShell>
       <ToolHeader
         title="Web Crypto Hash Generator"
-        description="Compute SHA-256, SHA-384, and SHA-512 hashes locally using hardware-accelerated Web Crypto API."
+        description="Compute SHA-256, SHA-384, and SHA-512 hashes locally using standard browser Web Crypto API."
         category="ENCODE & SECURITY"
         badge="One-Way Cryptographic Digest"
       />
@@ -125,7 +125,7 @@ export default function HashToolPage() {
 
           {/* Right Visual / System Info Column */}
           <div className="lg:col-span-4 space-y-6">
-            <ToolVisualStage
+            <ToolVisualStage visualType="hash"
               mode="security"
               statusLabel="WEB CRYPTO SUBTLE DIGEST"
               metricLabel="ALGORITHM"
