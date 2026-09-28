@@ -207,6 +207,8 @@ export default function JsonToolPage() {
           {/* Right Visual / System Info Column */}
           <div className="lg:col-span-4 space-y-6">
             <ToolVisualStage visualType="json"
+              pageKey="tools_json"
+              slotKey="visual_stage"
               mode="commerce"
               statusLabel={parsedResult.error ? "SYNTAX ERROR DETECTED" : "DATA STRUCTURE STABLE"}
               metricLabel="TOTAL KEYS"

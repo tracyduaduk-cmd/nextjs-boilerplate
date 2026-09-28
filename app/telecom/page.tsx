@@ -103,6 +103,8 @@ export default function TelecomPage() {
           <div className="lg:col-span-2">
             <ToolVisualStage
               mode="security"
+              pageKey="telecom_hub"
+              slotKey="hero_pipeline"
               visualType="telecom"
               statusLabel="NCC HARMONIZED FRAMEWORK ACTIVE"
               metricLabel="NETWORK OPERATORS"

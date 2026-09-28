@@ -372,6 +372,8 @@ export default function DnsLookupPage() {
           <div className="lg:col-span-4 space-y-6">
             <ToolVisualStage
               visualType="dns"
+              pageKey="network_dns"
+              slotKey="visual_stage"
               mode="services"
               isError={!!error}
               statusLabel={error ? "DNS QUERY FAILED" : isLoading ? "RESOLVING RECORDS" : "RESOLVER STABLE"}
