@@ -5,18 +5,9 @@ import { SpatialInstrument, SpatialInstrumentMode } from "@/components/spatial/S
 import { SiteAssetImage } from "@/components/ui/SiteAssetImage";
 import {
   Braces,
-  Binary,
-  Hash,
-  Lock,
   Search,
-  FileText,
-  Palette,
   QrCode,
   Globe,
-  Wifi,
-  Laptop,
-  Gauge,
-  Activity,
   ArrowRight,
   Radio,
 } from "lucide-react";
@@ -197,12 +188,6 @@ export const ToolVisualStage: React.FC<ToolVisualStageProps> = ({
     }
   };
 
-  const default3DStage = (
-    <div className="w-full h-[120px] sm:h-[160px] relative flex items-center justify-center touch-pan-y">
-      <SpatialInstrument mode={mode} scale={0.8} accentColor={isError ? "#f43f5e" : accentColor} />
-    </div>
-  );
-
   return (
     <div className={`p-4 sm:p-5 rounded-2xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-xl shadow-xl flex flex-col justify-between space-y-4 ${className}`}>
       <div className="flex items-center justify-between text-xs font-mono border-b border-slate-800/80 pb-2.5">
@@ -213,14 +198,17 @@ export const ToolVisualStage: React.FC<ToolVisualStageProps> = ({
         <span className="text-slate-500">CLIENT-SIDE SECURE</span>
       </div>
 
-      {pageKey && slotKey ? (
+      {/* Interactive 3D Spatial Instrument Stage (Preserved) */}
+      <div className="w-full h-[120px] sm:h-[150px] relative flex items-center justify-center touch-pan-y">
+        <SpatialInstrument mode={mode} scale={0.8} accentColor={isError ? "#f43f5e" : accentColor} />
+      </div>
+
+      {/* Supplementary Site Asset Reference Banner (If available) */}
+      {pageKey && slotKey && (
         <SiteAssetImage
           pageKey={pageKey}
           slotKey={slotKey}
-          fallbackComponent={default3DStage}
         />
-      ) : (
-        default3DStage
       )}
 
       {renderPipelineDiagram()}
