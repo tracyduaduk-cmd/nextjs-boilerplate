@@ -46,7 +46,7 @@ export default function TelecomPage() {
       <GlassNav activeHref="/telecom" />
 
       {/* Hero Header Section */}
-      <div className="pt-28 sm:pt-36 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8">
+      <div className="pt-20 sm:pt-28 pb-6 sm:pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-slate-800/80 pb-8">
           <div className="space-y-4 max-w-3xl">
             <div className="flex flex-wrap items-center gap-2">

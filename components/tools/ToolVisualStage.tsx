@@ -411,7 +411,7 @@ export const ToolVisualStage: React.FC<ToolVisualStageProps> = ({
   };
 
   return (
-    <div className={`p-5 rounded-2xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-xl shadow-xl flex flex-col justify-between space-y-4 ${className}`}>
+    <div className={`p-4 sm:p-5 rounded-2xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-xl shadow-xl flex flex-col justify-between space-y-4 ${className}`}>
       <div className="flex items-center justify-between text-xs font-mono border-b border-slate-800/80 pb-2.5">
         <span className={`flex items-center gap-2 font-semibold ${isError ? "text-rose-400" : "text-sky-400"}`}>
           <span className={`w-2 h-2 rounded-full animate-pulse ${isError ? "bg-rose-400" : "bg-sky-400"}`} />
@@ -420,7 +420,7 @@ export const ToolVisualStage: React.FC<ToolVisualStageProps> = ({
         <span className="text-slate-500">CLIENT-SIDE SECURE</span>
       </div>
 
-      <div className="w-full h-[160px] sm:h-[190px] relative flex items-center justify-center touch-pan-y">
+      <div className="w-full h-[120px] sm:h-[170px] relative flex items-center justify-center touch-pan-y">
         <SpatialInstrument mode={mode} scale={0.8} accentColor={isError ? "#f43f5e" : accentColor} />
       </div>
 

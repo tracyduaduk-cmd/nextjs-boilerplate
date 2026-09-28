@@ -254,11 +254,11 @@ export default function ToolsHubPage() {
   return (
     <ToolShell>
       {/* Interactive Snow Utility Console Hero */}
-      <section className="relative pt-20 pb-16 border-b border-slate-800/80 bg-gradient-to-b from-slate-950 via-slate-900/40 to-slate-950 overflow-hidden">
+      <section className="relative pt-10 sm:pt-20 pb-8 sm:pb-16 border-b border-slate-800/80 bg-gradient-to-b from-slate-950 via-slate-900/40 to-slate-950 overflow-hidden">
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:64px_64px] pointer-events-none" />
 
         <Container>
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-center">
             {/* Editorial Header */}
             <div className="lg:col-span-7">
               <PerspectiveContainer perspective={1200} className="w-full text-left">
@@ -298,7 +298,7 @@ export default function ToolsHubPage() {
               <Reveal direction="up" delay={150}>
                 <ProximitySurface className="p-6 w-full max-w-md mx-auto text-center space-y-4">
                   <div
-                    className="w-full h-[240px] relative flex items-center justify-center cursor-grab active:cursor-grabbing"
+                    className="w-full h-[160px] sm:h-[220px] relative flex items-center justify-center cursor-grab active:cursor-grabbing"
                     onMouseEnter={() => setCursorState("DRAG", "ROTATE 3D")}
                     onMouseLeave={resetCursorState}
                   >
@@ -323,7 +323,7 @@ export default function ToolsHubPage() {
       <ToolCommandNav />
 
       {/* AI Concierge Task Matcher */}
-      <section className="py-10 border-b border-slate-800/80 bg-slate-950/60">
+      <section className="py-6 sm:py-10 border-b border-slate-800/80 bg-slate-950/60">
         <Container>
           <AIConcierge
             title="Need guidance on selecting an instrument?"
@@ -333,10 +333,10 @@ export default function ToolsHubPage() {
       </section>
 
       {/* Main Filterable Tool Modules Grid */}
-      <section className="py-16">
+      <section className="py-8 sm:py-16">
         <Container>
           {/* Category Tabs */}
-          <div className="flex justify-center mb-12">
+          <div className="flex justify-center mb-6 sm:mb-12">
             <ToolTabs<CategoryId>
               tabs={[
                 { id: "ALL", label: "All Instruments", badge: ALL_TOOLS.length },

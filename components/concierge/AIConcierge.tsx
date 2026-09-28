@@ -206,11 +206,11 @@ export const AIConcierge: React.FC<AIConciergeProps> = ({
   };
 
   return (
-    <div className={`relative overflow-hidden rounded-3xl bg-slate-950 border border-slate-800/80 p-6 sm:p-10 ${className}`}>
+    <div className={`relative overflow-hidden rounded-3xl bg-slate-950 border border-slate-800/80 p-4 sm:p-8 ${className}`}>
       <PointerGlow color="rgba(56, 189, 248, 0.15)" size={500} />
 
       <PerspectiveContainer perspective={1000} className="relative z-10 max-w-4xl mx-auto">
-        <div className="text-center mb-8">
+        <div className="text-center mb-5 sm:mb-8">
           <Reveal direction="up">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono tracking-wider text-sky-400 bg-sky-950/80 border border-sky-800/60 uppercase mb-3">
               <span className="w-2 h-2 rounded-full bg-sky-400 animate-ping" />
@@ -234,12 +234,12 @@ export const AIConcierge: React.FC<AIConciergeProps> = ({
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="e.g. My website loads slowly and customers are complaining..."
-                className="w-full py-4 pl-5 pr-32 rounded-2xl bg-slate-900/90 border border-slate-700/80 text-slate-100 placeholder-slate-500 text-sm sm:text-base focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 transition-all shadow-inner"
+                className="w-full py-3.5 sm:py-4 pl-4 sm:pl-5 pr-28 sm:pr-32 rounded-2xl bg-slate-900/90 border border-slate-700/80 text-slate-100 placeholder-slate-500 text-sm sm:text-base focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 transition-all shadow-inner"
               />
               <button
                 type="submit"
                 disabled={isAnalyzing || !query.trim()}
-                className="absolute right-2 px-5 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold text-xs sm:text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="absolute right-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold text-xs sm:text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isAnalyzing ? "Analyzing..." : "Analyze ↗"}
               </button>
@@ -270,7 +270,7 @@ export const AIConcierge: React.FC<AIConciergeProps> = ({
 
         {/* Analyzing Animation State */}
         {isAnalyzing && (
-          <div className="p-8 rounded-2xl bg-slate-900/60 border border-slate-800 text-center animate-pulse">
+          <div className="p-4 sm:p-6 rounded-2xl bg-slate-900/60 border border-slate-800 text-center animate-pulse">
             <div className="inline-block w-8 h-8 border-2 border-sky-400 border-t-transparent rounded-full animate-spin mb-3" />
             <p className="text-xs font-mono text-sky-400 uppercase tracking-widest">Evaluating Capabilities & System Mapping...</p>
           </div>
@@ -280,7 +280,7 @@ export const AIConcierge: React.FC<AIConciergeProps> = ({
         {recommendation && !isAnalyzing && (
           <Reveal direction="up" delay={200}>
             <Tilt maxRotation={4}>
-              <div className="p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-slate-900/90 via-slate-900 to-sky-950/30 border border-sky-800/60 shadow-2xl relative">
+              <div className="p-4 sm:p-8 rounded-2xl bg-gradient-to-br from-slate-900/90 via-slate-900 to-sky-950/30 border border-sky-800/60 shadow-2xl relative">
                 <DepthLayer depth={10}>
                   <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
                     <span className="text-xs font-mono font-semibold tracking-wider text-sky-400 bg-sky-950 px-3 py-1 rounded-full border border-sky-800/80 uppercase">

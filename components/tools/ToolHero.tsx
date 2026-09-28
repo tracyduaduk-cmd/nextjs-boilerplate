@@ -23,7 +23,7 @@ export const ToolHero: React.FC<ToolHeroProps> = ({
   statusMessage,
 }) => {
   return (
-    <section className="pt-20 pb-12 border-b border-slate-800/60 bg-gradient-to-b from-slate-950 via-slate-900/40 to-slate-950">
+    <section className="pt-12 sm:pt-20 pb-6 sm:pb-12 border-b border-slate-800/60 bg-gradient-to-b from-slate-950 via-slate-900/40 to-slate-950">
       <Container>
         <PerspectiveContainer perspective={1200} className="max-w-4xl mx-auto text-center">
           <Reveal direction="up">
@@ -40,7 +40,7 @@ export const ToolHero: React.FC<ToolHeroProps> = ({
             <div className="mb-4">
               <ToolStatus status={status} message={statusMessage} />
             </div>
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-slate-100 tracking-tight mb-4">
+            <h1 className="text-2xl sm:text-5xl lg:text-6xl font-extrabold text-slate-100 tracking-tight mb-3 sm:mb-4">
               {title}
             </h1>
             <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
