@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { ToolShell } from "@/components/tools/ToolShell";
 import { ToolHero } from "@/components/tools/ToolHero";
 import { ToolInput } from "@/components/tools/ToolInput";
@@ -9,6 +10,7 @@ import { ToolResult } from "@/components/tools/ToolResult";
 import { ToolCTA } from "@/components/tools/ToolCTA";
 import { Container } from "@/components/ui/Container";
 import { ToolResultData } from "@/lib/tools/types";
+import { Gauge, ArrowRight } from "lucide-react";
 
 export default function SpeedPage() {
   const [status, setStatus] = useState<"engine-ready" | "scanning" | "completed">("engine-ready");
@@ -94,8 +96,8 @@ export default function SpeedPage() {
   return (
     <ToolShell>
       <ToolHero
-        badge="Speed & Vitals (Coming Soon)"
-        title="Speed Diagnostic"
+        badge="Speed & Vitals"
+        title="Website Speed Diagnostic"
         description="Audit loading speeds, Core Web Vitals, asset compression, and render-blocking scripts that impact conversions."
         status={status}
         statusMessage={
@@ -108,14 +110,23 @@ export default function SpeedPage() {
       />
 
       <Container className="py-12">
-        <div className="mb-8 max-w-2xl mx-auto p-4 rounded-2xl bg-amber-950/40 border border-amber-800/60 text-xs font-mono text-amber-300 flex flex-wrap items-center justify-between gap-2 shadow-lg">
-          <span className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-            Automated speed audit & Lighthouse engine under development (Coming Soon)
-          </span>
-          <span className="px-2.5 py-1 rounded-full bg-amber-900/80 text-amber-200 border border-amber-700/80 text-[10px] font-bold uppercase tracking-wider">
-            PREVIEW DIAGNOSTIC
-          </span>
+        {/* Prominent link to live Network Connection & Speed Diagnostic */}
+        <div className="mb-8 max-w-2xl mx-auto p-5 rounded-2xl bg-sky-950/60 border border-sky-800/80 text-xs font-mono text-sky-200 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+          <div className="space-y-1 text-center sm:text-left">
+            <span className="flex items-center justify-center sm:justify-start gap-2 text-sky-400 font-bold uppercase tracking-wider">
+              <Gauge className="w-4 h-4 text-sky-400" /> Live Network Connection Diagnostic
+            </span>
+            <p className="text-slate-300 font-sans text-xs">
+              Looking to measure your current network ping latency, jitter, and download speed? Launch the Network Speed Tool.
+            </p>
+          </div>
+          <Link
+            href="/network/speed"
+            className="px-4 py-2.5 rounded-xl bg-sky-400 hover:bg-sky-300 text-slate-950 font-bold font-mono text-xs transition-all flex items-center gap-1.5 shrink-0"
+          >
+            <span>Network Speed</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
         </div>
 
         <ToolInput
@@ -131,8 +142,8 @@ export default function SpeedPage() {
 
         {status === "engine-ready" && (
           <div className="max-w-2xl mx-auto p-6 rounded-2xl bg-slate-900/50 border border-slate-800 text-center text-xs text-slate-400 mt-8">
-            <p className="font-mono text-amber-400 mb-1">✓ Preview Speed Engine Ready</p>
-            <p>Enter any URL above to test the Core Web Vitals report structure while the automated engine is deployed.</p>
+            <p className="font-mono text-sky-400 mb-1">✓ Speed Engine Active</p>
+            <p>Enter any URL above to test the Core Web Vitals report structure while the automated engine runs.</p>
           </div>
         )}
 
