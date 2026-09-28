@@ -18,6 +18,7 @@ import {
   Gauge,
   Activity,
   AlertTriangle,
+  Radio,
 } from "lucide-react";
 
 export type ToolVisualType =
@@ -264,6 +265,12 @@ export const ToolVisualStage: React.FC<ToolVisualStageProps> = ({
                 SERVICE
               </div>
               <div className="p-1.5 rounded bg-emerald-950 border border-emerald-800 text-emerald-300 font-mono text-center font-bold truncate">
+                NCC VERIFIED
+              </div>
+            </div>
+          </div>
+        );
+
       case "dns":
         return (
           <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-mono space-y-2">
