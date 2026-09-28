@@ -225,6 +225,8 @@ export default function RegexToolPage() {
           {/* Right Visual / System Info Column */}
           <div className="lg:col-span-4 space-y-6">
             <ToolVisualStage visualType="regex"
+              pageKey="tools_regex"
+              slotKey="visual_stage"
               mode="security"
               statusLabel={regexAnalysis.error ? "PATTERN SYNTAX ERROR" : "MATCH SCAN COMPLETE"}
               metricLabel="TOTAL MATCHES"
