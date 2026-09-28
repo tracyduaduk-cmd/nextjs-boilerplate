@@ -153,7 +153,7 @@ export default function UuidToolPage() {
 
           {/* Right Visual / System Info Column */}
           <div className="lg:col-span-4 space-y-6">
-            <ToolVisualStage
+            <ToolVisualStage visualType="uuid"
               mode="security"
               statusLabel="ENTROPY ENGINE ONLINE"
               metricLabel="BATCH SIZE"

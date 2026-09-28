@@ -94,13 +94,13 @@ export default function SecurityPage() {
   return (
     <ToolShell>
       <ToolHero
-        badge="Safe Defensive Audit"
+        badge="Defensive Security Audit (Coming Soon)"
         title="Security Check"
         description="Perform non-intrusive defensive audits on HTTPS transport integrity, security response headers, and public exposure signals."
         status={status}
         statusMessage={
           status === "engine-ready"
-            ? "Defensive Security Engine Ready"
+            ? "Defensive Security Diagnostic Preview Ready"
             : status === "scanning"
             ? "Auditing Security Headers & Transport Security..."
             : "Security Review Complete"
@@ -108,6 +108,16 @@ export default function SecurityPage() {
       />
 
       <Container className="py-12">
+        <div className="mb-8 max-w-2xl mx-auto p-4 rounded-2xl bg-amber-950/40 border border-amber-800/60 text-xs font-mono text-amber-300 flex flex-wrap items-center justify-between gap-2 shadow-lg">
+          <span className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+            Automated security header audit engine under development (Coming Soon)
+          </span>
+          <span className="px-2.5 py-1 rounded-full bg-amber-900/80 text-amber-200 border border-amber-700/80 text-[10px] font-bold uppercase tracking-wider">
+            PREVIEW DIAGNOSTIC
+          </span>
+        </div>
+
         <ToolInput
           placeholder="Enter website URL (e.g. https://yourcompany.com)"
           buttonLabel="Run Defensive Security Check"
@@ -121,7 +131,7 @@ export default function SecurityPage() {
 
         {status === "engine-ready" && (
           <div className="max-w-2xl mx-auto p-6 rounded-2xl bg-slate-900/50 border border-slate-800 text-center text-xs text-slate-400 mt-8 space-y-2">
-            <p className="font-mono text-emerald-400">✓ Ethical & Defensive Policy</p>
+            <p className="font-mono text-amber-400">✓ Ethical & Defensive Policy</p>
             <p>
               Snow Security Check performs strictly non-intrusive, safe website-level header reviews. Snow never requests passwords, API keys, private tokens, or recovery credentials.
             </p>

@@ -46,12 +46,19 @@ const snow: Studio = {
 `;
 
 function sanitizeHtml(dirtyHtml: string): string {
-  // Safe basic HTML sanitization removing script tags and dangerous event handlers
-  return dirtyHtml
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
-    .replace(/on\w+="[^"]*"/gi, "")
-    .replace(/on\w+='[^']*'/gi, "")
-    .replace(/javascript:/gi, "");
+  if (!dirtyHtml) return "";
+  let clean = dirtyHtml;
+  // Strip dangerous tag blocks (script, iframe, object, embed, form, style, link, meta, base)
+  clean = clean.replace(/<(script|iframe|object|embed|form|style|link|meta|base)\b[^>]*>([\s\S]*?)(<\/\1>)?/gi, "");
+  // Strip self-closing or unclosed dangerous tags
+  clean = clean.replace(/<(script|iframe|object|embed|form|style|link|meta|base)\b[^>]*\/?>/gi, "");
+  // Strip all inline on* event handlers (e.g. onload, onerror, onclick)
+  clean = clean.replace(/\son[a-z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, "");
+  // Neutralize javascript:, vbscript:, and non-image data: URIs in links or assets
+  clean = clean.replace(/(href|src|data|action)\s*=\s*(?:"\s*(javascript|vbscript|data:(?!image\/)):[^"]*"|'\s*(javascript|vbscript|data:(?!image\/)):[^']*'|[^\s>]+)/gi, '$1="#"');
+  // Strip srcdoc attributes
+  clean = clean.replace(/\ssrcdoc\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, "");
+  return clean;
 }
 
 export default function MarkdownToolPage() {
@@ -129,7 +136,7 @@ export default function MarkdownToolPage() {
 
           {/* Right Visual / System Info Column */}
           <div className="lg:col-span-4 space-y-6">
-            <ToolVisualStage
+            <ToolVisualStage visualType="markdown"
               mode="design"
               statusLabel="DOCUMENT RENDER ACTIVE"
               metricLabel="CHAR COUNT"
@@ -139,7 +146,7 @@ export default function MarkdownToolPage() {
               <div className="space-y-2 text-xs font-sans text-slate-300">
                 <p className="font-semibold text-slate-200">XSS Protection & Sanitization</p>
                 <p className="text-slate-400 leading-relaxed">
-                  All generated HTML elements are stripped of executable scripts,Inline inline event handlers (`onload`, `onclick`), and unsafe `javascript:` URIs.
+                  All generated HTML elements are stripped of executable scripts, inline event handlers (`onload`, `onclick`), iframes, and unsafe `javascript:` URIs.
                 </p>
               </div>
             </ToolVisualStage>

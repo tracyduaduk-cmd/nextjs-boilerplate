@@ -138,7 +138,7 @@ export default function QrToolPage() {
 
           {/* Right Visual / System Info Column */}
           <div className="lg:col-span-4 space-y-6">
-            <ToolVisualStage
+            <ToolVisualStage visualType="qr"
               mode="local"
               statusLabel="CANVAS QR RENDERING"
               metricLabel="DEPENDENCY"

@@ -2,21 +2,21 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { Container } from "@/components/ui/Container";
 import { ToolShell } from "@/components/tools/ToolShell";
 import { ToolNavigation } from "@/components/tools/ToolNavigation";
-import { Container } from "@/components/ui/Container";
+import { SpatialInstrument } from "@/components/spatial/SpatialInstrument";
+import { PerspectiveContainer } from "@/components/spatial/PerspectiveContainer";
 import { Reveal } from "@/components/spatial/Reveal";
 import { Tilt } from "@/components/spatial/Tilt";
-import { PerspectiveContainer } from "@/components/spatial/PerspectiveContainer";
 import { AIConcierge } from "@/components/concierge/AIConcierge";
-import { SpatialInstrument } from "@/components/spatial/SpatialInstrument";
 import {
-  Code2,
-  FileText,
-  Search,
+  FileCode,
   Binary,
-  KeyRound,
+  Hash,
   ShieldCheck,
+  Search,
+  FileText,
   Palette,
   QrCode,
   Activity,
@@ -25,6 +25,7 @@ import {
   Shield,
   Bot,
   ArrowRight,
+  Clock,
 } from "lucide-react";
 
 interface ToolItem {
@@ -35,6 +36,7 @@ interface ToolItem {
   purpose: string;
   icon: React.ElementType;
   whatItDoes: string[];
+  isComingSoon?: boolean;
 }
 
 const BUILD_TOOLS: ToolItem[] = [
@@ -42,28 +44,28 @@ const BUILD_TOOLS: ToolItem[] = [
     id: "json",
     name: "JSON Formatter & Validator",
     slug: "/tools/json",
-    badge: "Browser Native",
-    purpose: "Format, minify, structure, and validate JSON data instantly with precise line-column syntax error tracking.",
-    icon: Code2,
-    whatItDoes: ["JSON syntax validation", "Pretty-print formatting", "Minification", "Line & column error location"],
-  },
-  {
-    id: "markdown",
-    name: "Markdown Preview & Editor",
-    slug: "/tools/markdown",
-    badge: "GFM Supported",
-    purpose: "Write and preview GitHub-Flavored Markdown in real-time with automatic HTML sanitization and file exports.",
-    icon: FileText,
-    whatItDoes: ["Live GFM preview", "Headings, tables, code blocks", "Client-side HTML sanitization", "Markdown document download"],
+    badge: "Zero Transmission",
+    purpose: "Format, minify, structure, and validate raw JSON data with instant syntax error detection.",
+    icon: FileCode,
+    whatItDoes: ["Parse & indent (2, 4, 8 spaces)", "Minify JSON strings", "Key counting & payload metrics", "100% browser memory isolation"],
   },
   {
     id: "regex",
     name: "Regex Tester & Matcher",
     slug: "/tools/regex",
-    badge: "ReDoS Safe",
+    badge: "Local Matcher",
     purpose: "Test regular expressions with flag toggles, live match highlighting, and capture group breakdown.",
     icon: Search,
-    whatItDoes: ["Real-time match highlighting", "Flag selectors (g, i, m, s)", "Capture group breakdown", "Catastrophic ReDoS safe"],
+    whatItDoes: ["Real-time match highlighting", "Flag selectors (g, i, m, s)", "Capture group breakdown", "Bounded loop evaluation"],
+  },
+  {
+    id: "markdown",
+    name: "Markdown Live Preview",
+    slug: "/tools/markdown",
+    badge: "GFM Support",
+    purpose: "Write GitHub-Flavored Markdown with instant live rendered HTML document previewing and export.",
+    icon: FileText,
+    whatItDoes: ["GFM headings, tables, code blocks", "Client-side HTML sanitization", "Raw Markdown download", "Clean document copying"],
   },
 ];
 
@@ -73,17 +75,17 @@ const ENCODE_TOOLS: ToolItem[] = [
     name: "Base64 & URL Encoder",
     slug: "/tools/encode",
     badge: "UTF-8 Safe",
-    purpose: "Encode and decode raw text strings using standard Base64 or URL percent-encoding for transit safety.",
+    purpose: "Encode and decode text payloads using Base64 or URL percent-encoding safely.",
     icon: Binary,
-    whatItDoes: ["Base64 encode/decode", "URL component encoding", "UTF-8 multi-byte support", "Instant string swap"],
+    whatItDoes: ["UTF-8 safe Base64 transformation", "URL Component percent encoding", "One-click input/output swap", "Zero network transmission"],
   },
   {
     id: "uuid",
     name: "UUID v4 Generator",
     slug: "/tools/uuid",
     badge: "Crypto.randomUUID()",
-    purpose: "Generate cryptographically strong Version-4 Universally Unique Identifiers with custom batch quantities.",
-    icon: KeyRound,
+    purpose: "Generate cryptographically unique Version-4 UUIDs in bulk using standard Web Crypto APIs.",
+    icon: Hash,
     whatItDoes: ["Web Crypto entropy", "Batch generation (up to 100)", "Uppercase & hyphen options", "Individual & batch copy"],
   },
   {
@@ -91,78 +93,83 @@ const ENCODE_TOOLS: ToolItem[] = [
     name: "Web Crypto Hash",
     slug: "/tools/hash",
     badge: "SHA-256 / SHA-512",
-    purpose: "Compute SHA-256, SHA-384, and SHA-512 cryptographic digests locally in standard hardware memory.",
+    purpose: "Compute SHA-256, SHA-384, and SHA-512 cryptographic digests locally in browser memory.",
     icon: ShieldCheck,
-    whatItDoes: ["SHA-256, SHA-384, SHA-512", "Web Crypto hardware acceleration", "One-way cryptographic digest", "Zero data transmission"],
+    whatItDoes: ["SHA-256, SHA-384, SHA-512", "Web Crypto Subtle API", "One-way cryptographic digest", "Zero data transmission"],
   },
 ];
 
 const DESIGN_TOOLS: ToolItem[] = [
   {
     id: "color",
-    name: "Color Utility & WCAG Auditor",
+    name: "Color & Contrast Utility",
     slug: "/tools/color",
-    badge: "WCAG 2.1 AA / AAA",
-    purpose: "Convert HEX, RGB, and HSL colors and evaluate WCAG accessibility contrast ratios.",
+    badge: "WCAG 2.1 AA/AAA",
+    purpose: "Convert HEX, RGB, and HSL colors and audit foreground/background contrast compliance.",
     icon: Palette,
-    whatItDoes: ["HEX ↔ RGB ↔ HSL conversion", "Contrast ratio calculation", "WCAG AA / AAA compliance", "Live foreground preview"],
+    whatItDoes: ["HEX, RGB, HSL color conversions", "WCAG AA (4.5:1) & AAA (7:1) checks", "Live typography surface preview", "Accessible contrast verdicts"],
   },
   {
     id: "qr",
-    name: "Client-Side QR Code Generator",
+    name: "Client-Side QR Generator",
     slug: "/tools/qr",
-    badge: "Zero Endpoint Tracking",
-    purpose: "Generate clean, high-resolution QR code matrices directly inside your browser canvas.",
+    badge: "Zero Network Calls",
+    purpose: "Generate high-resolution PNG QR codes directly in your browser without third-party APIs.",
     icon: QrCode,
-    whatItDoes: ["HTML5 Canvas QR rendering", "Web URL & payload support", "PNG image download", "Zero external server calls"],
+    whatItDoes: ["URL, text & contact payload support", "High-res 360px PNG download", "Zero third-party endpoint tracking", "Client-side canvas rendering"],
   },
 ];
 
 const DIAGNOSTIC_TOOLS: ToolItem[] = [
   {
     id: "website-health",
-    name: "Website Health Audit",
+    name: "Website Health Check",
     slug: "/tools/website-health",
-    badge: "Full System Audit",
-    purpose: "Evaluate overall functional reliability, broken paths, mobile rendering, and baseline technical health.",
+    badge: "Coming Soon",
+    purpose: "Full-spectrum diagnostic evaluating performance, mobile responsiveness, and reliability.",
     icon: Activity,
-    whatItDoes: ["Mobile responsiveness & viewport", "Form submission endpoints", "Accessibility signals", "Technical reliability"],
+    whatItDoes: ["DOM render speed checks", "Mobile viewport compliance", "Accessibility signals", "Technical reliability"],
+    isComingSoon: true,
   },
   {
     id: "speed",
     name: "Speed Diagnostic",
     slug: "/tools/speed",
-    badge: "Core Web Vitals",
+    badge: "Coming Soon",
     purpose: "Analyze loading speed, Core Web Vitals, script overhead, and caching efficiency.",
     icon: Gauge,
     whatItDoes: ["Core Web Vitals (LCP, INP, CLS)", "Unoptimized asset payloads", "JavaScript blocking", "Caching headers"],
+    isComingSoon: true,
   },
   {
     id: "seo",
     name: "SEO Check",
     slug: "/tools/seo",
-    badge: "Search Visibility",
+    badge: "Coming Soon",
     purpose: "Audit technical search foundation, indexability, structured data, and search engine readiness.",
     icon: SearchCheck,
     whatItDoes: ["Title tags & meta structure", "Canonical tags & sitemap.xml", "Open Graph metadata", "JSON-LD structured data"],
+    isComingSoon: true,
   },
   {
     id: "security",
     name: "Security Headers Audit",
     slug: "/tools/security",
-    badge: "Defensive Security",
+    badge: "Coming Soon",
     purpose: "Safely audit website security headers, SSL certificate integrity, and public exposure signals.",
     icon: Shield,
     whatItDoes: ["HTTPS & TLS certificate check", "Security headers (HSTS, CSP)", "Cookie security attributes", "Defensive hardening"],
+    isComingSoon: true,
   },
   {
     id: "ai-readiness",
     name: "AI Readiness Framework",
     slug: "/tools/ai-readiness",
-    badge: "Automation Audit",
+    badge: "Coming Soon",
     purpose: "Evaluate whether your business data, customer workflows, and systems are structured for AI integration.",
     icon: Bot,
     whatItDoes: ["Data organization readiness", "Workflow automation mapping", "API connectivity check", "Data privacy & safety"],
+    isComingSoon: true,
   },
 ];
 
@@ -191,7 +198,14 @@ export default function ToolsHubPage() {
                       <div className="p-2.5 rounded-xl bg-sky-950/80 border border-sky-800/60 text-sky-400 group-hover:scale-105 transition-transform">
                         <Icon className="w-5 h-5" />
                       </div>
-                      <span className="text-[11px] font-mono uppercase font-semibold text-sky-400 bg-sky-950/80 px-2.5 py-1 rounded-full border border-sky-800/60">
+                      <span
+                        className={`text-[11px] font-mono uppercase font-semibold px-2.5 py-1 rounded-full border ${
+                          tool.isComingSoon
+                            ? "bg-amber-950/80 text-amber-400 border-amber-800/80 flex items-center gap-1"
+                            : "bg-sky-950/80 text-sky-400 border-sky-800/60"
+                        }`}
+                      >
+                        {tool.isComingSoon && <Clock className="w-3 h-3 text-amber-400" />}
                         {tool.badge}
                       </span>
                     </div>
@@ -217,9 +231,13 @@ export default function ToolsHubPage() {
 
                   <Link
                     href={tool.slug}
-                    className="w-full text-center py-3 px-4 rounded-xl font-mono text-xs font-semibold bg-slate-800 hover:bg-sky-400 hover:text-slate-950 text-slate-200 border border-slate-700/80 transition-all flex items-center justify-center gap-2"
+                    className={`w-full text-center py-3 px-4 rounded-xl font-mono text-xs font-semibold border transition-all flex items-center justify-center gap-2 ${
+                      tool.isComingSoon
+                        ? "bg-slate-900 hover:bg-amber-950/80 text-amber-300 border-amber-800/60"
+                        : "bg-slate-800 hover:bg-sky-400 hover:text-slate-950 text-slate-200 border-slate-700/80"
+                    }`}
                   >
-                    <span>OPEN UTILITY</span>
+                    <span>{tool.isComingSoon ? "PREVIEW (COMING SOON)" : "OPEN UTILITY"}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>

@@ -94,13 +94,13 @@ export default function WebsiteHealthPage() {
   return (
     <ToolShell>
       <ToolHero
-        badge="Full System Diagnostic"
+        badge="Full System Diagnostic (Coming Soon)"
         title="Website Health Check"
         description="Run a full-spectrum diagnostic evaluating performance, mobile responsiveness, accessibility standards, and technical reliability."
         status={status}
         statusMessage={
           status === "engine-ready"
-            ? "Diagnostic Engine Ready"
+            ? "Diagnostic Engine Preview Ready"
             : status === "scanning"
             ? "Scanning Website Architecture..."
             : "Health Check Report Complete"
@@ -108,6 +108,16 @@ export default function WebsiteHealthPage() {
       />
 
       <Container className="py-12">
+        <div className="mb-8 max-w-2xl mx-auto p-4 rounded-2xl bg-amber-950/40 border border-amber-800/60 text-xs font-mono text-amber-300 flex flex-wrap items-center justify-between gap-2 shadow-lg">
+          <span className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+            Automated remote URL crawler engine under development (Coming Soon)
+          </span>
+          <span className="px-2.5 py-1 rounded-full bg-amber-900/80 text-amber-200 border border-amber-700/80 text-[10px] font-bold uppercase tracking-wider">
+            PREVIEW DIAGNOSTIC
+          </span>
+        </div>
+
         <ToolInput
           placeholder="Enter website URL (e.g. https://yourcompany.com)"
           buttonLabel="Run Health Diagnostic"
@@ -121,8 +131,8 @@ export default function WebsiteHealthPage() {
 
         {status === "engine-ready" && (
           <div className="max-w-2xl mx-auto p-6 rounded-2xl bg-slate-900/50 border border-slate-800 text-center text-xs text-slate-400 mt-8">
-            <p className="font-mono text-sky-400 mb-1">✓ Diagnostic Engine Ready</p>
-            <p>Enter any URL above to initiate an automated health analysis connected to Snow&apos;s analysis infrastructure.</p>
+            <p className="font-mono text-amber-400 mb-1">✓ Preview Diagnostic Ready</p>
+            <p>Enter any URL above to test the preview report structure while the live crawler engine is provisioned.</p>
           </div>
         )}
 
