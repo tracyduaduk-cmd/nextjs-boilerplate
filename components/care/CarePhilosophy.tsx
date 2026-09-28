@@ -4,21 +4,22 @@ import React from "react";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/spatial/Reveal";
 import { Tilt } from "@/components/spatial/Tilt";
+import { ProblemVisual } from "@/components/ui/ProblemVisual";
 
 const degradationFactors = [
-  { label: "Software & Dependencies", desc: "Libraries and framework versions age, exposing vulnerabilities or deprecations." },
-  { label: "Browser Standards", desc: "Updated web engines alter rendering engines and script behaviors unpredictably." },
-  { label: "API & Third-party Services", desc: "Payment gateways, CRM webhooks, and map APIs update endpoints without notice." },
-  { label: "Content Drift", desc: "Outdated business data, broken links, and obsolete operational guidelines create friction." },
-  { label: "Evolving Threat Models", desc: "New automated exploit scripts continuously target unpatched server runtimes." },
-  { label: "Performance Degradation", desc: "Accumulated assets, unindexed data queries, and unmanaged caches slow loading speed." },
+  { label: "Browser Engine Changes", desc: "Chromium, Safari, and Firefox update fast. CSS/JS standard shifts silently break layouts." },
+  { label: "Third-Party API Drift", desc: "Payment gateways, maps, analytics, and social APIs deprecate methods without warning." },
+  { label: "Security Vulnerabilities", desc: "Dependencies accumulate security CVE advisories over time requiring immediate patches." },
+  { label: "Unmanaged Database Growth", desc: "Accumulated assets, unindexed data queries, and unmanaged caches slow loading speed." },
+  { label: "Mobile Viewport Shifts", desc: "New device screen sizes and mobile browser bars alter interactive touch elements." },
+  { label: "SSL & Domain Expirations", desc: "SSL certificates, gateway tokens, and DNS records require persistent oversight." },
 ];
 
 export const CarePhilosophy: React.FC = () => {
   return (
     <section className="py-20 bg-slate-950/60 border-b border-slate-800/60">
       <Container>
-        <div className="max-w-4xl mx-auto mb-16 text-center">
+        <div className="max-w-4xl mx-auto mb-12 text-center">
           <Reveal direction="up">
             <p className="text-xs uppercase tracking-widest text-emerald-400 font-mono mb-2">The Reality of Modern Software</p>
             <h2 className="text-3xl sm:text-5xl font-bold text-slate-100 tracking-tight mb-6">
@@ -29,6 +30,14 @@ export const CarePhilosophy: React.FC = () => {
             </p>
           </Reveal>
         </div>
+
+        {/* Technical Transformation Visual Stage */}
+        <Reveal direction="up" delay={100} className="mb-16">
+          <ProblemVisual
+            problemText="Unmonitored systems silently degrade due to API shifts and security CVE advisories."
+            fixText="Disciplined Snow Care engineering stabilizes performance, updates runtime dependencies, and locks down security."
+          />
+        </Reveal>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {degradationFactors.map((factor, index) => (
