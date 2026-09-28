@@ -17,17 +17,28 @@ import {
   SearchCheck,
   Shield,
   Bot,
+  Globe,
+  Wifi,
+  Laptop,
+  Network,
 } from "lucide-react";
 
 export interface ToolNavItem {
   slug: string;
   name: string;
   shortName: string;
-  category: "BUILD" | "ENCODE" | "DESIGN" | "DIAGNOSTICS";
+  category: "BUILD" | "ENCODE" | "DESIGN" | "DIAGNOSTICS" | "NETWORK";
   icon: React.ElementType;
 }
 
 export const TOOLS_LIST: ToolNavItem[] = [
+  // NETWORK DIAGNOSTICS SUITE
+  { slug: "/network", name: "Network Hub", shortName: "Network", category: "NETWORK", icon: Network },
+  { slug: "/network/dns", name: "DNS Lookup", shortName: "DNS", category: "NETWORK", icon: Globe },
+  { slug: "/network/ip", name: "Public IP", shortName: "IP Info", category: "NETWORK", icon: Wifi },
+  { slug: "/network/device", name: "Device Diagnostics", shortName: "Device", category: "NETWORK", icon: Laptop },
+  { slug: "/network/speed", name: "Connection Speed", shortName: "Speed Test", category: "NETWORK", icon: Gauge },
+
   // BUILD
   { slug: "/tools/json", name: "JSON Formatter", shortName: "JSON", category: "BUILD", icon: Code2 },
   { slug: "/tools/markdown", name: "Markdown Preview", shortName: "Markdown", category: "BUILD", icon: FileText },
@@ -42,7 +53,7 @@ export const TOOLS_LIST: ToolNavItem[] = [
   { slug: "/tools/color", name: "Color Utility", shortName: "Color", category: "DESIGN", icon: Palette },
   { slug: "/tools/qr", name: "QR Generator", shortName: "QR Code", category: "DESIGN", icon: QrCode },
 
-  // DIAGNOSTICS (Existing)
+  // DIAGNOSTICS
   { slug: "/tools/website-health", name: "Website Health", shortName: "Health", category: "DIAGNOSTICS", icon: Activity },
   { slug: "/tools/speed", name: "Speed Audit", shortName: "Speed", category: "DIAGNOSTICS", icon: Gauge },
   { slug: "/tools/seo", name: "SEO Checker", shortName: "SEO", category: "DIAGNOSTICS", icon: SearchCheck },
