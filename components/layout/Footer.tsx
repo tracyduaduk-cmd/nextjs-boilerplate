@@ -14,17 +14,19 @@ export const Footer: React.FC = () => {
     { label: "Services", href: "/#services" },
     { label: "Work Portfolio", href: "/work" },
     { label: "Snow Care", href: "/care" },
-    { label: "Diagnostic Tools", href: "/tools" },
+    { label: "Network Diagnostics", href: "/network" },
+    { label: "Developer Tools", href: "/tools" },
     { label: "Editorial Insights", href: "/insights" },
     { label: "Request a Service", href: "/request" },
   ];
 
   const toolsLinks = [
+    { label: "Network Diagnostics Hub", href: "/network" },
+    { label: "DNS Lookup Utility", href: "/network/dns" },
+    { label: "Public IP & Network Info", href: "/network/ip" },
+    { label: "Device & Browser Diag", href: "/network/device" },
+    { label: "Connection Speed Test", href: "/network/speed" },
     { label: "Website Health Check", href: "/tools/website-health" },
-    { label: "Speed Diagnostic", href: "/tools/speed" },
-    { label: "SEO Check", href: "/tools/seo" },
-    { label: "Defensive Security Check", href: "/tools/security" },
-    { label: "AI Readiness Assessment", href: "/tools/ai-readiness" },
   ];
 
   return (
