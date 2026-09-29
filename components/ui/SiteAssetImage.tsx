@@ -10,6 +10,8 @@ interface SiteAssetImageProps {
   fallbackComponent?: React.ReactNode;
   className?: string;
   priority?: boolean;
+  aspectRatio?: string;
+  showCaption?: boolean;
 }
 
 export const SiteAssetImage: React.FC<SiteAssetImageProps> = ({
@@ -18,6 +20,8 @@ export const SiteAssetImage: React.FC<SiteAssetImageProps> = ({
   fallbackComponent,
   className = "",
   priority = false,
+  aspectRatio = "aspect-video",
+  showCaption = true,
 }) => {
   const [asset, setAsset] = useState<SiteAssetRecord | null>(null);
   const [hasError, setHasError] = useState(false);
@@ -46,8 +50,8 @@ export const SiteAssetImage: React.FC<SiteAssetImageProps> = ({
 
   if (isLoading) {
     return (
-      <div className={`w-full h-48 rounded-xl bg-slate-900/60 border border-slate-800 animate-pulse flex items-center justify-center ${className}`}>
-        <span className="text-xs font-mono text-slate-500 uppercase tracking-widest">
+      <div className={`w-full ${aspectRatio} rounded-xl bg-slate-900/60 border border-slate-800/80 animate-pulse flex items-center justify-center ${className}`}>
+        <span className="text-[11px] font-mono text-slate-500 uppercase tracking-widest">
           Loading Visual Asset...
         </span>
       </div>
@@ -58,22 +62,26 @@ export const SiteAssetImage: React.FC<SiteAssetImageProps> = ({
 
   return (
     <div className={`relative overflow-hidden rounded-xl border border-slate-800/80 bg-slate-950 group ${className}`}>
-      <Image
-        src={asset.public_url}
-        alt={asset.alt_text || asset.title}
-        width={1200}
-        height={675}
-        unoptimized
-        priority={priority}
-        onError={() => setHasError(true)}
-        className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-      />
-      <div className="absolute bottom-2 left-2 right-2 px-3 py-1.5 rounded-lg bg-slate-950/80 backdrop-blur-md border border-slate-800/60 flex items-center justify-between pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        <span className="text-[10px] font-mono text-slate-300 truncate">{asset.title}</span>
-        <span className="text-[9px] font-mono text-cyan-400 bg-cyan-950 px-1.5 py-0.5 rounded uppercase shrink-0">
-          {asset.asset_type.replace("_", " ")}
-        </span>
+      <div className={`relative w-full ${aspectRatio} overflow-hidden`}>
+        <Image
+          src={asset.public_url}
+          alt={asset.alt_text || asset.title}
+          fill
+          unoptimized
+          priority={priority}
+          onError={() => setHasError(true)}
+          className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+        />
       </div>
+
+      {showCaption && (
+        <div className="absolute bottom-2 left-2 right-2 px-3 py-1.5 rounded-lg bg-slate-950/85 backdrop-blur-md border border-slate-800/80 flex items-center justify-between pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+          <span className="text-[10px] font-mono text-slate-200 truncate">{asset.title}</span>
+          <span className="text-[9px] font-mono text-cyan-400 bg-cyan-950/90 px-1.5 py-0.5 rounded border border-cyan-800/60 uppercase shrink-0 ml-2">
+            {asset.asset_type.replace(/_/g, " ")}
+          </span>
+        </div>
+      )}
     </div>
   );
 };

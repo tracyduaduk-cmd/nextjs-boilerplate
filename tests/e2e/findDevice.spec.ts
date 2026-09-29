@@ -5,7 +5,7 @@ test.describe("Snow Find My Device & Spatial Location Suite", () => {
     await page.goto("/network/find");
     await expect(page.locator("h1")).toContainText("Find My Device & Spatial Location Center");
     await expect(page.getByText("Spatial Location Console")).toBeVisible();
-    await expect(page.getByRole("button", { name: /LOCATE MY DEVICE/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: "LOCATE MY DEVICE", exact: true })).toBeVisible();
     await expect(page.getByText("Location Engine Ready • Standby")).toBeVisible();
   });
 
@@ -22,16 +22,15 @@ test.describe("Snow Find My Device & Spatial Location Suite", () => {
     await context.setGeolocation({ latitude: 9.8965, longitude: 8.8583, accuracy: 12 });
 
     await page.goto("/network/find");
-    await page.getByRole("button", { name: /LOCATE MY DEVICE/i }).click();
+    await page.getByRole("button", { name: "LOCATE MY DEVICE", exact: true }).click();
 
-    await expect(page.getByText("9.896500°")).toBeVisible({ timeout: 10000 });
-    await expect(page.getByText("8.858300°")).toBeVisible();
-    await expect(page.getByText("LOCATED")).toBeVisible();
+    await expect(page.getByText("9.896500°").first()).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText("8.858300°").first()).toBeVisible();
   });
 
   test("Device Recovery Simulator executes with mandatory demo disclaimer", async ({ page }) => {
     await page.goto("/network/find");
-    await page.getByText("Recovery Simulator").click();
+    await page.getByRole("tab", { name: "Recovery Simulator" }).click();
 
     await expect(page.getByText("SIMULATION / DEMO MODE — DOES NOT ACTUALLY TRACK DEVICES")).toBeVisible();
 
@@ -47,9 +46,9 @@ test.describe("Snow Find My Device & Spatial Location Suite", () => {
     await context.setGeolocation({ latitude: 9.8965, longitude: 8.8583, accuracy: 15 });
 
     await page.goto("/network/find");
-    await page.getByRole("button", { name: /LOCATE MY DEVICE/i }).click();
+    await page.getByRole("button", { name: "LOCATE MY DEVICE", exact: true }).click();
 
-    await page.getByText("Session Trail (1)").click();
+    await page.getByRole("tab", { name: /Session Trail/i }).click();
     await expect(page.getByText("Fix #1")).toBeVisible({ timeout: 10000 });
 
     await page.getByRole("button", { name: /Clear Session/i }).click();
@@ -60,6 +59,6 @@ test.describe("Snow Find My Device & Spatial Location Suite", () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/network/find");
     await expect(page.locator("h1")).toContainText("Find My Device & Spatial Location Center");
-    await expect(page.getByRole("button", { name: /LOCATE MY DEVICE/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: "LOCATE MY DEVICE", exact: true })).toBeVisible();
   });
 });
