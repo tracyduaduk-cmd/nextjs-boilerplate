@@ -28,17 +28,6 @@ interface LatencyResult {
   pings: number[];
 }
 
-interface SpeedTestResult {
-  latency: LatencyResult | null;
-  effectiveType: string;
-  downlinkEstimate: string;
-  rttEstimate: string;
-  downloadMbps: number | null;
-  transferBytes: number;
-  durationMs: number;
-  profileRating: "EXCELLENT" | "GOOD" | "MODERATE" | "HIGH_LATENCY";
-}
-
 export default function ConnectionSpeedPage() {
   const [isMeasuring, setIsMeasuring] = useState(false);
   const [testStage, setTestStage] = useState<"idle" | "latency" | "download" | "complete" | "stopped">("idle");

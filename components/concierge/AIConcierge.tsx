@@ -2,6 +2,7 @@
 
 import React, { useState, useId } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { PerspectiveContainer } from "@/components/spatial/PerspectiveContainer";
 import { DepthLayer } from "@/components/spatial/DepthLayer";
 import { Tilt } from "@/components/spatial/Tilt";
@@ -41,6 +42,8 @@ const SUGGESTED_PROMPTS = [
   "I need help choosing the right technology",
   "I'm not sure what I need",
 ];
+
+const AI_CONCIERGE_ASSET_URL = "https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/General/snow-ai-concierge.png";
 
 export function determineIntentAndRecommendation(input: string): ConciergeRecommendation {
   const query = input.toLowerCase().trim();
@@ -210,15 +213,29 @@ export const AIConcierge: React.FC<AIConciergeProps> = ({
       <PointerGlow color="rgba(56, 189, 248, 0.15)" size={500} />
 
       <PerspectiveContainer perspective={1000} className="relative z-10 max-w-4xl mx-auto">
-        <div className="text-center mb-5 sm:mb-8">
-          <Reveal direction="up">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono tracking-wider text-sky-400 bg-sky-950/80 border border-sky-800/60 uppercase mb-3">
-              <span className="w-2 h-2 rounded-full bg-sky-400 animate-ping" />
-              Interactive Intent Discovery Engine
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center mb-6">
+          <div className="md:col-span-8 text-center md:text-left">
+            <Reveal direction="up">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono tracking-wider text-sky-400 bg-sky-950/80 border border-sky-800/60 uppercase mb-3">
+                <span className="w-2 h-2 rounded-full bg-sky-400 animate-ping" />
+                Interactive Intent Discovery Engine
+              </div>
+              <h2 className="text-2xl sm:text-4xl font-bold text-slate-100 tracking-tight mb-2">{title}</h2>
+              <p className="text-sm sm:text-base text-slate-400">{subtitle}</p>
+            </Reveal>
+          </div>
+
+          <div className="md:col-span-4 flex justify-center md:justify-end">
+            <div className="relative w-full max-w-[200px] aspect-[4/3] rounded-2xl overflow-hidden border border-sky-500/30 shadow-lg shadow-sky-950/50">
+              <Image
+                src={AI_CONCIERGE_ASSET_URL}
+                alt="Snow Intelligent AI Concierge Visual Stage"
+                fill
+                className="object-cover transition-transform duration-500 hover:scale-105"
+                sizes="(max-width: 768px) 100vw, 200px"
+              />
             </div>
-            <h2 className="text-2xl sm:text-4xl font-bold text-slate-100 tracking-tight mb-2">{title}</h2>
-            <p className="text-sm sm:text-base text-slate-400">{subtitle}</p>
-          </Reveal>
+          </div>
         </div>
 
         {/* Input Form */}

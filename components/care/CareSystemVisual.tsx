@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { SpatialInstrument } from "@/components/spatial/SpatialInstrument";
 import { ProximitySurface } from "@/components/spatial/ProximitySurface";
 import { SystemBadge } from "@/components/spatial/SystemBadge";
@@ -24,6 +25,17 @@ export const CareSystemVisual: React.FC = () => {
         <SystemBadge variant="emerald" size="sm">
           SNW-CARE-01
         </SystemBadge>
+      </div>
+
+      {/* Media Image Banner */}
+      <div className="relative w-full aspect-[16/9] rounded-xl overflow-hidden border border-slate-800/80">
+        <Image
+          src="https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/General/snow-tech-monitor.png"
+          alt="Snow System Telemetry Monitor"
+          fill
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw, 400px"
+        />
       </div>
 
       {/* Interactive Step Switcher Tabs */}
