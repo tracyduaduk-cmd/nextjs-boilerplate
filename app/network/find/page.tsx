@@ -114,16 +114,6 @@ export default function FindMyDevicePage() {
     const navMem = (navigator as unknown as { deviceMemory?: number }).deviceMemory;
     const deviceMemory = navMem ? "~" + navMem + " GB" : "Not exposed by this browser";
 
-    setDeviceSpecs({
-      browser,
-      os,
-      cpuCores,
-      deviceMemory,
-      batteryLevel: "Not exposed by this browser",
-      onlineState: navigator.onLine ? "Online" : "Offline",
-      geolocationPermission: "supported",
-    });
-
     if (navigator.permissions && navigator.permissions.query) {
       navigator.permissions.query({ name: "geolocation" as PermissionName }).then((perm) => {
         if (isMountedRef.current) {
@@ -157,8 +147,25 @@ export default function FindMyDevicePage() {
   }, []);
 
   useEffect(() => {
-    fetchIpLocation();
-  }, [fetchIpLocation]);
+    let ignore = false;
+    fetch("https://ipwho.is/", { cache: "no-store" })
+      .then((res) => res.json())
+      .then((data) => {
+        if (!ignore && data && data.success !== false) {
+          setIpLocation({
+            ip: data.ip || "Unknown",
+            city: data.city || "Unknown",
+            region: data.region || "Unknown",
+            country: data.country || "Unknown",
+            org: data.connection?.isp || data.org || "Unknown ISP",
+          });
+        }
+      })
+      .catch(() => {});
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   const requestLocation = useCallback(() => {
     if (!navigator.geolocation) {

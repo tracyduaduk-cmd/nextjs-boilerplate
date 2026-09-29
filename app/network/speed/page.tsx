@@ -28,7 +28,7 @@ interface LatencyResult {
   pings: number[];
 }
 
-interface SpeedTestResult {
+export interface SpeedTestResult {
   latency: LatencyResult | null;
   effectiveType: string;
   downlinkEstimate: string;
