@@ -11,6 +11,7 @@ import { PointerGlow } from "@/components/spatial/PointerGlow";
 import { ProximitySurface } from "@/components/spatial/ProximitySurface";
 import { SystemBadge } from "@/components/spatial/SystemBadge";
 import { CareSystemVisual } from "@/components/care/CareSystemVisual";
+import { SiteAssetImage } from "@/components/ui/SiteAssetImage";
 import { ShieldCheck, Activity, Wrench, Zap, RefreshCw, ArrowRight, Terminal, Cpu } from "lucide-react";
 
 export const CareHero: React.FC = () => {
@@ -143,10 +144,14 @@ export const CareHero: React.FC = () => {
             </PerspectiveContainer>
           </div>
 
-          {/* Right Column: Snow Care Technical System Pipeline Visual */}
-          <div className="lg:col-span-5 flex flex-col items-center justify-center">
+          {/* Right Column: Snow Care Technical System Pipeline Visual & Storage Asset */}
+          <div className="lg:col-span-5 flex flex-col items-center justify-center space-y-6">
             <Reveal direction="up" delay={150} className="w-full">
               <CareSystemVisual />
+            </Reveal>
+
+            <Reveal direction="up" delay={200} className="w-full max-w-md">
+              <SiteAssetImage pageKey="care_hub" slotKey="hero_care" aspectRatio="aspect-[16/9]" />
             </Reveal>
           </div>
         </div>

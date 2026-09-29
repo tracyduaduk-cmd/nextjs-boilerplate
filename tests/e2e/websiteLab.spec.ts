@@ -28,7 +28,7 @@ test.describe("Website Lab E2E Suite", () => {
     await page.goto("/tools/website/inspect");
     await page.fill("#target-url-input-inspect", "https://example.com");
     await page.click("button[type='submit']");
-    await expect(page.getByText("200 OK")).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText("200 OK").first()).toBeVisible({ timeout: 15000 });
     await expect(page.getByText("Security Response Headers Audit")).toBeVisible();
   });
 });
