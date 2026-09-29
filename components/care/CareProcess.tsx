@@ -44,7 +44,7 @@ const steps = [
 
 export const CareProcess: React.FC = () => {
   return (
-    <section className="py-20 border-b border-slate-800/80 bg-slate-950 relative overflow-hidden">
+    <section id="care-process" className="py-20 border-b border-slate-800/80 bg-slate-950 relative overflow-hidden">
       <Container>
         <div className="max-w-3xl mb-16">
           <Reveal direction="up">

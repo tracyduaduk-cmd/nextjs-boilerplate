@@ -30,6 +30,7 @@ const SUGGESTED_PROMPTS = [
 ];
 
 const AI_CONCIERGE_ASSET_URL = "https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/General/snow-ai-concierge.png";
+const STREAM_ERROR_PREFIX = "\u0000SNOW_CONCIERGE_ERROR\u0000";
 type ChatMessage = { role: "user" | "assistant"; content: string };
 type ConciergeStatus = "idle" | "submitting" | "streaming" | "complete" | "error";
 
@@ -93,6 +94,13 @@ export const AIConcierge: React.FC<AIConciergeProps> = ({
         setMessages([...nextMessages, { role: "assistant", content: assistantText }]);
       }
       assistantText += decoder.decode();
+      if (assistantText.startsWith(STREAM_ERROR_PREFIX)) {
+        setStatus("error");
+        setError(assistantText.slice(STREAM_ERROR_PREFIX.length) || "Snow Concierge is temporarily unavailable.");
+        setMessages(nextMessages);
+        return;
+      }
+      if (!assistantText.trim()) throw new Error("Snow Concierge returned an empty response. Please retry.");
       setMessages([...nextMessages, { role: "assistant", content: assistantText }]);
       setStatus("complete");
     } catch (caught) {
