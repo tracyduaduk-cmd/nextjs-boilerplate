@@ -105,7 +105,7 @@ export const CaseStudyView: React.FC<CaseStudyViewProps> = ({ project, nextProje
               alt={`${project.title} Hero View`}
               title={`${project.title} Hero Surface`}
               caption={`Primary concept demonstration surface for ${project.title}`}
-              urlText={`https://snow.dev/case-study/${project.slug}`}
+              urlText={`SNOW / CASE STUDY / ${project.slug}`}
               priority={true}
             />
           </div>
@@ -136,7 +136,7 @@ export const CaseStudyView: React.FC<CaseStudyViewProps> = ({ project, nextProje
                 alt={`${project.title} Desktop Screenshot`}
                 title="DESKTOP WORKSPACE"
                 caption="Web / Dashboard Application View"
-                urlText={`https://snow.dev/desktop/${project.slug}`}
+                urlText={`SNOW / DESKTOP / ${project.slug}`}
               />
             </div>
 

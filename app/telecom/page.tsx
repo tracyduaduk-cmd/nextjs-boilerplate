@@ -7,34 +7,13 @@ import { OperatorGuide } from "@/components/telecom/OperatorGuide";
 import { TelecomGuides } from "@/components/telecom/TelecomGuides";
 import { ToolVisualStage } from "@/components/tools/ToolVisualStage";
 import { Radio, ShieldCheck, ArrowUpRight, Smartphone, Info } from "lucide-react";
-
-export const metadata: Metadata = {
-  title: "Nigerian Telecom Hub — Universal USSD & Short Codes Reference | Snow",
+import { createPageMetadata } from "@/lib/seo";
+export const metadata: Metadata = createPageMetadata({
+  title: "Nigerian Telecom Hub | USSD & Short Codes Reference",
   description:
     "Interactive Nigerian telecom control and reference center. Authoritative NCC harmonized short codes for MTN, Airtel, Glo, and 9mobile, including check balance (*310#), buy data (*312#), DND (2442), and NIN/SIM linkage (*996#).",
-  keywords: [
-    "Nigerian telecom short codes",
-    "NCC harmonized codes",
-    "MTN USSD codes",
-    "Airtel short codes",
-    "Glo data codes",
-    "9mobile balance code",
-    "Nigerian check balance code",
-    "DND 2442 SMS",
-    "NIN SIM link 996",
-    "Mobile Number Portability 3232",
-    "Telecom utility Nigeria",
-  ],
-  openGraph: {
-    title: "Nigerian Telecom Hub — Universal USSD & Short Codes Reference | Snow",
-    description:
-      "Interactive Nigerian telecom control and reference center. Verified NCC harmonized USSD codes, DND guide, and SIM/NIN registration instructions.",
-    url: "https://snow.studio/telecom",
-    siteName: "Snow Editorial Technology Studio",
-    locale: "en_NG",
-    type: "website",
-  },
-};
+  path: "/telecom",
+});
 
 export default function TelecomPage() {
   return (

@@ -47,7 +47,7 @@ export const FeaturedSpatialProject: React.FC<ProjectVariantProps> = ({ project 
               src={desktopUrl || heroUrl}
               alt={`${project.title} Desktop View`}
               title={project.title}
-              urlText={`https://snow.dev/work/${project.slug}`}
+              urlText={`SNOW / WORK / ${project.slug}`}
               priority={true}
             />
           </div>
@@ -178,7 +178,7 @@ export const DeviceStackProject: React.FC<ProjectVariantProps> = ({ project }) =
                 src={desktopUrl}
                 alt={`${project.title} Desktop View`}
                 title={`${project.title} Desktop`}
-                urlText={`https://snow.dev/app/${project.slug}`}
+                urlText={`SNOW / APP / ${project.slug}`}
               />
             </div>
 
@@ -228,7 +228,7 @@ export const DarkLabProject: React.FC<ProjectVariantProps> = ({ project }) => {
               src={desktopUrl}
               alt={`${project.title} Laboratory View`}
               title="LAB SPEC"
-              urlText={`https://snow.dev/protocol/${project.slug}`}
+              urlText={`SNOW / PROTOCOL / ${project.slug}`}
             />
           </div>
 
@@ -322,7 +322,7 @@ export const EditorialProject: React.FC<ProjectVariantProps> = ({ project }) => 
               src={desktopUrl}
               alt={project.title}
               title="EDITORIAL"
-              urlText={`https://snow.dev/editorial/${project.slug}`}
+              urlText={`SNOW / EDITORIAL / ${project.slug}`}
             />
           </div>
         </div>
@@ -370,7 +370,7 @@ export const SplitPerspectiveProject: React.FC<ProjectVariantProps> = ({ project
               src={desktopUrl}
               alt={`${project.title} Desktop View`}
               title="DESKTOP VIEW"
-              urlText={`https://snow.dev/desktop/${project.slug}`}
+              urlText={`SNOW / DESKTOP / ${project.slug}`}
             />
           </div>
 
@@ -455,7 +455,7 @@ export const MinimalProject: React.FC<ProjectVariantProps> = ({ project }) => {
               src={heroUrl}
               alt={project.title}
               title="STUDIO VIEW"
-              urlText={`https://snow.dev/studio/${project.slug}`}
+              urlText={`SNOW / STUDIO / ${project.slug}`}
             />
           </div>
         </div>

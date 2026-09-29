@@ -57,7 +57,7 @@ export const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                 d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
               />
             </svg>
-            <span className="truncate">https://snow.dev/work/{project.slug}</span>
+            <span className="truncate">SNOW / WORK / {project.slug}</span>
           </div>
 
           <div className="text-slate-400 text-xs uppercase tracking-wider font-semibold font-mono">

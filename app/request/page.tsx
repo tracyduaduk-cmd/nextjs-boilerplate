@@ -2,12 +2,14 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ServiceRequestFlow } from "@/components/request/ServiceRequestFlow";
 import { EntryMode } from "@/lib/requests/types";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata = {
+export const metadata = createPageMetadata({
   title: "Request a Technical Service | Snow Studio",
   description:
     "Structured technical request and diagnostic experience. Get a tailored estimate for web engineering, apps, AI, security, or Snow Care maintenance.",
-};
+  path: "/request",
+});
 
 export default async function RequestPage({
   searchParams,

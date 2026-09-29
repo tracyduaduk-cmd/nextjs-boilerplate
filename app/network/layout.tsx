@@ -1,17 +1,21 @@
 import type { Metadata } from "next";
+import { BreadcrumbJsonLd } from "@/components/seo/StructuredData";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Network Diagnostics — Snow Technology Studio",
+export const metadata: Metadata = createPageMetadata({
+  title: "Network Diagnostics | DNS, IP, Device & Speed Tools",
   description:
-    "Practical network and browser diagnostic tools. Perform DNS lookups, inspect public IP & routing, analyze local device capabilities, and measure latency.",
-  openGraph: {
-    title: "Network Diagnostics — Snow Technology Studio",
-    description:
-      "Practical network and browser diagnostic tools. DNS lookup, public IP info, local browser capability diagnostics, and speed checks.",
-    type: "website",
-  },
-};
+    "Privacy-first network diagnostics for DNS lookups, public IP and route information, browser and device signals, location, and connection speed.",
+  path: "/network",
+});
 
 export default function NetworkLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return (
+    <>
+      <BreadcrumbJsonLd
+        items={[{ name: "Snow", path: "/" }, { name: "Network Diagnostics", path: "/network" }]}
+      />
+      {children}
+    </>
+  );
 }

@@ -158,7 +158,7 @@ export default function MarkdownToolPage() {
               <ul className="text-xs text-slate-300 space-y-1 font-mono">
                 <li>• # Headings (H1 to H6)</li>
                 <li>• **Bold**, *Italics*, ~Strikethrough~</li>
-                <li>• [Links](https://snow.tech) & Images</li>
+                <li>• [Links](/request) & Images</li>
                 <li>• Blockquotes & Code blocks</li>
                 <li>• GFM Tables & Checklists</li>
               </ul>

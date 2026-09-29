@@ -4,6 +4,7 @@ import { fetchProjects, fetchProjectBySlug } from "@/lib/projects/queries";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CaseStudyView } from "@/components/work/CaseStudyView";
+import { createPageMetadata } from "@/lib/seo";
 
 interface CaseStudyPageProps {
   params: Promise<{ slug: string }>;
@@ -26,16 +27,12 @@ export async function generateMetadata({ params }: CaseStudyPageProps): Promise<
     };
   }
 
-  return {
-    title: `${project.title} — Case Study | Snow`,
+  return createPageMetadata({
+    title: `${project.title} — Case Study`,
     description: project.summary,
-    openGraph: {
-      title: `${project.title} — Case Study | Snow`,
-      description: project.summary,
-      url: `https://snow.dev/work/${project.slug}`,
-      type: "article",
-    },
-  };
+    path: `/work/${project.slug}`,
+    type: "article",
+  });
 }
 
 export default async function CaseStudyPage({ params }: CaseStudyPageProps) {

@@ -46,7 +46,7 @@ export const MediaStack: React.FC<MediaStackProps> = ({
           <span className="w-2 h-2 rounded-full bg-rose-500/80" />
           <span className="w-2 h-2 rounded-full bg-amber-500/80" />
           <span className="w-2 h-2 rounded-full bg-emerald-500/80" />
-          <span className="ml-auto opacity-60">{category.toLowerCase()}.snow.dev</span>
+          <span className="ml-auto opacity-60">SNOW / {category.toLowerCase()}</span>
         </div>
         <div className="relative aspect-[16/10] overflow-hidden rounded-b-xl">
           <Image

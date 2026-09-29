@@ -4,11 +4,13 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Container } from "@/components/ui/Container";
 import { SystemBadge } from "@/components/spatial/SystemBadge";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Snow Concierge | AI Intelligence",
-  description: "Snow Concierge helps you find the right Snow capability for a technical challenge.",
-};
+export const metadata: Metadata = createPageMetadata({
+  title: "Snow Concierge | AI Capability Finder",
+  description: "Describe a technical challenge in plain language and Snow Concierge will map it to relevant tools, services, and Care capabilities.",
+  path: "/ai",
+});
 
 export default function AIPage() {
   return (
