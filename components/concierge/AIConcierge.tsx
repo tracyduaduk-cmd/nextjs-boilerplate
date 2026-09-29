@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useId } from "react";
+import React, { useState, useRef, useId, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { PerspectiveContainer } from "@/components/spatial/PerspectiveContainer";
@@ -30,6 +30,16 @@ export interface ConciergeRecommendation {
   relevantCapabilityFamilies: string[];
 }
 
+export type ConciergeState = "IDLE" | "SUBMITTING" | "STREAMING" | "COMPLETE" | "ERROR";
+
+export interface ChatMessage {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  recommendation?: ConciergeRecommendation | null;
+  isError?: boolean;
+}
+
 const SUGGESTED_PROMPTS = [
   "My website is broken",
   "I need a new website",
@@ -43,7 +53,8 @@ const SUGGESTED_PROMPTS = [
   "I'm not sure what I need",
 ];
 
-const AI_CONCIERGE_ASSET_URL = "https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/General/snow-ai-concierge.png";
+const AI_CONCIERGE_ASSET_URL =
+  "https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/General/snow-ai-concierge.png";
 
 export function determineIntentAndRecommendation(input: string): ConciergeRecommendation {
   const query = input.toLowerCase().trim();
@@ -152,7 +163,6 @@ export function determineIntentAndRecommendation(input: string): ConciergeRecomm
     };
   }
 
-  // Fallback for "not sure", general query or unknown
   return {
     intent: "diagnose",
     title: "Snow Guided Technology Assessment",
@@ -177,36 +187,194 @@ export const AIConcierge: React.FC<AIConciergeProps> = ({
   subtitle = "Describe your business challenge or goal in plain language.",
 }) => {
   const [query, setQuery] = useState("");
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [recommendation, setRecommendation] = useState<ConciergeRecommendation | null>(null);
+  const [status, setStatus] = useState<ConciergeState>("IDLE");
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const chatContainerRef = useRef<HTMLDivElement | null>(null);
+  const messageCounterRef = useRef<number>(0);
   const inputId = useId();
 
-  const handleSearch = (e?: React.FormEvent) => {
+  // Clean up abort controller on unmount
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
+
+  const scrollToBottom = () => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  };
+
+  const handleStop = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    setStatus("COMPLETE");
+  };
+
+  const executeChat = async (userText: string) => {
+    const text = userText.trim();
+    if (!text) return;
+
+    setErrorMessage(null);
+    setStatus("SUBMITTING");
+
+    const rec = determineIntentAndRecommendation(text);
+
+    messageCounterRef.current += 1;
+    const currentCount = messageCounterRef.current;
+
+    const userMsg: ChatMessage = {
+      id: `user-msg-${currentCount}`,
+      role: "user",
+      content: text,
+    };
+
+    const assistantMsgId = `assistant-msg-${currentCount}`;
+    const initialAssistantMsg: ChatMessage = {
+      id: assistantMsgId,
+      role: "assistant",
+      content: "",
+      recommendation: rec,
+    };
+
+    const newMessages = [...messages, userMsg];
+    setMessages([...newMessages, initialAssistantMsg]);
+    setQuery("");
+
+    setTimeout(scrollToBottom, 50);
+
+    const apiPayload = newMessages.concat(userMsg).map((m) => ({
+      role: m.role,
+      content: m.content,
+    }));
+
+    abortControllerRef.current = new AbortController();
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: apiPayload }),
+        signal: abortControllerRef.current.signal,
+      });
+
+      if (!res.ok) {
+        let errJson: { error?: string } = {};
+        try {
+          errJson = await res.json();
+        } catch {
+          // empty body
+        }
+
+        const fallbackContent =
+          errJson.error ||
+          `Snow AI Gateway key is offline or unavailable. Here is our grounded recommendation for "${text}":\n\n**${rec.title}**\n${rec.summary}`;
+
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === assistantMsgId
+              ? {
+                  ...msg,
+                  content: fallbackContent,
+                  isError: true,
+                }
+              : msg
+          )
+        );
+        setStatus("ERROR");
+        setErrorMessage(fallbackContent);
+        return;
+      }
+
+      setStatus("STREAMING");
+
+      const reader = res.body?.getReader();
+      if (!reader) {
+        throw new Error("No response body reader returned.");
+      }
+
+      const decoder = new TextDecoder();
+      let streamedContent = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        streamedContent = `${streamedContent}${chunk}`;
+
+        const nextContent = streamedContent;
+
+        setMessages((prev) =>
+          prev.map((msg) => (msg.id === assistantMsgId ? { ...msg, content: nextContent } : msg))
+        );
+        scrollToBottom();
+      }
+
+      setStatus("COMPLETE");
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === "AbortError") {
+        setStatus("COMPLETE");
+        return;
+      }
+
+      const fallbackContent = `Snow AI Concierge operates in offline mode when the AI Gateway is unreachable. Grounded recommendation for "${text}":\n\n**${rec.title}**\n${rec.summary}`;
+
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === assistantMsgId
+            ? {
+                ...msg,
+                content: msg.content || fallbackContent,
+                isError: true,
+              }
+            : msg
+        )
+      );
+      setStatus("ERROR");
+      setErrorMessage("System communication error. Showing grounded fallback recommendations.");
+    } finally {
+      abortControllerRef.current = null;
+    }
+  };
+
+  const handleSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (!query.trim()) return;
-
-    setIsAnalyzing(true);
-    setRecommendation(null);
-
-    // Simulate brief system analysis state
-    setTimeout(() => {
-      const rec = determineIntentAndRecommendation(query);
-      setRecommendation(rec);
-      setIsAnalyzing(false);
-    }, 400);
+    if (status === "SUBMITTING" || status === "STREAMING") return;
+    executeChat(query);
   };
 
   const handleSelectPrompt = (prompt: string) => {
-    setQuery(prompt);
-    setIsAnalyzing(true);
-    setRecommendation(null);
-    setTimeout(() => {
-      const rec = determineIntentAndRecommendation(prompt);
-      setRecommendation(rec);
-      setIsAnalyzing(false);
-    }, 400);
+    if (status === "SUBMITTING" || status === "STREAMING") return;
+    executeChat(prompt);
   };
+
+  const handleRetry = () => {
+    const lastUserMessage = [...messages].reverse().find((m) => m.role === "user");
+    if (lastUserMessage) {
+      executeChat(lastUserMessage.content);
+    }
+  };
+
+  const handleClearHistory = () => {
+    if (status === "SUBMITTING" || status === "STREAMING") {
+      handleStop();
+    }
+    setMessages([]);
+    setStatus("IDLE");
+    setErrorMessage(null);
+  };
+
+  const latestAssistantMessage = [...messages].reverse().find((m) => m.role === "assistant");
+  const activeRecommendation = latestAssistantMessage?.recommendation;
 
   return (
     <div className={`relative overflow-hidden rounded-3xl bg-slate-950 border border-slate-800/80 p-4 sm:p-8 ${className}`}>
@@ -217,8 +385,22 @@ export const AIConcierge: React.FC<AIConciergeProps> = ({
           <div className="md:col-span-8 text-center md:text-left">
             <Reveal direction="up">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono tracking-wider text-sky-400 bg-sky-950/80 border border-sky-800/60 uppercase mb-3">
-                <span className="w-2 h-2 rounded-full bg-sky-400 animate-ping" />
-                Interactive Intent Discovery Engine
+                <span
+                  className={`w-2 h-2 rounded-full ${
+                    status === "STREAMING" || status === "SUBMITTING"
+                      ? "bg-amber-400 animate-ping"
+                      : status === "ERROR"
+                      ? "bg-rose-400"
+                      : "bg-sky-400 animate-pulse"
+                  }`}
+                />
+                {status === "SUBMITTING"
+                  ? "SYSTEM THINKING"
+                  : status === "STREAMING"
+                  ? "STREAMING RESPONSE"
+                  : status === "ERROR"
+                  ? "SYSTEM FALLBACK"
+                  : "SYSTEM READY"}
               </div>
               <h2 className="text-2xl sm:text-4xl font-bold text-slate-100 tracking-tight mb-2">{title}</h2>
               <p className="text-sm sm:text-base text-slate-400">{subtitle}</p>
@@ -238,9 +420,67 @@ export const AIConcierge: React.FC<AIConciergeProps> = ({
           </div>
         </div>
 
+        {/* Conversation Stream Container */}
+        {messages.length > 0 && (
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-2 px-1">
+              <span className="text-xs font-mono text-slate-400 uppercase tracking-wider">
+                Session Transcript ({messages.length} message{messages.length === 1 ? "" : "s"})
+              </span>
+              <button
+                type="button"
+                onClick={handleClearHistory}
+                className="text-xs font-mono text-slate-500 hover:text-slate-300 transition-colors"
+              >
+                Clear Conversation
+              </button>
+            </div>
+
+            <div
+              ref={chatContainerRef}
+              aria-live="polite"
+              className="max-h-[360px] overflow-y-auto space-y-4 p-4 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-inner scrollbar-thin scrollbar-thumb-slate-700"
+            >
+              {messages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className={`flex flex-col ${
+                    msg.role === "user" ? "items-end" : "items-start"
+                  }`}
+                >
+                  <div className="flex items-center gap-2 mb-1 px-1">
+                    <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">
+                      {msg.role === "user" ? "You" : "Snow Concierge AI"}
+                    </span>
+                  </div>
+
+                  <div
+                    className={`max-w-[88%] sm:max-w-[80%] rounded-2xl p-3.5 sm:p-4 text-sm sm:text-base leading-relaxed ${
+                      msg.role === "user"
+                        ? "bg-sky-600/20 text-sky-100 border border-sky-500/30 rounded-tr-none"
+                        : msg.isError
+                        ? "bg-rose-950/30 text-rose-200 border border-rose-800/60 rounded-tl-none"
+                        : "bg-slate-950/90 text-slate-200 border border-slate-800 rounded-tl-none"
+                    }`}
+                  >
+                    {msg.role === "assistant" && !msg.content && (status === "SUBMITTING" || status === "STREAMING") ? (
+                      <div className="flex items-center gap-2 text-sky-400 font-mono text-xs animate-pulse py-1">
+                        <span className="w-2 h-2 rounded-full bg-sky-400 animate-bounce" />
+                        Generating grounded intelligence response...
+                      </div>
+                    ) : (
+                      <p className="whitespace-pre-wrap break-words">{msg.content}</p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Input Form */}
         <Reveal direction="up" delay={100}>
-          <form onSubmit={handleSearch} className="mb-6">
+          <form onSubmit={handleSubmit} className="mb-6">
             <div className="relative flex items-center">
               <label htmlFor={inputId} className="sr-only">
                 What do you need help with?
@@ -251,15 +491,28 @@ export const AIConcierge: React.FC<AIConciergeProps> = ({
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="e.g. My website loads slowly and customers are complaining..."
-                className="w-full py-3.5 sm:py-4 pl-4 sm:pl-5 pr-28 sm:pr-32 rounded-2xl bg-slate-900/90 border border-slate-700/80 text-slate-100 placeholder-slate-500 text-sm sm:text-base focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 transition-all shadow-inner"
+                disabled={status === "SUBMITTING" || status === "STREAMING"}
+                className="w-full py-3.5 sm:py-4 pl-4 sm:pl-5 pr-32 sm:pr-36 rounded-2xl bg-slate-900/90 border border-slate-700/80 text-slate-100 placeholder-slate-500 text-sm sm:text-base focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 transition-all shadow-inner disabled:opacity-60"
               />
-              <button
-                type="submit"
-                disabled={isAnalyzing || !query.trim()}
-                className="absolute right-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold text-xs sm:text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isAnalyzing ? "Analyzing..." : "Analyze ↗"}
-              </button>
+              <div className="absolute right-2 flex items-center gap-1">
+                {status === "STREAMING" || status === "SUBMITTING" ? (
+                  <button
+                    type="button"
+                    onClick={handleStop}
+                    className="px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 font-mono text-xs transition-all"
+                  >
+                    Stop 🛑
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    disabled={!query.trim()}
+                    className="px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold text-xs sm:text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Analyze ↗
+                  </button>
+                )}
+              </div>
             </div>
           </form>
         </Reveal>
@@ -276,7 +529,8 @@ export const AIConcierge: React.FC<AIConciergeProps> = ({
                   key={prompt}
                   type="button"
                   onClick={() => handleSelectPrompt(prompt)}
-                  className="text-xs px-3 py-1.5 rounded-lg bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-sky-300 border border-slate-800 hover:border-sky-800/60 transition-all text-left"
+                  disabled={status === "SUBMITTING" || status === "STREAMING"}
+                  className="text-xs px-3 py-1.5 rounded-lg bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-sky-300 border border-slate-800 hover:border-sky-800/60 transition-all text-left disabled:opacity-50"
                 >
                   {prompt}
                 </button>
@@ -285,26 +539,37 @@ export const AIConcierge: React.FC<AIConciergeProps> = ({
           </div>
         </Reveal>
 
-        {/* Analyzing Animation State */}
-        {isAnalyzing && (
-          <div className="p-4 sm:p-6 rounded-2xl bg-slate-900/60 border border-slate-800 text-center animate-pulse">
-            <div className="inline-block w-8 h-8 border-2 border-sky-400 border-t-transparent rounded-full animate-spin mb-3" />
-            <p className="text-xs font-mono text-sky-400 uppercase tracking-widest">Evaluating Capabilities & System Mapping...</p>
+        {/* Error State Banner */}
+        {status === "ERROR" && (
+          <div className="mb-6 p-4 rounded-2xl bg-rose-950/40 border border-rose-800/80 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <span className="w-3 h-3 rounded-full bg-rose-500 animate-ping" />
+              <p className="text-xs font-mono text-rose-300">
+                {errorMessage || "AI Service notice. Operating in offline diagnostic mode."}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleRetry}
+              className="px-3.5 py-1.5 rounded-lg bg-rose-900/80 hover:bg-rose-800 text-rose-100 font-mono text-xs border border-rose-700/60 transition-all"
+            >
+              Retry AI Query ↻
+            </button>
           </div>
         )}
 
-        {/* Recommendation Card Output */}
-        {recommendation && !isAnalyzing && (
+        {/* Deterministic Recommendation Card Output */}
+        {activeRecommendation && (
           <Reveal direction="up" delay={200}>
             <Tilt maxRotation={4}>
               <div className="p-4 sm:p-8 rounded-2xl bg-gradient-to-br from-slate-900/90 via-slate-900 to-sky-950/30 border border-sky-800/60 shadow-2xl relative">
                 <DepthLayer depth={10}>
                   <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
                     <span className="text-xs font-mono font-semibold tracking-wider text-sky-400 bg-sky-950 px-3 py-1 rounded-full border border-sky-800/80 uppercase">
-                      INTENT MATCH: {recommendation.intent.toUpperCase()}
+                      GROUNDED INTENT: {activeRecommendation.intent.toUpperCase()}
                     </span>
                     <div className="flex items-center gap-1.5">
-                      {recommendation.relevantCapabilityFamilies.map((fam) => (
+                      {activeRecommendation.relevantCapabilityFamilies.map((fam) => (
                         <span key={fam} className="text-[10px] font-mono text-slate-400 bg-slate-950 px-2 py-0.5 rounded border border-slate-800">
                           {fam}
                         </span>
@@ -312,29 +577,29 @@ export const AIConcierge: React.FC<AIConciergeProps> = ({
                     </div>
                   </div>
 
-                  <h3 className="text-xl sm:text-2xl font-bold text-slate-100 mb-3">{recommendation.title}</h3>
-                  <p className="text-sm sm:text-base text-slate-300 leading-relaxed mb-6">{recommendation.summary}</p>
+                  <h3 className="text-xl sm:text-2xl font-bold text-slate-100 mb-3">{activeRecommendation.title}</h3>
+                  <p className="text-sm sm:text-base text-slate-300 leading-relaxed mb-6">{activeRecommendation.summary}</p>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-slate-800/80 pt-6 mb-6">
                     <div className="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/60">
                       <span className="text-[11px] font-mono text-slate-400 uppercase block mb-1">Recommended Service</span>
-                      <p className="text-sm font-semibold text-slate-100">{recommendation.primaryService.name}</p>
+                      <p className="text-sm font-semibold text-slate-100">{activeRecommendation.primaryService.name}</p>
                     </div>
 
-                    {recommendation.recommendedTool && (
+                    {activeRecommendation.recommendedTool && (
                       <div className="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/60">
                         <span className="text-[11px] font-mono text-slate-400 uppercase block mb-1">Diagnostic Tool</span>
-                        <Link href={recommendation.recommendedTool.href} className="text-sm font-semibold text-sky-400 hover:underline">
-                          {recommendation.recommendedTool.name} ↗
+                        <Link href={activeRecommendation.recommendedTool.href} className="text-sm font-semibold text-sky-400 hover:underline">
+                          {activeRecommendation.recommendedTool.name} ↗
                         </Link>
                       </div>
                     )}
 
-                    {recommendation.recommendedCare && (
+                    {activeRecommendation.recommendedCare && (
                       <div className="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/60">
                         <span className="text-[11px] font-mono text-slate-400 uppercase block mb-1">Long-term Care</span>
-                        <Link href={recommendation.recommendedCare.href} className="text-sm font-semibold text-emerald-400 hover:underline">
-                          {recommendation.recommendedCare.name} ↗
+                        <Link href={activeRecommendation.recommendedCare.href} className="text-sm font-semibold text-emerald-400 hover:underline">
+                          {activeRecommendation.recommendedCare.name} ↗
                         </Link>
                       </div>
                     )}
@@ -342,10 +607,10 @@ export const AIConcierge: React.FC<AIConciergeProps> = ({
 
                   <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                     <Link
-                      href={recommendation.actionLink.href}
+                      href={activeRecommendation.actionLink.href}
                       className="w-full sm:w-auto px-6 py-3 rounded-xl font-semibold text-sm bg-sky-400 hover:bg-sky-300 text-slate-950 transition-all text-center shadow-md shadow-sky-950"
                     >
-                      {recommendation.actionLink.label}
+                      {activeRecommendation.actionLink.label}
                     </Link>
                     <span className="text-xs text-slate-500 font-mono">
                       Connected to Snow Intelligent Service Engine
