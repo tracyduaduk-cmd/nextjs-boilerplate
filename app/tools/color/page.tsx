@@ -259,7 +259,7 @@ export default function ColorToolPage() {
 
           {/* Right Visual / System Info Column */}
           <div className="lg:col-span-4 space-y-6">
-            <ToolVisualStage visualType="color"
+            <ToolVisualStage pageKey="tools_color" slotKey="visual_stage" visualType="color"
               mode="design"
               statusLabel="ACCESSIBILITY AUDITOR ACTIVE"
               metricLabel="CONTRAST"

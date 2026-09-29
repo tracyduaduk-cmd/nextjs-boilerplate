@@ -32,7 +32,6 @@ const NETWORK_TOOLS = [
     icon: Navigation,
     highlights: ["Browser-native GPS geolocation", "Device recovery simulator & demo", "Session location trail & distance", "Google Maps & Spatial Earth views"],
   },
-
   {
     id: "dns",
     name: "DNS Lookup",
@@ -124,6 +123,8 @@ export default function NetworkLandingPage() {
 
           <div className="lg:col-span-5">
             <ToolVisualStage
+              pageKey="network_hub"
+              slotKey="visual_stage"
               visualType="network"
               mode="services"
               statusLabel="NETWORK LAYER ACTIVE"

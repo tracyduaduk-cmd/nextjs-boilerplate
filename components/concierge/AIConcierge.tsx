@@ -7,6 +7,7 @@ import { DepthLayer } from "@/components/spatial/DepthLayer";
 import { Tilt } from "@/components/spatial/Tilt";
 import { Reveal } from "@/components/spatial/Reveal";
 import { PointerGlow } from "@/components/spatial/PointerGlow";
+import { SiteAssetImage } from "@/components/ui/SiteAssetImage";
 
 export type ConciergeIntent =
   | "build"
@@ -186,7 +187,6 @@ export const AIConcierge: React.FC<AIConciergeProps> = ({
     setIsAnalyzing(true);
     setRecommendation(null);
 
-    // Simulate brief system analysis state
     setTimeout(() => {
       const rec = determineIntentAndRecommendation(query);
       setRecommendation(rec);
@@ -210,15 +210,24 @@ export const AIConcierge: React.FC<AIConciergeProps> = ({
       <PointerGlow color="rgba(56, 189, 248, 0.15)" size={500} />
 
       <PerspectiveContainer perspective={1000} className="relative z-10 max-w-4xl mx-auto">
-        <div className="text-center mb-5 sm:mb-8">
-          <Reveal direction="up">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono tracking-wider text-sky-400 bg-sky-950/80 border border-sky-800/60 uppercase mb-3">
-              <span className="w-2 h-2 rounded-full bg-sky-400 animate-ping" />
-              Interactive Intent Discovery Engine
-            </div>
-            <h2 className="text-2xl sm:text-4xl font-bold text-slate-100 tracking-tight mb-2">{title}</h2>
-            <p className="text-sm sm:text-base text-slate-400">{subtitle}</p>
-          </Reveal>
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center mb-6">
+          <div className="md:col-span-8 text-left">
+            <Reveal direction="up">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono tracking-wider text-sky-400 bg-sky-950/80 border border-sky-800/60 uppercase mb-3">
+                <span className="w-2 h-2 rounded-full bg-sky-400 animate-ping" />
+                Interactive Intent Discovery Engine
+              </div>
+              <h2 className="text-2xl sm:text-4xl font-bold text-slate-100 tracking-tight mb-2">{title}</h2>
+              <p className="text-sm sm:text-base text-slate-400">{subtitle}</p>
+            </Reveal>
+          </div>
+          <div className="md:col-span-4 flex justify-center">
+            <Reveal direction="up" delay={100}>
+              <div className="w-full max-w-[200px]">
+                <SiteAssetImage pageKey="tools_hub" slotKey="ai_concierge" />
+              </div>
+            </Reveal>
+          </div>
         </div>
 
         {/* Input Form */}
