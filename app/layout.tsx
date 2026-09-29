@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SmoothScrollProvider } from "@/components/spatial/SmoothScrollProvider";
 import { CursorProvider } from "@/components/spatial/CursorSystem";
+import { SnowStructuredData } from "@/components/seo/StructuredData";
+import { siteOrigin } from "@/lib/seo";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,29 +18,30 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Snow — Interactive Technology & Design Studio",
+    default: "Snow | Spatial Technology Studio",
     template: "%s | Snow",
   },
   description:
-    "Snow is an editorial technology magazine and spatial digital laboratory engineering web, AI, software, and interactive experiences.",
-  keywords: [
-    "Snow",
-    "Spatial Web",
-    "Software Engineering",
-    "AI Integrations",
-    "Interaction Design",
-    "WebGL",
-    "Digital Studio",
-  ],
+    "Snow is a technology studio engineering high-performance web applications, intelligent AI workflows, digital products, and resilient infrastructure.",
+  metadataBase: siteOrigin,
+  alternates: { canonical: "/" },
   authors: [{ name: "Snow Technology Studio" }],
   creator: "Snow Technology Studio",
+  applicationName: "Snow",
   openGraph: {
-    title: "Snow — Interactive Technology & Design Studio",
+    title: "Snow | Spatial Technology Studio",
     description:
-      "Snow builds spatial web applications, WebGL visual systems, and custom AI integrations.",
+      "Snow engineers web applications, AI workflows, digital products, and developer utilities.",
     type: "website",
     locale: "en_US",
     siteName: "Snow",
+    url: siteOrigin,
+  },
+  twitter: {
+    card: "summary",
+    title: "Snow | Spatial Technology Studio",
+    description:
+      "Snow engineers web applications, AI workflows, digital products, and developer utilities.",
   },
   robots: {
     index: true,
@@ -71,7 +74,10 @@ export default function RootLayout({
           Skip to main content
         </a>
         <SmoothScrollProvider>
-          <CursorProvider>{children}</CursorProvider>
+          <CursorProvider>
+            <SnowStructuredData />
+            {children}
+          </CursorProvider>
         </SmoothScrollProvider>
       </body>
     </html>

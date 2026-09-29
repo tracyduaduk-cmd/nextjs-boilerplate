@@ -12,7 +12,7 @@ import { ToolRecommendation } from "@/components/tools/ToolRecommendation";
 import { Container } from "@/components/ui/Container";
 
 const SAMPLE_PATTERN = `([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})`;
-const SAMPLE_TEXT = `Contact us at support@snow.tech or engineering@snow.tech for service inquiries.
+const SAMPLE_TEXT = `Contact us at support@example.com or engineering@example.com for service inquiries.
 Direct technical contact: dajinjihn@gmail.com or emergency-triage@dev.snow.internal.`;
 
 export default function RegexToolPage() {

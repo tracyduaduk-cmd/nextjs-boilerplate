@@ -9,6 +9,7 @@ import { Reveal } from "@/components/spatial/Reveal";
 import { Tilt } from "@/components/spatial/Tilt";
 import { PerspectiveContainer } from "@/components/spatial/PerspectiveContainer";
 import { INSIGHT_ARTICLES, getArticleBySlug } from "@/lib/insights/articles";
+import { createPageMetadata } from "@/lib/seo";
 
 export async function generateStaticParams() {
   return INSIGHT_ARTICLES.map((article) => ({
@@ -30,15 +31,12 @@ export async function generateMetadata({
     };
   }
 
-  return {
+  return createPageMetadata({
     title: `${article.title} | Snow Insights`,
     description: article.excerpt,
-    openGraph: {
-      title: `${article.title} | Snow Technical Editorial`,
-      description: article.excerpt,
-      url: `https://snow.tech/insights/${article.slug}`,
-    },
-  };
+    path: `/insights/${article.slug}`,
+    type: "article",
+  });
 }
 
 export default async function ArticleDetailPage({

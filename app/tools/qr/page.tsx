@@ -12,7 +12,7 @@ import { ToolVisualStage } from "@/components/tools/ToolVisualStage";
 import { ToolRecommendation } from "@/components/tools/ToolRecommendation";
 import { Container } from "@/components/ui/Container";
 
-const SAMPLE_TEXT = "https://snow.tech/request";
+const SAMPLE_TEXT = "/request";
 
 export default function QrToolPage() {
   const [content, setContent] = useState(SAMPLE_TEXT);
