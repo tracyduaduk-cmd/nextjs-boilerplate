@@ -16,6 +16,8 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const googleSiteVerification = process.env.GOOGLE_SITE_VERIFICATION;
+
 export const metadata: Metadata = {
   title: {
     default: "Snow | Spatial Technology Studio",
@@ -43,6 +45,9 @@ export const metadata: Metadata = {
     description:
       "Snow engineers web applications, AI workflows, digital products, and developer utilities.",
   },
+  ...(googleSiteVerification
+    ? { verification: { google: googleSiteVerification } }
+    : {}),
   robots: {
     index: true,
     follow: true,
