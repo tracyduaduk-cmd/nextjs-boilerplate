@@ -370,7 +370,7 @@ export const ServiceRequestFlow: React.FC<ServiceRequestFlowProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Primary Interactive Form Section */}
           <div className="lg:col-span-8 space-y-6">
-            <PerspectiveContainer perspective={1200} className="w-full min-h-[420px]">
+            <PerspectiveContainer perspective={1200} className="w-full min-h-[420px] overflow-hidden">
               <AnimatePresence mode="wait" custom={direction}>
                 <motion.div
                   key={step}

@@ -17,7 +17,6 @@ import {
   Search,
   Palette,
   Camera,
-  Shield,
   Activity,
   Zap,
 } from "lucide-react";
@@ -212,20 +211,6 @@ const ALL_TOOLS: ToolModuleMeta[] = [
     purpose: "Inspect browser capabilities, GPU renderer, viewport bounds, hardware concurrency, and touch support.",
     icon: Activity,
     capabilities: ["WebGL / GPU renderer detection", "Hardware CPU thread concurrency", "Screen DPR & color depth", "Touch & gesture capability check"],
-    imageUrl: "https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/General/snow-tech-monitor.png",
-  },
-  {
-    id: "security",
-    slug: "/tools/security-check",
-    name: "HTTP Security Header Inspector",
-    category: "DIAGNOSTICS",
-    badge: "Preview Instrument",
-    isLocalOnly: false,
-    purpose: "Audit security headers, SSL certificate integrity, and public exposure signals.",
-    icon: Shield,
-    capabilities: ["HTTPS & TLS certificate check", "Security headers (HSTS, CSP)", "Cookie security attributes", "Defensive hardening"],
-    isComingSoon: true,
-    status: "PREVIEW",
     imageUrl: "https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/General/snow-tech-monitor.png",
   },
 ];
