@@ -5,6 +5,9 @@ import { PerspectiveContainer } from "@/components/spatial/PerspectiveContainer"
 import { Reveal } from "@/components/spatial/Reveal";
 import { ToolStatus } from "@/components/tools/ToolStatus";
 import { SystemBadge } from "@/components/spatial/SystemBadge";
+import Link from "next/link";
+import { getNavigationGroup } from "@/lib/navigation";
+import { usePathname } from "next/navigation";
 
 export interface ToolHeaderProps {
   title: string;
@@ -25,6 +28,8 @@ export const ToolHeader: React.FC<ToolHeaderProps> = ({
   statusMessage,
   isLocalOnly = true,
 }) => {
+  const pathname = usePathname();
+  const navigationGroup = getNavigationGroup(pathname);
   return (
     <header className="relative pt-20 pb-12 border-b border-slate-800/80 bg-gradient-to-b from-slate-950 via-slate-900/40 to-slate-950 overflow-hidden">
       {/* Background Grid Pattern */}
@@ -34,6 +39,15 @@ export const ToolHeader: React.FC<ToolHeaderProps> = ({
         <PerspectiveContainer perspective={1200} className="max-w-4xl">
           <Reveal direction="up">
             <div className="flex flex-wrap items-center gap-3 mb-5">
+              {navigationGroup && (
+                <div className="w-full flex flex-wrap items-center gap-2 text-[10px] font-mono uppercase tracking-[0.16em] text-slate-500">
+                  <Link href="/tools" className="text-cyan-400 hover:text-cyan-200">Tools</Link>
+                  <span aria-hidden="true">→</span>
+                  <span>{navigationGroup.label}</span>
+                  <span aria-hidden="true">→</span>
+                  <span className="text-slate-300">Current instrument</span>
+                </div>
+              )}
               <SystemBadge variant="cyan">{category}</SystemBadge>
               {badge && <SystemBadge variant="emerald">{badge}</SystemBadge>}
               {isLocalOnly && <SystemBadge variant="neutral">100% Client-Side Isolation</SystemBadge>}
