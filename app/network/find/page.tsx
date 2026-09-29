@@ -83,20 +83,9 @@ export default function FindMyDevicePage() {
     batteryLevel: string;
     onlineState: string;
     geolocationPermission: string;
-  } | null>(null);
-
-  const isMountedRef = useRef(true);
-  const activeLocateIdRef = useRef(0);
-
-  useEffect(() => {
-    isMountedRef.current = true;
-    return () => {
-      isMountedRef.current = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    const ua = typeof navigator !== "undefined" ? navigator.userAgent : "";
+  } | null>(() => {
+    if (typeof window === "undefined") return null;
+    const ua = navigator.userAgent || "";
     let browser = "Browser Native";
     if (ua.includes("Firefox")) browser = "Mozilla Firefox";
     else if (ua.includes("Edg")) browser = "Microsoft Edge";
@@ -114,7 +103,7 @@ export default function FindMyDevicePage() {
     const navMem = (navigator as unknown as { deviceMemory?: number }).deviceMemory;
     const deviceMemory = navMem ? "~" + navMem + " GB" : "Not exposed by this browser";
 
-    setDeviceSpecs({
+    return {
       browser,
       os,
       cpuCores,
@@ -122,9 +111,21 @@ export default function FindMyDevicePage() {
       batteryLevel: "Not exposed by this browser",
       onlineState: navigator.onLine ? "Online" : "Offline",
       geolocationPermission: "supported",
-    });
+    };
+  });
 
-    if (navigator.permissions && navigator.permissions.query) {
+  const isMountedRef = useRef(true);
+  const activeLocateIdRef = useRef(0);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof navigator !== "undefined" && navigator.permissions && navigator.permissions.query) {
       navigator.permissions.query({ name: "geolocation" as PermissionName }).then((perm) => {
         if (isMountedRef.current) {
           setDeviceSpecs((prev) => (prev ? { ...prev, geolocationPermission: perm.state } : null));
@@ -133,32 +134,35 @@ export default function FindMyDevicePage() {
     }
   }, []);
 
-  const fetchIpLocation = useCallback(async () => {
-    setIsIpLoading(true);
-    try {
-      const res = await fetch("https://ipwho.is/", { cache: "no-store" });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.success !== false) {
-          setIpLocation({
-            ip: data.ip || "Unknown",
-            city: data.city || "Unknown",
-            region: data.region || "Unknown",
-            country: data.country || "Unknown",
-            org: data.connection?.isp || data.org || "Unknown ISP",
-          });
-        }
-      }
-    } catch {
-      // Fallback
-    } finally {
-      if (isMountedRef.current) setIsIpLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
-    fetchIpLocation();
-  }, [fetchIpLocation]);
+    let ignore = false;
+    async function loadIp() {
+      setIsIpLoading(true);
+      try {
+        const res = await fetch("https://ipwho.is/", { cache: "no-store" });
+        if (res.ok) {
+          const data = await res.json();
+          if (!ignore && data.success !== false) {
+            setIpLocation({
+              ip: data.ip || "Unknown",
+              city: data.city || "Unknown",
+              region: data.region || "Unknown",
+              country: data.country || "Unknown",
+              org: data.connection?.isp || data.org || "Unknown ISP",
+            });
+          }
+        }
+      } catch {
+        // Fallback
+      } finally {
+        if (!ignore && isMountedRef.current) setIsIpLoading(false);
+      }
+    }
+    loadIp();
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   const requestLocation = useCallback(() => {
     if (!navigator.geolocation) {

@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Binary,
   Cpu,
@@ -47,6 +48,7 @@ interface ToolModuleMeta {
   status?: string;
   pageKey?: string;
   slotKey?: string;
+  imageUrl?: string;
 }
 
 const ALL_TOOLS: ToolModuleMeta[] = [
@@ -62,6 +64,7 @@ const ALL_TOOLS: ToolModuleMeta[] = [
     capabilities: ["Prettify & Minify", "Syntax error detection & line highlights", "Key-count metadata & depth check", "Local JSON download"],
     pageKey: "tools_json",
     slotKey: "visual_stage",
+    imageUrl: "https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/General/snow-code.png",
   },
   {
     id: "encode",
@@ -73,6 +76,7 @@ const ALL_TOOLS: ToolModuleMeta[] = [
     purpose: "Safely encode and decode strings, binary representations, and URL parameters with full UTF-8 support.",
     icon: Binary,
     capabilities: ["Standard & URL-safe Base64", "URL component encoding / decoding", "Hexadecimal representation", "Instant copy and validation"],
+    imageUrl: "https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/General/snow-developer.png",
   },
   {
     id: "uuid",
@@ -108,6 +112,7 @@ const ALL_TOOLS: ToolModuleMeta[] = [
     capabilities: ["Full ECMAScript Regex engine", "Interactive group capture highlighting", "Live string replacement test", "Common pattern cheat library"],
     pageKey: "tools_regex",
     slotKey: "visual_stage",
+    imageUrl: "https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/General/snow-design-tools.png",
   },
   {
     id: "markdown",
@@ -119,6 +124,7 @@ const ALL_TOOLS: ToolModuleMeta[] = [
     purpose: "Write, preview, and export clean Markdown document files with live HTML rendering.",
     icon: FileText,
     capabilities: ["GitHub Flavored Markdown (GFM)", "Synchronized split-screen preview", "Raw HTML export & copy", "Word, character & read-time metrics"],
+    imageUrl: "https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/General/snow-digital-design.png",
   },
   {
     id: "color",
@@ -130,6 +136,7 @@ const ALL_TOOLS: ToolModuleMeta[] = [
     purpose: "Convert HEX, RGB, HSL color models and verify WCAG AAA / AA accessibility contrast compliance ratios.",
     icon: Palette,
     capabilities: ["HEX, RGB, HSL, HSB conversions", "WCAG 2.1 Contrast Ratio verification", "Color palette generation", "Perceptual brightness analysis"],
+    imageUrl: "https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/General/snow-design-tools.png",
   },
   {
     id: "qr",
@@ -154,6 +161,7 @@ const ALL_TOOLS: ToolModuleMeta[] = [
     purpose: "Capture full-page desktop and mobile viewport screenshots of any public URL via isolated worker nodes.",
     icon: Camera,
     capabilities: ["Desktop (1920x1080) & Mobile (390x844)", "Full-page scroll screenshot capture", "High-DPI WebP & PNG output", "Real viewport rendering verification"],
+    imageUrl: "https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/General/snow-website-builder.png",
   },
   {
     id: "dns",
@@ -167,6 +175,7 @@ const ALL_TOOLS: ToolModuleMeta[] = [
     capabilities: ["A, AAAA, CNAME, MX, TXT, NS records", "Cloudflare & Google DoH query nodes", "TTL & propagation status check", "RAW JSON DNS response inspection"],
     pageKey: "network_dns",
     slotKey: "visual_stage",
+    imageUrl: "https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/General/snow-network-diagnostics.png",
   },
   {
     id: "telecom",
@@ -191,6 +200,7 @@ const ALL_TOOLS: ToolModuleMeta[] = [
     purpose: "Inspect client and host public IP addresses, ASN allocations, BGP routing paths, and reverse DNS.",
     icon: Globe2,
     capabilities: ["IPv4 & IPv6 address detection", "ASN allocation & ISP details", "BGP route verification", "Reverse PTR DNS lookup"],
+    imageUrl: "https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/General/snow-network-diagnostics.png",
   },
   {
     id: "device",
@@ -202,6 +212,7 @@ const ALL_TOOLS: ToolModuleMeta[] = [
     purpose: "Inspect browser capabilities, GPU renderer, viewport bounds, hardware concurrency, and touch support.",
     icon: Activity,
     capabilities: ["WebGL / GPU renderer detection", "Hardware CPU thread concurrency", "Screen DPR & color depth", "Touch & gesture capability check"],
+    imageUrl: "https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/General/snow-tech-monitor.png",
   },
   {
     id: "security",
@@ -215,6 +226,7 @@ const ALL_TOOLS: ToolModuleMeta[] = [
     capabilities: ["HTTPS & TLS certificate check", "Security headers (HSTS, CSP)", "Cookie security attributes", "Defensive hardening"],
     isComingSoon: true,
     status: "PREVIEW",
+    imageUrl: "https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/General/snow-tech-monitor.png",
   },
 ];
 
@@ -367,12 +379,22 @@ export default function ToolsHubPage() {
                         </SystemBadge>
                       </div>
 
-                      {/* Optional Tool Asset Thumbnail Preview */}
-                      {tool.pageKey && tool.slotKey && (
+                      {/* Tool Asset Preview (DB SiteAsset or General Storage Image) */}
+                      {tool.pageKey && tool.slotKey ? (
                         <div className="mb-4">
                           <SiteAssetImage pageKey={tool.pageKey} slotKey={tool.slotKey} />
                         </div>
-                      )}
+                      ) : tool.imageUrl ? (
+                        <div className="mb-4 relative w-full aspect-[16/9] rounded-xl overflow-hidden border border-slate-800/80">
+                          <Image
+                            src={tool.imageUrl}
+                            alt={`${tool.name} visual preview`}
+                            fill
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          />
+                        </div>
+                      ) : null}
 
                       {/* Tool Title & Category */}
                       <span className="text-[10px] font-mono uppercase tracking-widest text-cyan-400/80 block mb-1">

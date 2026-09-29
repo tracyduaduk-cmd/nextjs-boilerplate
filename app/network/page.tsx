@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 import { ToolShell } from "@/components/tools/ToolShell";
 import { ToolHeader } from "@/components/tools/ToolHeader";
@@ -30,6 +31,7 @@ const NETWORK_TOOLS = [
     badge: "GPS / Spatial",
     purpose: "Real-time browser GPS location, device recovery simulator, session location trail, and interactive spatial earth views.",
     icon: Navigation,
+    imageUrl: "https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/General/snow-tech-monitor.png",
     highlights: ["Browser-native GPS geolocation", "Device recovery simulator & demo", "Session location trail & distance", "Google Maps & Spatial Earth views"],
   },
 
@@ -40,6 +42,7 @@ const NETWORK_TOOLS = [
     badge: "Cloudflare DoH",
     purpose: "Query domain DNS records (A, AAAA, MX, TXT, CNAME, NS) directly using public DNS-over-HTTPS.",
     icon: Globe,
+    imageUrl: "https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/General/snow-network-diagnostics.png",
     highlights: ["A, AAAA, MX, TXT, CNAME, NS records", "Cloudflare DoH JSON integration", "Copy individual or full JSON results", "Zero telemetry tracking"],
   },
   {
@@ -49,6 +52,7 @@ const NETWORK_TOOLS = [
     badge: "IPv4 / IPv6",
     purpose: "Inspect your public IP address, ISP / Organization, ASN, and approximate geographic region.",
     icon: Wifi,
+    imageUrl: "https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/General/snow-network-diagnostics.png",
     highlights: ["Dual-stack IPv4 & IPv6 detection", "Approximate region & ASN details", "Clear privacy & non-tracking guarantee", "Zero database retention"],
   },
   {
@@ -58,6 +62,7 @@ const NETWORK_TOOLS = [
     badge: "100% Local",
     purpose: "Evaluate local browser capabilities, screen viewport, hardware cores, Network API, and WebGL context.",
     icon: Laptop,
+    imageUrl: "https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/General/snow-tech-monitor.png",
     highlights: ["Logical CPU cores & device memory", "Network Information API details", "WebGL renderer & unmasked vendor", "Honest 'Not exposed' fallbacks"],
   },
   {
@@ -67,6 +72,7 @@ const NETWORK_TOOLS = [
     badge: "Latency & Throughput",
     purpose: "Measure round-trip ping latency, jitter, effective connection type, and controlled download speed.",
     icon: Gauge,
+    imageUrl: "https://jwetpisuobxyypgofvsd.supabase.co/storage/v1/object/public/General/snow-network-diagnostics.png",
     highlights: ["HTTP ping round-trip latency & jitter", "Network API effective type & downlink", "Controlled user-initiated download test", "Explicit speed disclaimers"],
   },
 ];
@@ -167,6 +173,19 @@ export default function NetworkLandingPage() {
                             {tool.badge}
                           </span>
                         </div>
+
+                        {/* Optional Storage Asset Thumbnail */}
+                        {tool.imageUrl && (
+                          <div className="mb-4 relative w-full aspect-[16/9] rounded-xl overflow-hidden border border-slate-800/80">
+                            <Image
+                              src={tool.imageUrl}
+                              alt={`${tool.name} preview`}
+                              fill
+                              className="object-cover transition-transform duration-500 group-hover:scale-105"
+                              sizes="(max-width: 768px) 100vw, 50vw"
+                            />
+                          </div>
+                        )}
 
                         <h3 className="text-xl font-bold text-slate-100 mb-2 group-hover:text-sky-300 transition-colors font-sans">
                           {tool.name}
