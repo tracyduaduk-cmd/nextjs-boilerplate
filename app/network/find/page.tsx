@@ -114,51 +114,51 @@ export default function FindMyDevicePage() {
     const navMem = (navigator as unknown as { deviceMemory?: number }).deviceMemory;
     const deviceMemory = navMem ? "~" + navMem + " GB" : "Not exposed by this browser";
 
-    setDeviceSpecs({
-      browser,
-      os,
-      cpuCores,
-      deviceMemory,
-      batteryLevel: "Not exposed by this browser",
-      onlineState: navigator.onLine ? "Online" : "Offline",
-      geolocationPermission: "supported",
-    });
+    Promise.resolve().then(() => {
+      if (!isMountedRef.current) return;
+      setDeviceSpecs({
+        browser,
+        os,
+        cpuCores,
+        deviceMemory,
+        batteryLevel: "Not exposed by this browser",
+        onlineState: navigator.onLine ? "Online" : "Offline",
+        geolocationPermission: "supported",
+      });
 
-    if (navigator.permissions && navigator.permissions.query) {
-      navigator.permissions.query({ name: "geolocation" as PermissionName }).then((perm) => {
-        if (isMountedRef.current) {
-          setDeviceSpecs((prev) => (prev ? { ...prev, geolocationPermission: perm.state } : null));
-        }
-      }).catch(() => {});
-    }
-  }, []);
-
-  const fetchIpLocation = useCallback(async () => {
-    setIsIpLoading(true);
-    try {
-      const res = await fetch("https://ipwho.is/", { cache: "no-store" });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.success !== false) {
-          setIpLocation({
-            ip: data.ip || "Unknown",
-            city: data.city || "Unknown",
-            region: data.region || "Unknown",
-            country: data.country || "Unknown",
-            org: data.connection?.isp || data.org || "Unknown ISP",
-          });
-        }
+      if (navigator.permissions && navigator.permissions.query) {
+        navigator.permissions.query({ name: "geolocation" as PermissionName }).then((perm) => {
+          if (isMountedRef.current) {
+            setDeviceSpecs((prev) => (prev ? { ...prev, geolocationPermission: perm.state } : null));
+          }
+        }).catch(() => {});
       }
-    } catch {
-      // Fallback
-    } finally {
-      if (isMountedRef.current) setIsIpLoading(false);
-    }
+    });
   }, []);
 
   useEffect(() => {
-    fetchIpLocation();
-  }, [fetchIpLocation]);
+    Promise.resolve().then(() => {
+      if (!isMountedRef.current) return;
+      setIsIpLoading(true);
+      fetch("https://ipwho.is/", { cache: "no-store" })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (isMountedRef.current && data && data.success !== false) {
+            setIpLocation({
+              ip: data.ip || "Unknown",
+              city: data.city || "Unknown",
+              region: data.region || "Unknown",
+              country: data.country || "Unknown",
+              org: data.connection?.isp || data.org || "Unknown ISP",
+            });
+          }
+        })
+        .catch(() => {})
+        .finally(() => {
+          if (isMountedRef.current) setIsIpLoading(false);
+        });
+    });
+  }, []);
 
   const requestLocation = useCallback(() => {
     if (!navigator.geolocation) {
