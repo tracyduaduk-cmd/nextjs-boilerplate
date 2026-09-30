@@ -1,12 +1,10 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import Image from 'next/image';
-import { Tilt } from '@/components/spatial/Tilt';
-import { PointerGlow } from '@/components/spatial/PointerGlow';
+import React, { useState } from "react";
+import Image from "next/image";
+import { Tilt } from "@/components/spatial/Tilt";
 
-export type DeviceFrameType = 'desktop' | 'browser' | 'mobile' | 'phone';
-
+export type DeviceFrameType = "desktop" | "browser" | "mobile" | "phone";
 interface PortfolioDeviceFrameProps {
   type?: DeviceFrameType;
   src: string;
@@ -18,174 +16,23 @@ interface PortfolioDeviceFrameProps {
   priority?: boolean;
   showUrlBar?: boolean;
   urlText?: string;
-  aspectRatio?: 'video' | 'portrait' | 'auto';
+  aspectRatio?: "video" | "portrait" | "auto";
 }
 
-export function PortfolioDeviceFrame({
-  type = 'desktop',
-  src,
-  alt,
-  title,
-  caption,
-  className = '',
-  interactive = true,
-  priority = false,
-  showUrlBar = true,
-  urlText,
-  aspectRatio = 'auto',
-}: PortfolioDeviceFrameProps) {
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [hasError, setHasError] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-
-  const isMobileType = type === 'mobile' || type === 'phone';
-
-  // Fallback aspect ratios if auto
-  const finalAspectRatio =
-    aspectRatio === 'auto'
-      ? isMobileType
-        ? 'aspect-[9/19.5]'
-        : 'aspect-[16/10]'
-      : aspectRatio === 'portrait'
-      ? 'aspect-[9/16]'
-      : 'aspect-video';
-
-  if (isMobileType) {
-    return (
-      <Tilt maxRotation={interactive ? 8 : 0} className={`w-full max-w-[320px] mx-auto ${className}`}>
-        <div
-          className="relative group rounded-[2.5rem] border-[6px] sm:border-[8px] border-slate-800 bg-slate-950 p-2 shadow-2xl shadow-black/80 overflow-hidden hover:border-slate-700 transition-all duration-500"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-        >
-          <PointerGlow color="rgba(56, 189, 248, 0.15)" className="rounded-[2.2rem]" />
-
-          {/* Top Dynamic Island / Camera Notch */}
-          <div className="absolute top-3 left-1/2 -translate-x-1/2 w-24 h-4 bg-slate-900 rounded-full z-30 flex items-center justify-center border border-slate-800/80">
-            <div className="w-2.5 h-2.5 rounded-full bg-slate-950 border border-slate-700/60" />
-            <div className="w-1.5 h-1.5 rounded-full bg-cyan-900/60 ml-3" />
-          </div>
-
-          {/* Viewport Frame */}
-          <div className={`relative w-full ${finalAspectRatio} rounded-[2rem] overflow-hidden bg-slate-950 border border-slate-800/60`}>
-            {!hasError ? (
-              <Image
-                src={src}
-                alt={alt}
-                fill
-                priority={priority}
-                sizes="(max-width: 768px) 100vw, 400px"
-                className={`object-cover object-top transition-all duration-700 ${
-                  isLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
-                } ${isHovered ? 'scale-105' : 'scale-100'}`}
-                onLoad={() => setIsLoaded(true)}
-                onError={() => setHasError(true)}
-              />
-            ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center bg-slate-950 p-4 text-center">
-                <div className="w-10 h-10 rounded-full bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center font-mono text-cyan-400 text-[10px] mb-2">
-                  MOBILE
-                </div>
-                <p className="font-mono text-[11px] text-cyan-300 font-bold uppercase truncate max-w-[200px]">{alt}</p>
-              </div>
-            )}
-
-            {/* Subtle gloss overlay */}
-            <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent pointer-events-none z-10" />
-
-            {/* Bottom Home Indicator */}
-            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-28 h-1 bg-white/20 rounded-full z-20 pointer-events-none" />
-          </div>
-
-          {(title || caption) && (
-            <div className="pt-2 px-2 pb-1 text-center font-mono text-[10px] text-slate-400 truncate">
-              {title && <span className="text-slate-200 font-semibold block truncate">{title}</span>}
-              {caption && <span className="text-slate-500 block truncate">{caption}</span>}
-            </div>
-          )}
-        </div>
-      </Tilt>
-    );
-  }
-
-  // Desktop / Browser Presentation Chrome
-  return (
-    <Tilt maxRotation={interactive ? 5 : 0} className={`w-full ${className}`}>
-      <div
-        className="relative group rounded-2xl border border-slate-800 bg-slate-950 shadow-2xl overflow-hidden hover:border-sky-500/40 transition-all duration-500"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        <PointerGlow color="rgba(56, 189, 248, 0.12)" className="rounded-2xl" />
-
-        {/* Browser Chrome Header */}
-        <div className="flex items-center justify-between px-4 py-3 bg-slate-900/90 border-b border-slate-800/80 font-mono text-xs z-20 relative backdrop-blur-md">
-          <div className="flex items-center space-x-2 shrink-0">
-            <span className="w-3 h-3 rounded-full bg-rose-500/80 inline-block border border-rose-600/40" />
-            <span className="w-3 h-3 rounded-full bg-amber-500/80 inline-block border border-amber-600/40" />
-            <span className="w-3 h-3 rounded-full bg-emerald-500/80 inline-block border border-emerald-600/40" />
-          </div>
-
-          {showUrlBar && (
-            <div className="flex items-center justify-center max-w-md w-full px-3 py-1 rounded-lg bg-slate-950/80 border border-slate-800/80 text-slate-400 text-[11px] truncate mx-4 shadow-inner">
-              <svg
-                className="w-3.5 h-3.5 mr-2 text-cyan-400 shrink-0"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                />
-              </svg>
-              <span className="truncate">{urlText || 'SNOW / PRODUCTION / ACTIVE SURFACE'}</span>
-            </div>
-          )}
-
-          <div className="text-slate-400 text-[10px] uppercase tracking-wider font-semibold font-mono shrink-0 hidden sm:block">
-            {title || 'SNOW SYSTEM'}
-          </div>
-        </div>
-
-        {/* Viewport Frame */}
-        <div className={`relative w-full ${finalAspectRatio} overflow-hidden bg-slate-950`}>
-          {!hasError ? (
-            <Image
-              src={src}
-              alt={alt}
-              fill
-              priority={priority}
-              sizes="(max-width: 1200px) 100vw, 1200px"
-              className={`object-cover object-top transition-all duration-700 ${
-                isLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-102'
-              } ${isHovered ? 'scale-[1.02]' : 'scale-100'}`}
-              onLoad={() => setIsLoaded(true)}
-              onError={() => setHasError(true)}
-            />
-          ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center bg-slate-950 p-8 text-center">
-              <div className="w-12 h-12 rounded-full bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center font-mono text-cyan-400 text-xs mb-2">
-                SNOW
-              </div>
-              <p className="font-mono text-xs text-cyan-300 font-bold uppercase tracking-wider">{alt}</p>
-              <p className="font-mono text-[10px] text-slate-500 mt-1 uppercase">[DESKTOP INTERFACE MOCKUP]</p>
-            </div>
-          )}
-
-          {/* Subtle reflection overlay */}
-          <div className="absolute inset-0 bg-gradient-to-tr from-slate-950/20 via-transparent to-white/5 pointer-events-none z-10" />
-        </div>
-
-        {caption && (
-          <div className="p-3 bg-slate-950/90 border-t border-slate-800/80 text-xs font-mono text-slate-400 flex items-center justify-between">
-            <span className="truncate">{caption}</span>
-            <span className="text-[10px] text-cyan-400 font-semibold uppercase tracking-wider shrink-0 ml-2">CANONICAL ASSET</span>
-          </div>
-        )}
+export function PortfolioDeviceFrame({ type = "desktop", src, alt, title, caption, className = "", interactive = true, priority = false, showUrlBar = false, urlText }: PortfolioDeviceFrameProps) {
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
+  const phone = type === "mobile" || type === "phone";
+  const ratio = phone ? "aspect-[9/18.8]" : "aspect-[16/10]";
+  return <Tilt maxRotation={interactive ? (phone ? 6 : 3) : 0} className={`w-full ${phone ? "mx-auto max-w-[320px]" : ""} ${className}`}>
+    <div className={`relative overflow-hidden shadow-[0_24px_60px_rgba(15,23,42,.2)] ${phone ? "rounded-[2.25rem] border-[6px] border-slate-900 bg-slate-900 p-2" : "rounded-[1.15rem] border border-slate-300/80 bg-white"}`}>
+      {phone ? <div className="absolute left-1/2 top-2 z-20 h-4 w-20 -translate-x-1/2 rounded-full bg-slate-900" /> : <div className="flex h-9 items-center gap-2 border-b border-slate-200 bg-slate-50 px-3"><span className="h-2.5 w-2.5 rounded-full bg-[#ff776d]" /><span className="h-2.5 w-2.5 rounded-full bg-[#f7c94c]" /><span className="h-2.5 w-2.5 rounded-full bg-[#54c878]" />{showUrlBar && <span className="ml-3 min-w-0 flex-1 truncate rounded-full bg-white px-3 py-1 text-center font-mono text-[9px] text-slate-400">{urlText || "snow / project"}</span>}{title && <span className="hidden truncate pl-3 font-mono text-[9px] uppercase tracking-[.14em] text-slate-400 sm:block">{title}</span>}</div>}
+      <div className={`relative ${ratio} overflow-hidden bg-slate-100 ${phone ? "rounded-[1.7rem]" : ""}`}>
+        {!error ? <Image src={src} alt={alt} fill priority={priority} loading={priority ? "eager" : "lazy"} sizes={phone ? "(max-width: 768px) 35vw, 320px" : "(max-width: 1024px) 90vw, 850px"} className={`object-cover object-top transition duration-700 ${loaded ? "opacity-100" : "opacity-0"}`} onLoad={() => setLoaded(true)} onError={() => setError(true)} /> : <div className="flex h-full items-center justify-center p-6 text-center font-mono text-xs text-slate-500">{alt}</div>}
+        {!loaded && !error && <div aria-hidden="true" className="absolute inset-0 animate-pulse bg-slate-200" />}
       </div>
-    </Tilt>
-  );
+      {phone && <div className="pointer-events-none absolute bottom-2 left-1/2 z-20 h-1 w-20 -translate-x-1/2 rounded-full bg-white/70" />}
+      {caption && <div className="border-t border-slate-200 px-3 py-2 font-mono text-[10px] text-slate-500">{caption}</div>}
+    </div>
+  </Tilt>;
 }

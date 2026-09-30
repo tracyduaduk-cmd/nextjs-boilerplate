@@ -2,485 +2,70 @@
 
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ProjectWithMedia } from "@/lib/projects/types";
 import { PortfolioDeviceFrame } from "@/components/work/PortfolioDeviceFrame";
-import { GlassSurface } from "@/components/spatial/GlassSurface";
 import { Reveal } from "@/components/spatial/Reveal";
-import { PointerGlow } from "@/components/spatial/PointerGlow";
 import { getLocalPublicUrl, PortfolioProjectSlug } from "@/lib/projects/mediaManifest";
 
 interface ProjectVariantProps {
   project: ProjectWithMedia;
 }
 
-/**
- * Variant 1: FEATURED SPATIAL
- */
-export const FeaturedSpatialProject: React.FC<ProjectVariantProps> = ({ project }) => {
+function mediaUrl(project: ProjectWithMedia, role: "hero" | "desktop" | "mobile") {
   const slug = project.slug as PortfolioProjectSlug;
-  const heroUrl =
-    project.hero_media?.url ||
-    getLocalPublicUrl(slug, "hero.webp");
-  const desktopUrl =
-    project.desktop_media?.url ||
-    getLocalPublicUrl(slug, "desktop.webp");
+  const record = role === "hero" ? project.hero_media : role === "desktop" ? project.desktop_media : project.mobile_media;
+  return record?.url || getLocalPublicUrl(slug, `${role}.webp`);
+}
 
+function ProjectMeta({ project, dark = false }: ProjectVariantProps & { dark?: boolean }) {
+  const ink = dark ? "text-white" : "text-slate-950";
+  const muted = dark ? "text-white/60" : "text-slate-500";
   return (
-    <Reveal direction="up" duration={0.8} className="w-full">
-      <div className="relative group rounded-3xl border border-slate-800/90 bg-gradient-to-b from-slate-900/90 to-slate-950 p-6 md:p-10 overflow-hidden shadow-2xl hover:border-sky-500/40 transition-all duration-500">
-        <PointerGlow color="rgba(56, 189, 248, 0.12)" className="rounded-3xl pointer-events-none" />
-
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-          <div className="flex items-center gap-3 font-mono text-xs">
-            <span className="px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-400 font-semibold tracking-wide">
-              FEATURED PROJECT #{project.sort_order.toString().padStart(2, "0")}
-            </span>
-            <span className="text-slate-400">• {project.category}</span>
-          </div>
-          <span className="font-mono text-xs text-slate-500">{project.project_type_label || "Concept System"} ({project.year})</span>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          <div className="lg:col-span-7 relative z-10">
-            <PortfolioDeviceFrame
-              type="browser"
-              src={desktopUrl || heroUrl}
-              alt={`${project.title} Desktop View`}
-              title={project.title}
-              urlText={`SNOW / WORK / ${project.slug}`}
-              priority={true}
-            />
-          </div>
-
-          <div className="lg:col-span-5 relative z-20 space-y-6">
-            <GlassSurface intensity="heavy" elevation="floating" className="p-6 md:p-8 space-y-5">
-              <div>
-                <span className="text-[11px] font-mono tracking-widest text-sky-400 uppercase block mb-1">
-                  PROJECT PROFILE
-                </span>
-                <h3 className="text-3xl font-bold tracking-tight text-white font-sans">
-                  {project.title}
-                </h3>
-              </div>
-
-              <p className="text-slate-300 text-sm leading-relaxed font-sans">
-                {project.summary}
-              </p>
-
-              {project.problem && (
-                <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800/80">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-rose-400 block mb-1">
-                    THE BRIEF
-                  </span>
-                  <p className="text-xs text-slate-300 leading-relaxed">
-                    {project.problem}
-                  </p>
-                </div>
-              )}
-
-              <div className="flex flex-wrap gap-2 pt-1">
-                {project.technologies.slice(0, 4).map((tech) => (
-                  <span
-                    key={tech}
-                    className="px-2.5 py-1 rounded-md bg-slate-900/90 border border-slate-800 text-[11px] font-mono text-slate-300"
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
-
-              <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between">
-                <span className="text-xs font-mono text-slate-400">
-                  {project.client_name || "Internal Research"}
-                </span>
-                <Link
-                  href={`/work/${project.slug}`}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold font-mono text-xs transition-colors shadow-lg shadow-sky-500/20"
-                >
-                  <span>Explore Case Study</span>
-                  <span>→</span>
-                </Link>
-              </div>
-            </GlassSurface>
-          </div>
-        </div>
-      </div>
-    </Reveal>
+    <div className={`grid grid-cols-2 gap-x-5 gap-y-4 border-t ${dark ? "border-white/15" : "border-slate-950/15"} pt-5 font-mono text-[10px] uppercase tracking-[0.16em] ${muted}`}>
+      <div><span className="mb-1 block opacity-60">Category</span><span className={ink}>{project.category}</span></div>
+      <div><span className="mb-1 block opacity-60">Year</span><span className={ink}>{project.year || "Concept"}</span></div>
+      <div className="col-span-2"><span className="mb-2 block opacity-60">Technology / context</span><div className="flex flex-wrap gap-2 normal-case tracking-normal">{project.technologies.slice(0, 5).map((technology) => <span key={technology} className={`rounded-full border px-2.5 py-1 ${dark ? "border-white/15 text-white/75" : "border-slate-950/15 text-slate-600"}`}>{technology}</span>)}</div></div>
+    </div>
   );
+}
+
+function ProjectLink({ project, dark = false, label = "Explore study" }: ProjectVariantProps & { dark?: boolean; label?: string }) {
+  return <Link href={`/work/${project.slug}`} className={`group/link inline-flex min-h-11 items-center gap-3 rounded-full px-4 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em] transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 ${dark ? "bg-white text-slate-950" : "bg-slate-950 text-white"}`}>{label}<span aria-hidden="true" className="text-base transition-transform group-hover/link:translate-x-1">↗</span></Link>;
+}
+
+function BrowserStage({ project, priority = false, className = "" }: ProjectVariantProps & { priority?: boolean; className?: string }) {
+  return <div className={className}><PortfolioDeviceFrame type="browser" src={mediaUrl(project, "desktop")} alt={`${project.title} desktop interface concept`} title={project.title} priority={priority} showUrlBar={false} /></div>;
+}
+
+function ProjectEyebrow({ project, dark = false, number }: ProjectVariantProps & { dark?: boolean; number: string }) {
+  return <div className={`flex flex-wrap items-center gap-3 font-mono text-[10px] uppercase tracking-[.18em] ${dark ? "text-cyan-300" : "text-cyan-700"}`}><span className={`inline-flex h-7 items-center rounded-full px-3 ${dark ? "bg-cyan-300/10" : "bg-cyan-100"}`}>Project {number}</span><span className={dark ? "text-white/55" : "text-slate-500"}>{project.category}</span></div>;
+}
+
+/** Shared case-study presentation used by every project variant. */
+export const PremiumProjectFrame: React.FC<ProjectVariantProps & { variant?: "featured" | "stack" | "dark" | "editorial" | "split" | "minimal" }> = ({ project, variant = "featured" }) => {
+  const mobile = mediaUrl(project, "mobile");
+  const number = project.sort_order.toString().padStart(2, "0");
+  if (variant === "dark") return <Reveal className="w-full"><article className="portfolio-project portfolio-project-dark relative overflow-hidden rounded-[2rem] bg-[#101927] p-5 text-white shadow-[0_28px_80px_rgba(15,23,42,.18)] sm:p-8 lg:p-12"><div className="pointer-events-none absolute -right-24 -top-28 h-80 w-80 rounded-full bg-cyan-400/15 blur-3xl" /><div className="relative z-10 grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(19rem,.7fr)] lg:items-end lg:gap-14"><div className="order-2 lg:order-1"><BrowserStage project={project} priority={project.sort_order === 1} /></div><div className="order-1 space-y-6 lg:order-2"><ProjectEyebrow project={project} dark number={number} /><h3 className="max-w-[10ch] text-4xl font-semibold leading-[.95] tracking-[-.06em] sm:text-6xl">{project.title}</h3><p className="max-w-md text-base leading-relaxed text-white/70">{project.summary}</p><ProjectMeta project={project} dark /><ProjectLink project={project} dark label="Open project" /></div></div></article></Reveal>;
+  if (variant === "split" || variant === "stack") return <Reveal className="w-full"><article className="portfolio-project relative overflow-hidden rounded-[2rem] border border-slate-950/10 bg-white p-5 shadow-[0_24px_70px_rgba(15,23,42,.1)] sm:p-8 lg:p-12"><div className={`grid gap-8 lg:grid-cols-12 lg:items-center ${variant === "stack" ? "" : "lg:gap-14"}`}><div className={`relative min-w-0 lg:col-span-7 ${variant === "stack" ? "lg:order-2" : ""}`}><BrowserStage project={project} priority={project.sort_order === 1} /><div className="absolute -bottom-8 right-0 w-[27%] min-w-[88px] max-w-[180px] sm:-bottom-12 sm:right-4"><PortfolioDeviceFrame type="phone" src={mobile} alt={`${project.title} mobile interface concept`} title="Mobile view" showUrlBar={false} interactive={false} /></div></div><div className={`space-y-6 lg:col-span-5 ${variant === "stack" ? "lg:order-1" : ""}`}><ProjectEyebrow project={project} number={number} /><h3 className="max-w-[11ch] text-4xl font-semibold leading-[.95] tracking-[-.06em] text-slate-950 sm:text-6xl">{project.title}</h3><p className="max-w-md text-base leading-relaxed text-slate-600">{project.summary}</p><ProjectMeta project={project} /><ProjectLink project={project} /></div></div></article></Reveal>;
+  const hero = mediaUrl(project, "hero");
+  return <Reveal className="w-full"><article className={`portfolio-project relative overflow-hidden rounded-[2rem] border border-slate-950/10 p-5 shadow-[0_24px_70px_rgba(15,23,42,.1)] sm:p-8 lg:p-12 ${variant === "minimal" ? "bg-[#dff8f1]" : "bg-white"}`}><div className="mb-8 flex flex-wrap items-start justify-between gap-4"><ProjectEyebrow project={project} number={number} /><span className="rounded-full border border-slate-950/15 px-3 py-1 font-mono text-[10px] uppercase tracking-[.14em] text-slate-500">Concept study</span></div><div className="relative"><div className="relative aspect-[16/8] overflow-hidden rounded-[1.4rem] bg-slate-100 shadow-[0_24px_60px_rgba(15,23,42,.14)]"><Image src={hero} alt={`${project.title} interface concept hero`} fill priority={project.sort_order === 1} loading={project.sort_order === 1 ? "eager" : "lazy"} sizes="(max-width: 768px) 100vw, 1100px" className="object-cover" /></div><div className="relative z-10 -mt-10 ml-4 max-w-xl rounded-2xl border border-white/70 bg-white/90 p-5 shadow-[0_18px_50px_rgba(15,23,42,.14)] backdrop-blur sm:ml-10 sm:p-7"><h3 className="text-3xl font-semibold leading-none tracking-[-.05em] text-slate-950 sm:text-5xl">{project.title}</h3><p className="mt-4 text-sm leading-relaxed text-slate-600 sm:text-base">{project.summary}</p><div className="mt-6"><ProjectLink project={project} /></div></div></div><div className="mt-8 max-w-2xl"><ProjectMeta project={project} /></div></article></Reveal>;
 };
 
-/**
- * Variant 2: DEVICE STACK
- */
-export const DeviceStackProject: React.FC<ProjectVariantProps> = ({ project }) => {
-  const slug = project.slug as PortfolioProjectSlug;
-  const desktopUrl =
-    project.desktop_media?.url ||
-    getLocalPublicUrl(slug, "desktop.webp");
-  const mobileUrl =
-    project.mobile_media?.url ||
-    getLocalPublicUrl(slug, "mobile.webp");
-
-  return (
-    <Reveal direction="up" duration={0.8} className="w-full">
-      <div className="relative group rounded-3xl border border-slate-800 bg-slate-950 p-6 md:p-10 overflow-hidden shadow-2xl hover:border-slate-700 transition-all duration-500">
-        <PointerGlow color="rgba(125, 211, 252, 0.08)" className="rounded-3xl pointer-events-none" />
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          <div className="lg:col-span-5 space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-xs font-mono text-slate-300">
-              <span>PROJECT #{project.sort_order.toString().padStart(2, "0")}</span>
-              <span>•</span>
-              <span className="text-sky-400">{project.category}</span>
-            </div>
-
-            <h3 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-100 font-sans">
-              {project.title}
-            </h3>
-
-            <p className="text-slate-300 text-sm leading-relaxed font-sans">
-              {project.summary}
-            </p>
-
-            <div className="space-y-2 font-mono text-xs">
-              <div className="text-slate-500 uppercase tracking-wider text-[10px]">PROJECT NOTE</div>
-              <p className="text-slate-300 italic bg-slate-900/60 p-3 rounded-xl border border-slate-800">
-                &quot;{project.results}&quot;
-              </p>
-            </div>
-
-            <div className="flex flex-wrap gap-2 pt-2">
-              {project.technologies.map((tech) => (
-                <span
-                  key={tech}
-                  className="px-2.5 py-1 rounded-md bg-slate-900 border border-slate-800 text-[11px] font-mono text-slate-400"
-                >
-                  {tech}
-                </span>
-              ))}
-            </div>
-
-            <div className="pt-4 border-t border-slate-900">
-              <Link
-                href={`/work/${project.slug}`}
-                className="inline-flex items-center gap-2 font-mono text-xs text-sky-400 hover:text-sky-300 font-semibold group/link"
-              >
-                <span>View Project</span>
-                <span className="group-hover/link:translate-x-1 transition-transform">→</span>
-              </Link>
-            </div>
-          </div>
-
-          <div className="lg:col-span-7 relative min-h-[380px] sm:min-h-[460px] flex items-center justify-center p-2 sm:p-4">
-            <div className="w-[85%] sm:w-[88%] transform -rotate-1 group-hover:rotate-0 transition-transform duration-700 shadow-2xl relative z-10">
-              <PortfolioDeviceFrame
-                type="browser"
-                src={desktopUrl}
-                alt={`${project.title} Desktop View`}
-                title={`${project.title} Desktop`}
-                urlText={`SNOW / APP / ${project.slug}`}
-              />
-            </div>
-
-            <div className="absolute right-0 sm:right-4 bottom-0 sm:bottom-2 w-[45%] sm:w-[38%] z-20 transform translate-y-2 group-hover:translate-y-0 transition-all duration-700 drop-shadow-[0_25px_50px_rgba(0,0,0,0.9)]">
-              <PortfolioDeviceFrame
-                type="phone"
-                src={mobileUrl}
-                alt={`${project.title} Mobile View`}
-                title="MOBILE"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </Reveal>
-  );
-};
-
-/**
- * Variant 3: DARK LAB
- */
-export const DarkLabProject: React.FC<ProjectVariantProps> = ({ project }) => {
-  const slug = project.slug as PortfolioProjectSlug;
-  const desktopUrl =
-    project.desktop_media?.url ||
-    getLocalPublicUrl(slug, "desktop.webp");
-
-  return (
-    <Reveal direction="up" duration={0.8} className="w-full">
-      <div className="relative group rounded-3xl border border-sky-900/30 bg-slate-950 p-6 md:p-10 overflow-hidden shadow-2xl hover:border-sky-500/50 transition-all duration-500">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(14,165,233,0.15),transparent_70%)] pointer-events-none" />
-
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-6 relative z-10">
-          <div className="flex items-center gap-2 font-mono text-xs text-sky-400">
-            <span className="w-2 h-2 rounded-full bg-sky-400 animate-ping" />
-            <span>SNOW LAB #{project.sort_order.toString().padStart(2, "0")}</span>
-          </div>
-          <span className="px-3 py-1 rounded-full bg-slate-900 border border-slate-800 font-mono text-xs text-slate-400">
-            {project.category}
-          </span>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
-          <div className="lg:col-span-7">
-            <PortfolioDeviceFrame
-              type="browser"
-              src={desktopUrl}
-              alt={`${project.title} Laboratory View`}
-              title="LAB SPEC"
-              urlText={`SNOW / PROTOCOL / ${project.slug}`}
-            />
-          </div>
-
-          <div className="lg:col-span-5 space-y-6">
-            <div>
-              <span className="text-[10px] font-mono tracking-widest text-emerald-400 uppercase block mb-1">
-                DESIGN & BUILD
-              </span>
-              <h3 className="text-3xl font-bold tracking-tight text-slate-100 font-sans">
-                {project.title}
-              </h3>
-            </div>
-
-            <p className="text-slate-300 text-sm leading-relaxed font-sans">
-              {project.summary}
-            </p>
-
-            <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 space-y-2">
-              <span className="text-[10px] font-mono uppercase text-slate-400 block">THE APPROACH</span>
-              <p className="text-xs text-slate-300 leading-relaxed font-sans">
-                {project.solution}
-              </p>
-            </div>
-
-            <div className="pt-2 flex items-center justify-between">
-              <div className="flex flex-wrap gap-1.5 max-w-[220px]">
-                {project.technologies.slice(0, 3).map((tech) => (
-                  <span key={tech} className="px-2 py-0.5 rounded text-[10px] font-mono bg-sky-950/60 border border-sky-800/60 text-sky-300">
-                    {tech}
-                  </span>
-                ))}
-              </div>
-
-              <Link
-                href={`/work/${project.slug}`}
-                className="px-4 py-2 rounded-xl bg-slate-900 border border-sky-500/40 hover:border-sky-400 text-sky-400 text-xs font-mono font-semibold transition-all hover:bg-sky-500/10"
-              >
-                Explore Project →
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Reveal>
-  );
-};
-
-/**
- * Variant 4: EDITORIAL
- */
-export const EditorialProject: React.FC<ProjectVariantProps> = ({ project }) => {
-  const slug = project.slug as PortfolioProjectSlug;
-  const desktopUrl =
-    project.desktop_media?.url ||
-    getLocalPublicUrl(slug, "desktop.webp");
-
-  return (
-    <Reveal direction="up" duration={0.8} className="w-full">
-      <div className="relative group rounded-3xl border border-slate-800 bg-slate-900/60 p-6 md:p-12 overflow-hidden hover:border-slate-700 transition-all duration-500">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          <div className="lg:col-span-6 space-y-6 z-10">
-            <div className="font-mono text-xs text-slate-500">
-              PROJECT RECORD #{project.sort_order.toString().padStart(2, "0")} — {project.category}
-            </div>
-
-            <h3 className="text-4xl sm:text-5xl font-bold tracking-tight text-slate-100 font-sans leading-[1.05]">
-              {project.title}
-            </h3>
-
-            <p className="text-base text-slate-300 leading-relaxed max-w-lg font-sans">
-              {project.summary}
-            </p>
-
-            <div className="pt-2 flex items-center gap-4">
-              <Link
-                href={`/work/${project.slug}`}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-white text-slate-950 font-semibold text-xs font-mono transition-colors"
-              >
-                <span>Read Case Study</span>
-                <span>→</span>
-              </Link>
-              <span className="text-xs font-mono text-slate-500">
-                {project.project_type_label || "Platform Study"}
-              </span>
-            </div>
-          </div>
-
-          <div className="lg:col-span-6 relative">
-            <PortfolioDeviceFrame
-              type="browser"
-              src={desktopUrl}
-              alt={project.title}
-              title="EDITORIAL"
-              urlText={`SNOW / EDITORIAL / ${project.slug}`}
-            />
-          </div>
-        </div>
-      </div>
-    </Reveal>
-  );
-};
-
-/**
- * Variant 5: SPLIT PERSPECTIVE
- */
-export const SplitPerspectiveProject: React.FC<ProjectVariantProps> = ({ project }) => {
-  const slug = project.slug as PortfolioProjectSlug;
-  const desktopUrl =
-    project.desktop_media?.url ||
-    getLocalPublicUrl(slug, "desktop.webp");
-  const mobileUrl =
-    project.mobile_media?.url ||
-    getLocalPublicUrl(slug, "mobile.webp");
-
-  return (
-    <Reveal direction="up" duration={0.8} className="w-full">
-      <div className="relative group rounded-3xl border border-slate-800 bg-slate-950 p-6 md:p-10 overflow-hidden hover:border-slate-700 transition-all duration-500">
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-          <div>
-            <span className="text-xs font-mono text-sky-400 block mb-1">
-              PROJECT #{project.sort_order.toString().padStart(2, "0")} • {project.category}
-            </span>
-            <h3 className="text-3xl font-bold text-slate-100 font-sans">
-              {project.title}
-            </h3>
-          </div>
-          <Link
-            href={`/work/${project.slug}`}
-            className="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white text-xs font-mono transition-colors"
-          >
-            Explore Dual View →
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-          <div className="md:col-span-8">
-            <PortfolioDeviceFrame
-              type="browser"
-              src={desktopUrl}
-              alt={`${project.title} Desktop View`}
-              title="DESKTOP VIEW"
-              urlText={`SNOW / DESKTOP / ${project.slug}`}
-            />
-          </div>
-
-          <div className="md:col-span-4">
-            <PortfolioDeviceFrame
-              type="phone"
-              src={mobileUrl}
-              alt={`${project.title} Mobile View`}
-              title="MOBILE VIEW"
-            />
-          </div>
-        </div>
-
-        <div className="mt-6 pt-4 border-t border-slate-900 flex flex-wrap items-center justify-between gap-4">
-          <p className="text-xs text-slate-400 max-w-xl font-sans">
-            {project.summary}
-          </p>
-          <div className="flex gap-2">
-            {project.technologies.slice(0, 3).map((t) => (
-              <span key={t} className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-400">
-                {t}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-    </Reveal>
-  );
-};
-
-/**
- * Variant 6: MINIMAL EDITORIAL
- */
-export const MinimalProject: React.FC<ProjectVariantProps> = ({ project }) => {
-  const slug = project.slug as PortfolioProjectSlug;
-  const heroUrl =
-    project.hero_media?.url ||
-    getLocalPublicUrl(slug, "hero.webp");
-
-  return (
-    <Reveal direction="up" duration={0.8} className="w-full">
-      <div className="relative group rounded-3xl border border-slate-200/20 bg-slate-100 text-slate-950 p-6 md:p-12 overflow-hidden shadow-2xl transition-all duration-500">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          <div className="lg:col-span-5 space-y-6">
-            <div className="font-mono text-xs text-slate-600 uppercase tracking-wider">
-              {project.category} -- RECORD #{project.sort_order.toString().padStart(2, "0")}
-            </div>
-
-            <h3 className="text-4xl font-bold tracking-tight text-slate-950 font-sans">
-              {project.title}
-            </h3>
-
-            <p className="text-slate-700 text-sm leading-relaxed font-sans">
-              {project.summary}
-            </p>
-
-            <div className="pt-2 border-t border-slate-300/80">
-              <span className="text-[11px] font-mono text-slate-500 block mb-2">
-                SCOPE & APPROACH
-              </span>
-              <p className="text-xs text-slate-800 leading-relaxed">
-                {project.solution}
-              </p>
-            </div>
-
-            <div className="pt-4 flex items-center justify-between">
-              <span className="text-xs font-mono text-slate-500">
-                {project.project_type_label || "Design Exploration"}
-              </span>
-              <Link
-                href={`/work/${project.slug}`}
-                className="px-4 py-2 rounded-xl bg-slate-950 text-white hover:bg-slate-800 text-xs font-mono font-semibold transition-colors"
-              >
-                View Study →
-              </Link>
-            </div>
-          </div>
-
-          <div className="lg:col-span-7">
-            <PortfolioDeviceFrame
-              type="browser"
-              src={heroUrl}
-              alt={project.title}
-              title="STUDIO VIEW"
-              urlText={`SNOW / STUDIO / ${project.slug}`}
-            />
-          </div>
-        </div>
-      </div>
-    </Reveal>
-  );
-};
+export const FeaturedSpatialProject: React.FC<ProjectVariantProps> = ({ project }) => <PremiumProjectFrame project={project} variant="featured" />;
+export const DeviceStackProject: React.FC<ProjectVariantProps> = ({ project }) => <PremiumProjectFrame project={project} variant="stack" />;
+export const DarkLabProject: React.FC<ProjectVariantProps> = ({ project }) => <PremiumProjectFrame project={project} variant="dark" />;
+export const EditorialProject: React.FC<ProjectVariantProps> = ({ project }) => <PremiumProjectFrame project={project} variant="editorial" />;
+export const SplitPerspectiveProject: React.FC<ProjectVariantProps> = ({ project }) => <PremiumProjectFrame project={project} variant="split" />;
+export const MinimalProject: React.FC<ProjectVariantProps> = ({ project }) => <PremiumProjectFrame project={project} variant="minimal" />;
 
 export const ProjectCompositionMapper: React.FC<ProjectVariantProps> = ({ project }) => {
-  const variant = project.composition_variant || "featured";
-
-  switch (variant) {
-    case "featured":
-      return <FeaturedSpatialProject project={project} />;
-    case "device-stack":
-      return <DeviceStackProject project={project} />;
-    case "dark-lab":
-      return <DarkLabProject project={project} />;
-    case "editorial":
-      return <EditorialProject project={project} />;
-    case "split-perspective":
-      return <SplitPerspectiveProject project={project} />;
-    case "minimal":
-      return <MinimalProject project={project} />;
-    default:
-      return <FeaturedSpatialProject project={project} />;
+  switch (project.composition_variant) {
+    case "device-stack": return <DeviceStackProject project={project} />;
+    case "dark-lab": return <DarkLabProject project={project} />;
+    case "editorial": return <EditorialProject project={project} />;
+    case "split-perspective": return <SplitPerspectiveProject project={project} />;
+    case "minimal": return <MinimalProject project={project} />;
+    default: return <FeaturedSpatialProject project={project} />;
   }
 };
