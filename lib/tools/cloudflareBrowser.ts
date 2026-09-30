@@ -82,9 +82,9 @@ export async function captureScreenshotWithCloudflare(
       const status = response.status;
       let errorText = "";
       try {
-        errorText = await response.text();
+        errorText = (await response.text()).toLowerCase();
       } catch {
-        errorText = "Failed to read response body";
+        errorText = "";
       }
 
       if (status === 401 || status === 403) {
@@ -121,7 +121,7 @@ export async function captureScreenshotWithCloudflare(
         success: false,
         error: {
           errorCategory: "RENDER_FAILED",
-          errorMessage: `Cloudflare screenshot rendering failed (HTTP ${status}): ${errorText.substring(0, 200)}`,
+          errorMessage: `Cloudflare could not render the requested website. Please try again.`,
         },
       };
     }
@@ -152,7 +152,7 @@ export async function captureScreenshotWithCloudflare(
       success: false,
       error: {
         errorCategory: "RENDER_FAILED",
-        errorMessage: err instanceof Error ? err.message : String(err),
+        errorMessage: "The external browser service could not reach the requested website. Please try again.",
       },
     };
   }
@@ -206,9 +206,9 @@ export async function generatePdfWithCloudflare(
       const status = response.status;
       let errorText = "";
       try {
-        errorText = await response.text();
+        errorText = (await response.text()).toLowerCase();
       } catch {
-        errorText = "Failed to read response body";
+        errorText = "";
       }
 
       if (status === 401 || status === 403) {
@@ -245,7 +245,7 @@ export async function generatePdfWithCloudflare(
         success: false,
         error: {
           errorCategory: "RENDER_FAILED",
-          errorMessage: `Cloudflare PDF rendering failed (HTTP ${status}): ${errorText.substring(0, 200)}`,
+          errorMessage: `Cloudflare could not generate the requested PDF. Please try again.`,
         },
       };
     }
@@ -275,7 +275,7 @@ export async function generatePdfWithCloudflare(
       success: false,
       error: {
         errorCategory: "RENDER_FAILED",
-        errorMessage: err instanceof Error ? err.message : String(err),
+        errorMessage: "The external browser service could not reach the requested website. Please try again.",
       },
     };
   }

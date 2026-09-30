@@ -113,7 +113,7 @@ export async function POST(request: Request) {
         {
           success: false,
           errorCategory: "TARGET_UNREACHABLE",
-          errorMessage: `Failed to connect to target URL: ${err instanceof Error ? err.message : String(err)}`,
+          errorMessage: "The target website could not be reached. Check the URL and try again.",
         },
         { status: 502 }
       );
@@ -283,12 +283,12 @@ export async function POST(request: Request) {
       data: inspectionData,
       inspectedAt: new Date().toISOString(),
     });
-  } catch (err: unknown) {
+  } catch {
     return NextResponse.json(
       {
         success: false,
         errorCategory: "UNKNOWN_ERROR",
-        errorMessage: err instanceof Error ? err.message : "An unexpected server error occurred.",
+        errorMessage: "The inspection could not be completed. Please try again.",
       },
       { status: 500 }
     );

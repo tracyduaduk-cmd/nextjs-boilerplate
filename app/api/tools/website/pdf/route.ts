@@ -60,12 +60,12 @@ export async function POST(request: Request) {
       sizeBytes: result.pdfBuffer.length,
       generatedAt: new Date().toISOString(),
     });
-  } catch (err: unknown) {
+  } catch {
     return NextResponse.json(
       {
         success: false,
         errorCategory: "UNKNOWN_ERROR",
-        errorMessage: err instanceof Error ? err.message : "An unexpected server error occurred.",
+        errorMessage: "The PDF could not be generated. Please try again.",
       },
       { status: 500 }
     );
