@@ -8,10 +8,22 @@ export type CompositionVariant =
   | "minimal"
   | "split-perspective";
 
+export type ProjectMediaRole =
+  | "hero"
+  | "desktop"
+  | "mobile"
+  | "browser"
+  | "phone"
+  | "interface"
+  | "detail"
+  | "architecture"
+  | "gallery";
+
 export interface ProjectMediaRecord {
   id: string;
   project_id: string;
   media_type: MediaType;
+  role?: ProjectMediaRole;
   title: string | null;
   url: string;
   thumbnail_url: string | null;

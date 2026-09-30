@@ -6,17 +6,17 @@ import Image from 'next/image';
 import { ArrowUpRight, Check, Sparkles } from 'lucide-react';
 import { ServiceRecord } from '@/lib/services/types';
 import { CAPABILITY_FAMILIES } from '@/lib/services/capabilityFamilies';
-import { getPublicUrl } from '@/lib/projects/mediaManifest';
+import { getLocalPublicUrl } from '@/lib/projects/mediaManifest';
 
 const FAMILY_VISUALS: Record<string, { image: string; eyebrow: string; tone: string }> = {
-  WEB: { image: getPublicUrl('aurora-commerce', 'hero.webp'), eyebrow: 'WEB / DIGITAL PRODUCTS', tone: 'from-cyan-400/30' },
-  'APPS & SOFTWARE': { image: getPublicUrl('pulse-health', 'desktop.webp'), eyebrow: 'MOBILE / SOFTWARE', tone: 'from-violet-400/30' },
-  AI: { image: getPublicUrl('nova-ai-assistant', 'hero.webp'), eyebrow: 'AI / AUTOMATION', tone: 'from-fuchsia-400/30' },
-  INFRASTRUCTURE: { image: getPublicUrl('atlas-business-portal', 'desktop.webp'), eyebrow: 'SYSTEMS / INFRASTRUCTURE', tone: 'from-emerald-400/30' },
-  'SECURITY & RECOVERY': { image: getPublicUrl('orbit-finance', 'desktop.webp'), eyebrow: 'SECURITY / RECOVERY', tone: 'from-amber-400/30' },
-  'DIGITAL GROWTH': { image: getPublicUrl('studio-landing', 'hero.webp'), eyebrow: 'GROWTH / PERFORMANCE', tone: 'from-rose-400/30' },
-  'DEVICES & HARDWARE': { image: getPublicUrl('orbit-finance', 'desktop.webp'), eyebrow: 'DEVICES / HARDWARE', tone: 'from-orange-400/30' },
-  'BUSINESS IT': { image: getPublicUrl('atlas-business-portal', 'hero.webp'), eyebrow: 'BUSINESS / SUPPORT', tone: 'from-sky-400/30' },
+  WEB: { image: getLocalPublicUrl('aurora-commerce', 'hero.webp'), eyebrow: 'WEB / DIGITAL PRODUCTS', tone: 'from-cyan-400/30' },
+  'APPS & SOFTWARE': { image: getLocalPublicUrl('pulse-health', 'desktop.webp'), eyebrow: 'MOBILE / SOFTWARE', tone: 'from-violet-400/30' },
+  AI: { image: getLocalPublicUrl('nova-ai-assistant', 'hero.webp'), eyebrow: 'AI / AUTOMATION', tone: 'from-fuchsia-400/30' },
+  INFRASTRUCTURE: { image: getLocalPublicUrl('atlas-business-portal', 'desktop.webp'), eyebrow: 'SYSTEMS / INFRASTRUCTURE', tone: 'from-emerald-400/30' },
+  'SECURITY & RECOVERY': { image: getLocalPublicUrl('orbit-finance', 'desktop.webp'), eyebrow: 'SECURITY / RECOVERY', tone: 'from-amber-400/30' },
+  'DIGITAL GROWTH': { image: getLocalPublicUrl('studio-landing', 'hero.webp'), eyebrow: 'GROWTH / PERFORMANCE', tone: 'from-rose-400/30' },
+  'DEVICES & HARDWARE': { image: getLocalPublicUrl('orbit-finance', 'desktop.webp'), eyebrow: 'DEVICES / HARDWARE', tone: 'from-orange-400/30' },
+  'BUSINESS IT': { image: getLocalPublicUrl('atlas-business-portal', 'hero.webp'), eyebrow: 'BUSINESS / SUPPORT', tone: 'from-sky-400/30' },
 };
 
 interface ServicesStudioProps { services: ServiceRecord[]; }
@@ -44,7 +44,7 @@ export function ServicesStudio({ services }: ServicesStudioProps) {
             <p className="mt-8 max-w-xl text-lg leading-relaxed text-slate-300 sm:text-xl">Snow designs, builds, and looks after digital products that need to feel as considered as they are capable.</p>
           </div>
           <div className="relative hidden min-h-[300px] overflow-hidden rounded-[2rem] border border-white/15 bg-white/5 lg:block">
-            <Image src={getPublicUrl('nova-ai-assistant', 'hero.webp')} alt="Snow AI interface concept" fill priority className="object-cover opacity-80 mix-blend-screen" sizes="40vw" />
+            <Image src={getLocalPublicUrl('nova-ai-assistant', 'hero.webp')} alt="Snow AI interface concept" fill priority className="object-cover opacity-80 mix-blend-screen" sizes="40vw" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#101b2a] via-transparent to-cyan-300/10" />
             <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between font-mono text-[10px] uppercase tracking-[.18em] text-cyan-200"><span>Design + engineering</span><span>01 / 08</span></div>
           </div>

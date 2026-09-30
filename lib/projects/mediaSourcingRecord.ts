@@ -1,4 +1,10 @@
-import { PORTFOLIO_PROJECT_SLUGS, PortfolioProjectSlug, PortfolioAssetRole, getPublicUrl } from "./mediaManifest";
+import {
+  PORTFOLIO_PROJECT_SLUGS,
+  PortfolioProjectSlug,
+  PortfolioAssetFilename,
+  PortfolioAssetRole,
+  getPublicUrl,
+} from "./mediaManifest";
 
 export interface SourcingRecordEntry {
   projectSlug: PortfolioProjectSlug;
@@ -14,7 +20,7 @@ export interface SourcingRecordEntry {
 export const MEDIA_SOURCING_RECORDS: SourcingRecordEntry[] = PORTFOLIO_PROJECT_SLUGS.flatMap((slug) => {
   const roles: PortfolioAssetRole[] = ["hero", "desktop", "mobile"];
   return roles.map((role) => {
-    const filename = `${role}.webp` as const;
+    const filename = `${role}.webp` as PortfolioAssetFilename;
     return {
       projectSlug: slug,
       role,

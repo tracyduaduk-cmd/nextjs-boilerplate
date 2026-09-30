@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { ProjectMediaRecord } from "@/lib/projects/types";
+import { ProjectMediaRecord, ProjectMediaRole } from "@/lib/projects/types";
 import { SpatialMedia } from "@/components/spatial/SpatialMedia";
 import { Tilt } from "@/components/spatial/Tilt";
 
@@ -15,32 +15,22 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ mediaItems, projectT
 
   if (!mediaItems || mediaItems.length === 0) return null;
 
+  const getRole = (item: ProjectMediaRecord, index: number): ProjectMediaRole => {
+    if (item.role) return item.role;
+    const value = `${item.title || ""} ${item.url}`.toLowerCase();
+    if (value.includes("hero")) return "hero";
+    if (value.includes("mobile")) return "mobile";
+    if (value.includes("desktop")) return "desktop";
+    return index === 0 ? "gallery" : "interface";
+  };
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
-        {mediaItems.map((item) => {
-          const isMobile =
-            item.sort_order === 3 ||
-            item.title?.toLowerCase().includes("mobile") ||
-            item.url.includes("mobile");
-          const isDesktop =
-            item.sort_order === 2 ||
-            item.title?.toLowerCase().includes("desktop") ||
-            item.url.includes("desktop");
-          const isHero =
-            item.sort_order === 1 ||
-            item.title?.toLowerCase().includes("hero") ||
-            item.url.includes("hero");
-
-          const roleLabel = isHero
-            ? "HERO VIEW"
-            : isDesktop
-            ? "DESKTOP VIEW"
-            : isMobile
-            ? "MOBILE VIEW"
-            : item.media_type.toUpperCase();
-
-          const aspectRatio = isMobile ? "portrait" : "video";
+        {mediaItems.map((item, index) => {
+          const role = getRole(item, index);
+          const roleLabel = `${role.toUpperCase()} VIEW`;
+          const aspectRatio = role === "mobile" || role === "phone" ? "portrait" : "video";
 
           return (
             <Tilt key={item.id} maxRotation={5} className="w-full">
@@ -102,7 +92,7 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({ mediaItems, projectT
                 alt={selectedMedia.alt_text || projectTitle}
                 title={selectedMedia.title || projectTitle}
                 caption={selectedMedia.alt_text}
-                aspectRatio={selectedMedia.sort_order === 3 ? "portrait" : "auto"}
+                aspectRatio={getRole(selectedMedia, mediaItems.indexOf(selectedMedia)) === "mobile" ? "portrait" : "auto"}
                 className="max-h-[75vh] w-auto max-w-full"
                 priority={true}
               />

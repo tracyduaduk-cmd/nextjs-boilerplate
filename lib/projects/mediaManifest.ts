@@ -15,15 +15,31 @@ export const PORTFOLIO_PROJECT_SLUGS = [
 
 export type PortfolioProjectSlug = (typeof PORTFOLIO_PROJECT_SLUGS)[number];
 
-export const PORTFOLIO_ASSET_FILENAMES = [
-  "hero.webp",
-  "desktop.webp",
-  "mobile.webp",
+/** Canonical roles for project media. The current storage set implements the first three;
+ * later roles can be added without changing consumers or URL conventions. */
+export const PORTFOLIO_MEDIA_ROLES = [
+  "hero",
+  "desktop",
+  "mobile",
+  "browser",
+  "phone",
+  "interface",
+  "detail",
+  "architecture",
+  "gallery",
 ] as const;
 
+export type PortfolioAssetRole = (typeof PORTFOLIO_MEDIA_ROLES)[number];
+
+/** Files already present in the repository and mirrored by the upload script. */
+export const PORTFOLIO_ASSET_FILENAMES = ["hero.webp", "desktop.webp", "mobile.webp"] as const;
 export type PortfolioAssetFilename = (typeof PORTFOLIO_ASSET_FILENAMES)[number];
 
-export type PortfolioAssetRole = "hero" | "desktop" | "mobile";
+const ROLE_BY_FILENAME: Record<PortfolioAssetFilename, PortfolioAssetRole> = {
+  "hero.webp": "hero",
+  "desktop.webp": "desktop",
+  "mobile.webp": "mobile",
+};
 
 export interface PortfolioAssetSource {
   sourceUrl?: string | null;
@@ -41,59 +57,30 @@ export interface PortfolioAsset extends PortfolioAssetSource {
   publicUrl: string;
 }
 
+export const MEDIA_TAXONOMY = {
+  project: ["hero", "desktop", "mobile", "browser", "phone", "detail", "interface", "architecture"],
+  services: ["web-development", "digital-products", "ui-ux", "mobile", "ai", "saas", "e-commerce", "experimental"],
+  capabilities: ["spatial-webgl", "data-tools", "network", "website-lab", "ai-concierge", "care", "telecom"],
+  editorial: ["technology", "devices", "interface-closeups", "abstract-technical", "studio-atmospheric"],
+} as const;
+
+export type MediaTaxonomyGroup = keyof typeof MEDIA_TAXONOMY;
+export type MediaTaxonomyTag = (typeof MEDIA_TAXONOMY)[MediaTaxonomyGroup][number];
+
 const SNOW_CONCEPT_LICENSE =
   "Original fictional interface created by Snow for portfolio demonstration. Not represented as a third-party client deliverable.";
 
-const CURATED_SOURCE_BY_PROJECT: Record<PortfolioProjectSlug, PortfolioAssetSource> = {
-  "aurora-commerce": {
-    sourceUrl: null,
-    provider: "Snow — Original Concept Interface",
-    attribution: "Original Snow concept interface — generated internally for portfolio demonstration.",
-    licenseNote: SNOW_CONCEPT_LICENSE,
-  },
-  "pulse-health": {
-    sourceUrl: null,
-    provider: "Snow — Original Concept Interface",
-    attribution: "Original Snow concept interface — generated internally for portfolio demonstration.",
-    licenseNote: SNOW_CONCEPT_LICENSE,
-  },
-  "orbit-finance": {
-    sourceUrl: null,
-    provider: "Snow — Original Concept Interface",
-    attribution: "Original Snow concept interface — generated internally for portfolio demonstration.",
-    licenseNote: SNOW_CONCEPT_LICENSE,
-  },
-  "nova-ai-assistant": {
-    sourceUrl: null,
-    provider: "Snow — Original Concept Interface",
-    attribution: "Original Snow concept interface — generated internally for portfolio demonstration.",
-    licenseNote: SNOW_CONCEPT_LICENSE,
-  },
-  "atlas-business-portal": {
-    sourceUrl: null,
-    provider: "Snow — Original Concept Interface",
-    attribution: "Original Snow concept interface — generated internally for portfolio demonstration.",
-    licenseNote: SNOW_CONCEPT_LICENSE,
-  },
-  "studio-landing": {
-    sourceUrl: null,
-    provider: "Snow — Original Concept Interface",
-    attribution: "Original Snow concept interface — generated internally for portfolio demonstration.",
-    licenseNote: SNOW_CONCEPT_LICENSE,
-  },
-  "local-services-platform": {
-    sourceUrl: null,
-    provider: "Snow — Original Concept Interface",
-    attribution: "Original Snow concept interface — generated internally for portfolio demonstration.",
-    licenseNote: SNOW_CONCEPT_LICENSE,
-  },
-  "secure-account-recovery": {
-    sourceUrl: null,
-    provider: "Snow — Original Concept Interface",
-    attribution: "Original Snow concept interface — generated internally for portfolio demonstration.",
-    licenseNote: SNOW_CONCEPT_LICENSE,
-  },
-};
+const CURATED_SOURCE_BY_PROJECT: Record<PortfolioProjectSlug, PortfolioAssetSource> = Object.fromEntries(
+  PORTFOLIO_PROJECT_SLUGS.map((slug) => [
+    slug,
+    {
+      sourceUrl: null,
+      provider: "Snow Original Concept Interface",
+      attribution: "Original Snow concept interface created for portfolio demonstration.",
+      licenseNote: SNOW_CONCEPT_LICENSE,
+    },
+  ]),
+) as Record<PortfolioProjectSlug, PortfolioAssetSource>;
 
 export const PORTFOLIO_ASSET_SOURCES: Record<
   PortfolioProjectSlug,
@@ -115,6 +102,10 @@ export function isPortfolioAssetFilename(filename: string): filename is Portfoli
   return (PORTFOLIO_ASSET_FILENAMES as readonly string[]).includes(filename);
 }
 
+export function getRoleForFilename(filename: PortfolioAssetFilename): PortfolioAssetRole {
+  return ROLE_BY_FILENAME[filename];
+}
+
 export function getStoragePath(slug: string, filename: PortfolioAssetFilename): string {
   return `projects/${slug}/${filename}`;
 }
@@ -134,7 +125,7 @@ export function getLocalPath(slug: string, filename: PortfolioAssetFilename): st
 export function getProjectAssets(slug: PortfolioProjectSlug): PortfolioAsset[] {
   return PORTFOLIO_ASSET_FILENAMES.map((filename) => ({
     projectSlug: slug,
-    role: filename.replace(".webp", "") as PortfolioAssetRole,
+    role: getRoleForFilename(filename),
     filename,
     localPath: getLocalPath(slug, filename),
     storagePath: getStoragePath(slug, filename),

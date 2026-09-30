@@ -244,7 +244,7 @@ export default function DesignSystemPlaygroundPage() {
                 </span>
                 <h3 className="text-2xl font-bold text-white">AURORA COMMERCE</h3>
               </div>
-              <span className="font-mono text-xs text-slate-400">SUPABASE BUCKET</span>
+              <span className="font-mono text-xs text-slate-400">MEDIA LIBRARY</span>
             </div>
 
             <MediaStack
@@ -265,7 +265,7 @@ export default function DesignSystemPlaygroundPage() {
                 </span>
                 <h3 className="text-2xl font-bold text-white">PULSE HEALTH</h3>
               </div>
-              <span className="font-mono text-xs text-slate-400">SUPABASE BUCKET</span>
+              <span className="font-mono text-xs text-slate-400">MEDIA LIBRARY</span>
             </div>
 
             <MediaStack
@@ -323,7 +323,7 @@ export default function DesignSystemPlaygroundPage() {
             <span className="w-2 h-2 rounded-full bg-cyan-300 shadow-[0_0_8px_#67e8f9]" />
             SNOW SPATIAL DESIGN SYSTEM // PHASE A VERIFIED
           </div>
-          <div>SUPABASE BUCKET: snow-media (24 OBJECTS LOADED)</div>
+          <div>MEDIA LIBRARY • 24 OBJECTS LOADED</div>
         </div>
       </footer>
     </main>
