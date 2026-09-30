@@ -11,17 +11,19 @@ interface ProjectExplorerProps {
 }
 
 const CATEGORY_MATCHES: Record<string, string[]> = {
-  "Web design": ["Design & Spatial", "E-Commerce"],
-  "Digital products": ["E-Commerce", "Enterprise Portal", "Fintech"],
-  "Web apps": ["Web App", "Enterprise Portal", "Fintech"],
-  "AI / automation": ["AI & Intelligence"],
+  Web: ["Design & Spatial", "E-Commerce"],
+  "Digital Products": ["E-Commerce", "Enterprise Portal", "Fintech", "Web App"],
   "UI / UX": ["Healthcare", "Healthcare Systems Study", "Design & Spatial"],
+  Mobile: ["Healthcare", "Fintech", "AI & Intelligence"],
+  AI: ["AI & Intelligence"],
+  SaaS: ["Enterprise Portal", "Fintech"],
+  "E-commerce": ["E-Commerce"],
   Experimental: ["Fintech", "AI & Intelligence", "Design & Spatial"],
 };
 
 export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({ projects }) => {
   const [activeCategory, setActiveCategory] = useState("All");
-  const categories = useMemo(() => ["Web design", "Digital products", "Web apps", "AI / automation", "UI / UX", "Experimental"], []);
+  const categories = useMemo(() => ["Web", "Digital Products", "UI / UX", "Mobile", "AI", "SaaS", "E-commerce", "Experimental"], []);
 
   // Filter projects by category
   const filteredProjects = useMemo(() => {
@@ -30,7 +32,7 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({ projects }) =>
   }, [projects, activeCategory]);
 
   return (
-    <section className="py-16 md:py-24 bg-slate-950 min-h-screen">
+    <section className="work-explorer py-16 md:py-24 bg-[#f7f6f2] min-h-screen">
       <Container>
         {/* Category Selector Bar */}
         <div className="mb-12 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 pb-6 border-b border-slate-900">
@@ -38,7 +40,7 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({ projects }) =>
             <span className="text-xs font-mono uppercase tracking-widest text-slate-500 block mb-1">
               EXPLORE THE FIELD
             </span>
-            <h2 className="text-xl font-bold text-slate-200 font-sans">
+            <h2 className="text-xl font-bold text-slate-950 font-sans">
               Projects, prototypes, and interface studies
             </h2>
           </div>
