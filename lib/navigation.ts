@@ -17,6 +17,10 @@ import {
   QrCode,
   Search,
   ShieldCheck,
+  Shield,
+  Target,
+  TerminalSquare,
+  Radar,
   Sparkles,
   Wifi,
   Wrench,
@@ -102,6 +106,23 @@ export const NAVIGATION_GROUPS: NavigationGroup[] = [
     ],
   },
   {
+    id: "security",
+    label: "Security",
+    eyebrow: "SECURITY LAB",
+    icon: Shield,
+    items: [
+      { href: "/security", label: "Security Lab", shortLabel: "Lab", description: "Enter the controlled cyber operations simulation.", icon: Shield, status: "live" },
+      { href: "/security#missions", label: "Missions", shortLabel: "Missions", description: "Play the Black Ice simulation mission.", icon: Target },
+      { href: "/security#terminal", label: "Terminal", shortLabel: "Terminal", description: "Run safe local simulation commands.", icon: TerminalSquare },
+      { href: "/security#recon", label: "Recon", shortLabel: "Recon", description: "Discover fictional sandbox hosts.", icon: Radar },
+      { href: "/security#network", label: "Network", shortLabel: "Network", description: "View the simulated topology.", icon: Network },
+      { href: "/security#web", label: "Web", shortLabel: "Web", description: "Next operation.", icon: Globe },
+      { href: "/security#credentials", label: "Credentials", shortLabel: "Credentials", description: "Run a fictional credential lab.", icon: KeyRound },
+      { href: "/security#forensics", label: "Forensics", shortLabel: "Forensics", description: "Next operation.", icon: FileSearch },
+      { href: "/security#defense", label: "Defense", shortLabel: "Defense", description: "Run a simulated firewall loop.", icon: ShieldCheck },
+    ],
+  },
+  {
     id: "ai",
     label: "AI / Intelligence",
     eyebrow: "AI / INTELLIGENCE",
@@ -113,10 +134,12 @@ export const NAVIGATION_GROUPS: NavigationGroup[] = [
 ];
 
 export const PRIMARY_NAVIGATION = [
-  { href: "/work", label: "Our Work", icon: Sparkles },
+  { href: "/work", label: "Work", icon: Sparkles },
   { href: "/services", label: "Services", icon: Wrench },
-  { href: "/care", label: "Care", icon: Activity },
+  { href: "/security", label: "Security", icon: Shield },
   { href: "/tools", label: "Tools", icon: Zap },
+  { href: "/ai", label: "AI", icon: Bot },
+  { href: "/care", label: "Care", icon: Activity },
 ] satisfies NavigationItem[];
 
 export const UTILITY_NAVIGATION = [
