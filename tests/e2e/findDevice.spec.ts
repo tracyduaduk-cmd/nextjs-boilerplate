@@ -3,8 +3,8 @@ import { test, expect } from "@playwright/test";
 test.describe("Snow Find My Device & Spatial Location Suite", () => {
   test("Location Console renders header, controls, and initial READY state", async ({ page }) => {
     await page.goto("/network/find");
-    await expect(page.locator("h1")).toContainText("Find My Device & Spatial Location Center");
-    await expect(page.getByText("Spatial Location Console")).toBeVisible();
+    await expect(page.locator("h1")).toContainText("Find your place in the world.");
+    await expect(page.getByText("Your location, in focus")).toBeVisible();
     await expect(page.getByRole("button", { name: "LOCATE MY DEVICE", exact: true })).toBeVisible();
     await expect(page.getByText("Location Engine Ready • Standby")).toBeVisible();
   });
@@ -14,7 +14,7 @@ test.describe("Snow Find My Device & Spatial Location Suite", () => {
     await page.getByRole("button", { name: "SATELLITE" }).click();
     await page.getByRole("button", { name: "TERRAIN" }).click();
     await page.getByRole("button", { name: "EARTH" }).click();
-    await expect(page.getByText("SNOW SPATIAL EARTH GLOBE")).toBeVisible();
+    await expect(page.getByText("Photographic Earth · NASA Blue Marble")).toBeVisible();
   });
 
   test("Browser GPS Geolocation trigger resolves mock position", async ({ page, context }) => {
@@ -58,7 +58,7 @@ test.describe("Snow Find My Device & Spatial Location Suite", () => {
   test("Mobile Viewport 390x844 layout check", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/network/find");
-    await expect(page.locator("h1")).toContainText("Find My Device & Spatial Location Center");
+    await expect(page.locator("h1")).toContainText("Find your place in the world.");
     await expect(page.getByRole("button", { name: "LOCATE MY DEVICE", exact: true })).toBeVisible();
   });
 });
