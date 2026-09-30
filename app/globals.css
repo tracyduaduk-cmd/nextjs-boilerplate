@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+.leaflet-container { background: #08111f; font-family: inherit; }
+.leaflet-control-zoom a { background: rgba(2, 7, 17, 0.9) !important; border-color: rgba(51, 65, 85, 0.9) !important; color: #bae6fd !important; }
+.leaflet-control-attribution { background: rgba(2, 7, 17, 0.82) !important; color: #cbd5e1 !important; font-size: 9px !important; }
+.leaflet-control-attribution a { color: #7dd3fc !important; }
+.snow-location-marker { background: transparent; border: 0; }
+.snow-location-marker__halo, .snow-location-marker__core, .snow-location-marker__crosshair { position: absolute; display: block; }
+.snow-location-marker__halo { inset: 3px; border: 2px solid rgba(125, 211, 252, 0.42); border-radius: 9999px; box-shadow: 0 0 20px rgba(56, 189, 248, 0.48); }
+.snow-location-marker__core { left: 17px; top: 17px; width: 12px; height: 12px; border: 2px solid white; border-radius: 9999px; background: #38bdf8; box-shadow: 0 0 14px rgba(56, 189, 248, 0.95); }
+.snow-location-marker__crosshair { inset: 10px; border: 1px solid rgba(186, 230, 253, 0.8); border-radius: 9999px; }
+
 @layer base {
   :root {
     /* Atmospheric Color Palette */
