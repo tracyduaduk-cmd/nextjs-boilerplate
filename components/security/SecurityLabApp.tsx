@@ -14,12 +14,13 @@ import {
   type SecurityEvent,
   type SecuritySimulationState,
   formatSimulationTimestamp,
+  type SecuritySession,
 } from "@/lib/security/simulation";
 
 const INITIAL_TERMINAL = [
-  "SNOW SECURITY LAB // OPERATOR WORKSTATION v4.0",
-  "HIGH-FIDELITY CYBER OPERATIONS SANDBOX ONLINE",
-  "DETERMINISTIC SIMULATION ENGINE CONNECTED",
+  "SNOW SECURITY LAB // OPERATOR WORKSTATION v6.0",
+  "CYBER RANGE 10.44.0.0/24 CONNECTED // ISOLATED SIMULATION",
+  "DETERMINISTIC EVENT ENGINE ONLINE",
   "Type 'help' or select an operation below to execute.",
   "",
 ];
@@ -28,6 +29,9 @@ type Action =
   | { type: "TICK" }
   | { type: "SET_CATEGORY"; category: OperationCategory }
   | { type: "SET_ACTIVE_OP"; opId: string }
+  | { type: "SELECT_HOST"; hostId: string }
+  | { type: "SELECT_SESSION"; sessionId: string }
+  | { type: "SELECT_MISSION"; missionId: string }
   | { type: "START_OP" }
   | { type: "PAUSE_OP" }
   | { type: "RESUME_OP" }
@@ -61,6 +65,26 @@ function addEvent(
   };
 }
 
+function updateActiveMissionStage(
+  state: SecuritySimulationState,
+  stageIndex: number,
+  status: "complete" | "in-progress" | "locked"
+): SecuritySimulationState {
+  const missions = state.missions.map((m) => {
+    if (m.id !== state.activeMissionId) return m;
+    const stages = m.stages.map((stg, idx) => {
+      if (idx === stageIndex) return { ...stg, status };
+      if (idx === stageIndex + 1 && status === "complete" && stg.status === "locked") {
+        return { ...stg, status: "in-progress" as const };
+      }
+      return stg;
+    });
+    const allComplete = stages.every((s) => s.status === "complete");
+    return { ...m, stages, status: allComplete ? ("completed" as const) : m.status };
+  });
+  return { ...state, missions };
+}
+
 function reducer(state: SecuritySimulationState, action: Action): SecuritySimulationState {
   switch (action.type) {
     case "SET_CATEGORY":
@@ -85,6 +109,15 @@ function reducer(state: SecuritySimulationState, action: Action): SecuritySimula
 
     case "SET_ACTIVE_OP":
       return { ...state, activeOpId: action.opId };
+
+    case "SELECT_HOST":
+      return { ...state, selectedHostId: action.hostId };
+
+    case "SELECT_SESSION":
+      return { ...state, selectedSessionId: action.sessionId };
+
+    case "SELECT_MISSION":
+      return { ...state, activeMissionId: action.missionId };
 
     case "UPDATE_BRUTE_FORCE":
       return {
@@ -120,7 +153,7 @@ function reducer(state: SecuritySimulationState, action: Action): SecuritySimula
       return { ...state, webLab: { ...state.webLab, ...action.update } };
 
     case "EXECUTE_SNOWPLOIT": {
-      const nextState = addEvent(
+      let nextState = addEvent(
         state,
         "SNOWPLOIT",
         "info",
@@ -132,21 +165,32 @@ function reducer(state: SecuritySimulationState, action: Action): SecuritySimula
       let newLog = `snowploit > ${action.cmd}`;
 
       if (cmd === "exploit" || cmd === "run") {
-        sessionCreated = [
-          ...sessionCreated,
-          {
-            id: `session-${sessionCreated.length + 1}`,
-            target: state.snowploit.target,
-            module: state.snowploit.selectedModule,
-            status: "active",
-            createdAt: formatSimulationTimestamp(state.clock),
-          },
-        ];
-        newLog = `[*] Sending simulated payload...\n[+] Session established: session-${sessionCreated.length} on ${state.snowploit.target}`;
+        const newSess: SecuritySession = {
+          id: `session-0${sessionCreated.length + 1}`,
+          target: state.snowploit.target,
+          module: state.snowploit.selectedModule,
+          privilege: "ADMIN",
+          status: "active",
+          createdAt: formatSimulationTimestamp(state.clock),
+        };
+        sessionCreated = [...sessionCreated, newSess];
+        newLog = `[*] Sending simulated payload...\n[+] Session established: ${newSess.id} (${newSess.privilege}) on ${state.snowploit.target}`;
+
+        // Interconnect: advance mission stage 4 for Black Ice or stage 3 for Ghost Protocol
+        if (state.activeMissionId === "black-ice") {
+          nextState = updateActiveMissionStage(nextState, 3, "complete");
+        } else if (state.activeMissionId === "ghost-protocol") {
+          nextState = updateActiveMissionStage(nextState, 2, "complete");
+        }
+      } else if (cmd === "vault extract" || cmd === "extract") {
+        newLog = `[*] Extracting vault secrets from DATA-NODE (10.44.0.40)...\n[+] VAULT UNLOCKED // FLAG RECORDED: ${state.missions[0].flag}`;
+        if (state.activeMissionId === "black-ice") {
+          nextState = updateActiveMissionStage(nextState, 4, "complete");
+        }
       } else if (cmd === "check") {
         newLog = `[*] Checking vulnerability on ${state.snowploit.target}...\n[+] Target is vulnerable to SNO-2026-001.`;
       } else if (cmd === "target list") {
-        newLog = `[1] lab-web-01.snow.local (10.42.0.10)\n[2] lab-auth.snow.local (10.42.0.14)\n[3] lab-api-01.snow.local (10.42.0.12)`;
+        newLog = `[1] EDGE-GATEWAY (10.44.0.10)\n[2] AUTH-SRV (10.44.0.20)\n[3] WEB-NODE (10.44.0.30)\n[4] DATA-NODE (10.44.0.40)\n[5] MONITOR (10.44.0.50)`;
       } else if (cmd === "vuln scan") {
         newLog = `[*] Scanning ${state.snowploit.target}...\n[+] SNO-2026-001 (Auth Bypass) CRITICAL\n[+] SNO-2026-002 (Boolean SQLi) HIGH`;
       }
@@ -154,17 +198,23 @@ function reducer(state: SecuritySimulationState, action: Action): SecuritySimula
       return {
         ...nextState,
         sessions: sessionCreated,
+        selectedSessionId: sessionCreated.length > 0 ? sessionCreated[sessionCreated.length - 1].id : undefined,
         snowploit: {
           ...state.snowploit,
-          activeSession: sessionCreated.length > 0 ? sessionCreated[0].id : undefined,
+          activeSession: sessionCreated.length > 0 ? sessionCreated[sessionCreated.length - 1].id : undefined,
           commandHistory: [...state.snowploit.commandHistory, action.cmd],
           consoleLogs: [...state.snowploit.consoleLogs, newLog],
         },
       };
     }
 
-    case "SELECT_FORENSIC":
-      return { ...state, forensics: { ...state.forensics, selectedArtifactId: action.id } };
+    case "SELECT_FORENSIC": {
+      let nextState: SecuritySimulationState = { ...state, forensics: { ...state.forensics, selectedArtifactId: action.id } };
+      if (state.activeMissionId === "ghost-protocol" && action.id === "art-5") {
+        nextState = updateActiveMissionStage(nextState, 3, "complete");
+      }
+      return nextState;
+    }
 
     case "START_OP": {
       if (state.category === "recon") {
@@ -182,11 +232,11 @@ function reducer(state: SecuritySimulationState, action: Action): SecuritySimula
             state: {
               ...s.recon.state,
               status: "running",
-              progress: 5,
-              currentPhase: "HOST DISCOVERY",
+              progress: 10,
+              currentPhase: "CYBER RANGE HOST DISCOVERY",
               terminalLogs: [
-                `Starting Snow Recon Engine v4.0 against ${state.recon.config.target}...`,
-                `[+] Host discovered: 10.42.0.1 (lab-gateway.snow.local)`,
+                `Starting Snow Cyber Range Recon Engine v6.0 against ${state.recon.config.target}...`,
+                `[+] Target subnet: 10.44.0.0/24`,
               ],
             },
           },
@@ -255,13 +305,7 @@ function reducer(state: SecuritySimulationState, action: Action): SecuritySimula
               state: {
                 ...s.medusaHydra.state,
                 status: "running",
-                workerProgress: [10, 15, 8, 12],
-                workerActivities: [
-                  { id: 1, user: "operator", status: "AUTHENTICATING", progress: 15 },
-                  { id: 2, user: "admin", status: "CONNECTING", progress: 20 },
-                  { id: 3, user: "root", status: "RETRY", progress: 10 },
-                  { id: 4, user: "snow", status: "AUTHENTICATING", progress: 12 },
-                ],
+                workerProgress: [0, 0, 0, 0],
                 totalAttempts: 0,
                 attemptsPerSec: 240,
                 matchedPair: undefined,
@@ -275,17 +319,29 @@ function reducer(state: SecuritySimulationState, action: Action): SecuritySimula
 
     case "PAUSE_OP": {
       if (state.category === "recon") {
-        return { ...state, recon: { ...state.recon, state: { ...state.recon.state, status: "paused" } } };
+        return {
+          ...state,
+          recon: { ...state.recon, state: { ...state.recon.state, status: "paused" } },
+        };
       }
       if (state.category === "credentials") {
         if (state.activeOpId === "brute-force") {
-          return { ...state, bruteForce: { ...state.bruteForce, state: { ...state.bruteForce.state, status: "paused" } } };
+          return {
+            ...state,
+            bruteForce: { ...state.bruteForce, state: { ...state.bruteForce.state, status: "paused", attemptsPerSec: 0 } },
+          };
         }
         if (state.activeOpId === "john-hashcat") {
-          return { ...state, johnHashcat: { ...state.johnHashcat, state: { ...state.johnHashcat.state, status: "paused" } } };
+          return {
+            ...state,
+            johnHashcat: { ...state.johnHashcat, state: { ...state.johnHashcat.state, status: "paused", hashRate: 0 } },
+          };
         }
         if (state.activeOpId === "medusa-hydra") {
-          return { ...state, medusaHydra: { ...state.medusaHydra, state: { ...state.medusaHydra.state, status: "paused" } } };
+          return {
+            ...state,
+            medusaHydra: { ...state.medusaHydra, state: { ...state.medusaHydra.state, status: "paused", attemptsPerSec: 0 } },
+          };
         }
       }
       return state;
@@ -293,17 +349,29 @@ function reducer(state: SecuritySimulationState, action: Action): SecuritySimula
 
     case "RESUME_OP": {
       if (state.category === "recon") {
-        return { ...state, recon: { ...state.recon, state: { ...state.recon.state, status: "running" } } };
+        return {
+          ...state,
+          recon: { ...state.recon, state: { ...state.recon.state, status: "running" } },
+        };
       }
       if (state.category === "credentials") {
         if (state.activeOpId === "brute-force") {
-          return { ...state, bruteForce: { ...state.bruteForce, state: { ...state.bruteForce.state, status: "running" } } };
+          return {
+            ...state,
+            bruteForce: { ...state.bruteForce, state: { ...state.bruteForce.state, status: "running", attemptsPerSec: 320 } },
+          };
         }
         if (state.activeOpId === "john-hashcat") {
-          return { ...state, johnHashcat: { ...state.johnHashcat, state: { ...state.johnHashcat.state, status: "running" } } };
+          return {
+            ...state,
+            johnHashcat: { ...state.johnHashcat, state: { ...state.johnHashcat.state, status: "running", hashRate: 38420 } },
+          };
         }
         if (state.activeOpId === "medusa-hydra") {
-          return { ...state, medusaHydra: { ...state.medusaHydra, state: { ...state.medusaHydra.state, status: "running" } } };
+          return {
+            ...state,
+            medusaHydra: { ...state.medusaHydra, state: { ...state.medusaHydra.state, status: "running", attemptsPerSec: 240 } },
+          };
         }
       }
       return state;
@@ -311,83 +379,108 @@ function reducer(state: SecuritySimulationState, action: Action): SecuritySimula
 
     case "STOP_OP": {
       if (state.category === "recon") {
-        return { ...state, recon: { ...state.recon, state: { ...state.recon.state, status: "stopped" } } };
+        return {
+          ...state,
+          recon: { ...state.recon, state: { ...state.recon.state, status: "stopped" } },
+        };
       }
       if (state.category === "credentials") {
         if (state.activeOpId === "brute-force") {
-          return { ...state, bruteForce: { ...state.bruteForce, state: { ...state.bruteForce.state, status: "stopped", attemptsPerSec: 0 } } };
+          return {
+            ...state,
+            bruteForce: { ...state.bruteForce, state: { ...state.bruteForce.state, status: "stopped", attemptsPerSec: 0 } },
+          };
         }
         if (state.activeOpId === "john-hashcat") {
-          return { ...state, johnHashcat: { ...state.johnHashcat, state: { ...state.johnHashcat.state, status: "stopped", hashRate: 0 } } };
+          return {
+            ...state,
+            johnHashcat: { ...state.johnHashcat, state: { ...state.johnHashcat.state, status: "stopped", hashRate: 0 } },
+          };
         }
         if (state.activeOpId === "medusa-hydra") {
-          return { ...state, medusaHydra: { ...state.medusaHydra, state: { ...state.medusaHydra.state, status: "stopped", attemptsPerSec: 0 } } };
+          return {
+            ...state,
+            medusaHydra: { ...state.medusaHydra, state: { ...state.medusaHydra.state, status: "stopped", attemptsPerSec: 0 } },
+          };
         }
       }
       return state;
     }
 
-    case "RESET_OP":
+    case "RESET_OP": {
       return initialSimulationState();
+    }
 
     case "TICK": {
       let s = { ...state, clock: state.clock + 1 };
 
-      // DETERMINISTIC RECON TICK PROGRESSION
+      // 1. RECON Tick
       if (s.recon.state.status === "running") {
         const nextProgress = Math.min(100, s.recon.state.progress + 20);
-        let phase = "PORT ENUMERATION";
-        let newLog = "";
+        const isDone = nextProgress >= 100;
 
-        if (nextProgress === 25) {
-          phase = "PORT ENUMERATION";
-          newLog = "Discovered open ports: 22/tcp (ssh), 80/tcp (http), 443/tcp (https), 8080/tcp (http-proxy)";
-        } else if (nextProgress === 45) {
-          phase = "SERVICE DETECTION";
-          newLog = "Service detection: 22/OpenSSH 9.2p1, 80/nginx 1.24, 443/OpenSSL 3.0";
-        } else if (nextProgress === 65) {
-          phase = "OS FINGERPRINT";
-          newLog = "OS Fingerprint match: Linux 6.1 (Snow Cyber-Range Architecture)";
-        } else if (nextProgress >= 100) {
-          phase = "COMPLETE";
-          newLog = "Host summary complete: 6 hosts discovered, 14 services enumerated.";
+        // Reveal hosts as recon advances
+        const updatedHosts = s.hosts.map((h) => {
+          if (nextProgress >= 30 && h.id === "host-auth") return { ...h, discovered: true };
+          if (nextProgress >= 60 && h.id === "host-web") return { ...h, discovered: true };
+          if (nextProgress >= 80 && h.id === "host-data") return { ...h, discovered: true };
+          return h;
+        });
+
+        // Add generated packets
+        const newPackets = [...s.packets];
+        if (nextProgress === 20) {
+          newPackets.push({
+            id: `pkt-${newPackets.length + 1}`,
+            timestamp: formatSimulationTimestamp(s.clock),
+            source: "10.44.0.100",
+            destination: "10.44.0.10",
+            protocol: "TCP",
+            port: 22,
+            length: 64,
+            info: "TCP SYN [SYN] Seq=0 Win=64240 Len=0",
+            payload: "0000 00 02 45 00 00 3c 1a 2b 40 00 40 06",
+            status: "observed",
+            layers: ["Ethernet II", "IPv4", "TCP"],
+          });
         }
 
-        const isDone = nextProgress >= 100;
         if (isDone && s.recon.state.status === "running") {
-          s = addEvent(s, "RECON", "success", "NMAP-ENGINE", "Scan completed. lab-gateway.snow.local fully enumerated.");
-          s = {
-            ...s,
-            hosts: s.hosts.map((h) => ({ ...h, discovered: true })),
-            mission: updateMissionStage(s.mission, "stage-1", "complete"),
-          };
+          s = addEvent(s, "RECON", "success", "NMAP-ENGINE", "RANGE RECONNAISSANCE COMPLETE // ALL 5 CYBER RANGE HOSTS MAPPED");
+          // Interconnect: advance Stage 01 of active mission
+          if (s.activeMissionId === "black-ice") {
+            s = updateActiveMissionStage(s, 0, "complete");
+          } else if (s.activeMissionId === "ghost-protocol") {
+            s = updateActiveMissionStage(s, 0, "complete");
+          }
         }
 
         s = {
           ...s,
+          hosts: updatedHosts,
+          packets: newPackets,
           recon: {
             ...s.recon,
             state: {
               ...s.recon.state,
               progress: nextProgress,
-              currentPhase: phase,
-              hostsFound: nextProgress > 30 ? 6 : 2,
-              portsScanned: Math.floor((nextProgress / 100) * 1024),
+              hostsFound: updatedHosts.filter((h) => h.discovered).length,
+              portsScanned: s.recon.state.portsScanned + 18,
               elapsedSec: s.recon.state.elapsedSec + 1,
               status: isDone ? "success" : "running",
-              terminalLogs: newLog ? [...s.recon.state.terminalLogs, newLog] : s.recon.state.terminalLogs,
+              currentPhase: isDone ? "SCAN COMPLETE" : "ENUMERATING PORTS & SERVICES",
+              terminalLogs: [
+                ...s.recon.state.terminalLogs,
+                `[${formatSimulationTimestamp(s.clock)}] Scanned subnet segment (${nextProgress}%)...`,
+              ],
             },
           },
         };
       }
 
-      // DETERMINISTIC BRUTE FORCE TICK PROGRESSION
+      // 2. BRUTE FORCE Tick
       if (s.bruteForce.state.status === "running") {
-        const newAttempts = s.bruteForce.state.attempts + 450;
-        const total = s.bruteForce.state.totalCandidates;
-        const stepIndex = Math.floor(newAttempts / 500);
-
-        const CANDIDATES = [
+        const candidates = [
           "operator / winter2026",
           "operator / snowflake",
           "operator / snowlab",
@@ -395,53 +488,56 @@ function reducer(state: SecuritySimulationState, action: Action): SecuritySimula
           "operator / cyber2026",
           "operator / snow-lab-2025!",
         ];
+        const nextIndex = Math.min(candidates.length - 1, Math.floor(s.bruteForce.state.attempts / 100));
+        const currentCandidate = candidates[nextIndex];
+        const matchFound = currentCandidate === "operator / snow-lab-2025!";
 
-        const matchFound = newAttempts >= 2700;
-        const currentCandidate = matchFound
-          ? "operator / snow-lab-2025!"
-          : CANDIDATES[stepIndex % (CANDIDATES.length - 1)];
-
-        const isDone = matchFound || newAttempts >= total;
-
+        let sessions = s.sessions;
         if (matchFound && !s.bruteForce.state.matchFound) {
           s = addEvent(s, "BRUTE FORCE", "success", "AUTH-ENGINE", "CREDENTIAL MATCH FOUND: operator / snow-lab-2025!");
-          s = {
-            ...s,
-            credentials: s.credentials.map((c) => (c.username === "operator" ? { ...c, status: "cracked", discovered: true } : c)),
-            mission: updateMissionStage(s.mission, "stage-2", "complete"),
+          // Create session upon credential match
+          const newSess: SecuritySession = {
+            id: `session-0${sessions.length + 1}`,
+            target: "AUTH-SRV (10.44.0.20:22)",
+            module: "ssh_bruteforce",
+            privilege: "USER",
+            status: "active",
+            createdAt: formatSimulationTimestamp(s.clock),
           };
+          sessions = [...sessions, newSess];
+
+          // Interconnect: advance Stage 02 of Black Ice
+          if (s.activeMissionId === "black-ice") {
+            s = updateActiveMissionStage(s, 1, "complete");
+          }
         }
 
         s = {
           ...s,
+          sessions,
+          selectedSessionId: sessions.length > 0 ? sessions[sessions.length - 1].id : undefined,
           bruteForce: {
             ...s.bruteForce,
             state: {
               ...s.bruteForce.state,
-              attempts: Math.min(total, newAttempts),
-              attemptsPerSec: isDone ? 0 : 320,
+              attempts: s.bruteForce.state.attempts + 100,
               currentCandidate,
-              matchFound: matchFound || s.bruteForce.state.matchFound,
+              matchFound,
               matchedCredential: matchFound ? "operator / snow-lab-2025!" : undefined,
+              status: matchFound ? "success" : "running",
               elapsedSec: s.bruteForce.state.elapsedSec + 1,
-              status: isDone ? "success" : "running",
             },
           },
         };
       }
 
-      // DETERMINISTIC JOHN / HASHCAT TICK PROGRESSION
+      // 3. JOHN / HASHCAT Tick
       if (s.johnHashcat.state.status === "running") {
-        const nextTested = s.johnHashcat.state.candidatesTested + 25000;
-        const nextProgress = Math.min(100, Math.floor((nextTested / s.johnHashcat.state.totalCandidates) * 100));
-        const match = nextProgress >= 75;
+        const nextProgress = Math.min(100, s.johnHashcat.state.progress + 25);
+        const isDone = nextProgress >= 100;
 
-        if (match && !s.johnHashcat.state.matchedResult) {
-          s = addEvent(s, "HASHCAT", "success", "GPU-CRACKER", "HASH PLAINTEXT RECOVERED: snow-lab-2025!");
-          s = {
-            ...s,
-            mission: updateMissionStage(s.mission, "stage-3", "complete"),
-          };
+        if (isDone && s.johnHashcat.state.status === "running") {
+          s = addEvent(s, "HASHCAT", "success", "GPU-CRACKER", "HASH CRACKED // RECOVERED: snow-lab-2025!");
         }
 
         s = {
@@ -450,18 +546,18 @@ function reducer(state: SecuritySimulationState, action: Action): SecuritySimula
             ...s.johnHashcat,
             state: {
               ...s.johnHashcat.state,
-              candidatesTested: Math.min(s.johnHashcat.state.totalCandidates, nextTested),
               progress: nextProgress,
-              hashRate: match ? 0 : 38420,
-              matchedResult: match ? "snow-lab-2025!" : undefined,
+              candidatesTested: s.johnHashcat.state.candidatesTested + 25000,
+              status: isDone ? "success" : "running",
+              matchedResult: isDone ? "snow-lab-2025!" : undefined,
+              recoveredPassword: isDone ? "snow-lab-2025!" : undefined,
               elapsedSec: s.johnHashcat.state.elapsedSec + 1,
-              status: match ? "success" : "running",
             },
           },
         };
       }
 
-      // DETERMINISTIC MEDUSA / HYDRA TICK PROGRESSION
+      // 4. MEDUSA / HYDRA Tick
       if (s.medusaHydra.state.status === "running") {
         const nextWorkers: [number, number, number, number] = [
           Math.min(100, s.medusaHydra.state.workerProgress[0] + 25),
@@ -509,15 +605,6 @@ function reducer(state: SecuritySimulationState, action: Action): SecuritySimula
   }
 }
 
-function updateMissionStage(
-  mission: SecuritySimulationState["mission"],
-  stageId: string,
-  status: "complete" | "in-progress" | "locked"
-) {
-  const stages = mission.stages.map((stg) => (stg.id === stageId ? { ...stg, status } : stg));
-  return { ...mission, stages };
-}
-
 export function SecurityLabApp() {
   const [state, dispatch] = useReducer(reducer, undefined, initialSimulationState);
   const [terminalLines, setTerminalLines] = useState(INITIAL_TERMINAL);
@@ -530,6 +617,7 @@ export function SecurityLabApp() {
     }, 1200);
     return () => clearInterval(timer);
   }, []);
+
   useEffect(() => {
     const previousCount = previousEventCount.current;
     if (state.events.length < previousCount) {
@@ -557,9 +645,16 @@ export function SecurityLabApp() {
     else if (normalized === "stop") dispatch({ type: "STOP_OP" });
     else if (normalized === "reset") dispatch({ type: "RESET_OP" });
     else if (normalized === "recon") dispatch({ type: "SET_CATEGORY", category: "recon" });
-    else if (normalized === "bruteforce") {
+    else if (normalized === "scan --demo") {
+      dispatch({ type: "SET_CATEGORY", category: "recon" });
+      dispatch({ type: "START_OP" });
+    } else if (normalized === "bruteforce" || normalized === "auth --demo") {
       dispatch({ type: "SET_CATEGORY", category: "credentials" });
       dispatch({ type: "SET_ACTIVE_OP", opId: "brute-force" });
+    } else if (normalized === "bruteforce --demo") {
+      dispatch({ type: "SET_CATEGORY", category: "credentials" });
+      dispatch({ type: "SET_ACTIVE_OP", opId: "brute-force" });
+      dispatch({ type: "START_OP" });
     } else if (normalized === "crack" || normalized === "hashcat") {
       dispatch({ type: "SET_CATEGORY", category: "credentials" });
       dispatch({ type: "SET_ACTIVE_OP", opId: "john-hashcat" });
@@ -572,8 +667,15 @@ export function SecurityLabApp() {
     else if (normalized === "snowploit") dispatch({ type: "SET_CATEGORY", category: "exploitation" });
     else if (normalized === "forensics") dispatch({ type: "SET_CATEGORY", category: "forensics" });
     else if (normalized === "mission" || normalized === "blackice") dispatch({ type: "SET_CATEGORY", category: "missions" });
+    else if (normalized.startsWith("mission --start")) {
+      const parts = normalized.split(/\s+/);
+      if (parts[2]) {
+        dispatch({ type: "SELECT_MISSION", missionId: parts[2] });
+        dispatch({ type: "SET_CATEGORY", category: "missions" });
+      }
+    }
 
-    const output = commandOutput(cmd);
+    const output = commandOutput(cmd, state);
     setTerminalLines((prev) => [...prev, `snow@lab:~$ ${cmd}`, ...output]);
   };
 
@@ -596,33 +698,46 @@ export function SecurityLabApp() {
         {/* Header Hero Section */}
         <section className="security-hero flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border-b border-emerald-400/20 pb-8">
           <div className="max-w-2xl">
-            <p className="security-kicker flex items-center gap-2">
-              <span className="security-live-dot" />
+            <p className="security-kicker flex items-center gap-2 font-mono text-xs text-emerald-400 tracking-wider">
+              <span className="security-live-dot h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
               SNOW SECURITY LAB // OPERATOR WORKSTATION
             </p>
             <h1 className="mt-2 text-4xl sm:text-6xl font-extrabold tracking-tight font-mono text-white">
-              CYBER <em className="text-emerald-400 not-italic">OPERATIONS</em>
+              CYBER <em className="text-emerald-400 not-italic">RANGE</em>
             </h1>
             <p className="mt-3 text-sm sm:text-base text-slate-300 font-mono leading-relaxed">
-              Execute realistic cyber operations against deterministic Snow sandbox targets. Select an operation, configure parameters, run execution, inspect terminal &amp; packets, and observe network reactions.
+              Step into an authentic hacker workstation targeting the local <strong>10.44.0.0/24 cyber range</strong>. Execute deterministic operations, establish active sessions, capture traffic, analyze forensic traces, and complete cinematic missions.
             </p>
             <div className="mt-4 flex flex-wrap gap-2 font-mono text-[10px] uppercase text-slate-400">
-              <span className="security-chip">OPERATOR WORKSTATION</span>
-              <span className="security-chip">LOCAL SANDBOX</span>
-              <span className="security-chip">100% DETERMINISTIC</span>
+              <span className="security-chip border border-emerald-500/30 bg-emerald-950/40 px-2 py-0.5 text-emerald-300">RANGE: 10.44.0.0/24</span>
+              <span className="security-chip border border-cyan-500/30 bg-cyan-950/40 px-2 py-0.5 text-cyan-300">MOCK TARGETS</span>
+              <span className="security-chip border border-slate-700 bg-slate-900 px-2 py-0.5 text-slate-300">100% DETERMINISTIC</span>
             </div>
           </div>
 
-          <div className="security-hero-signal flex flex-col items-center justify-center p-4 border border-cyan-400/30 bg-cyan-950/20 rounded-none w-full md:w-48 text-center font-mono">
-            <span className="text-[10px] text-cyan-300">CORE WORKSTATION</span>
-            <strong className="text-emerald-400 text-lg">ONLINE</strong>
-            <small className="text-[8px] text-slate-500 mt-1">SIM CLOCK: #{String(state.clock).padStart(4, "0")}</small>
+          <div className="security-hero-signal flex flex-col items-center justify-center p-4 border border-cyan-400/30 bg-cyan-950/20 rounded-none w-full md:w-52 text-center font-mono">
+            <span className="text-[10px] text-cyan-300">ACTIVE WORKSTATION</span>
+            <strong className="text-emerald-400 text-lg">CYBER RANGE ONLINE</strong>
+            <small className="text-[9px] text-slate-400 mt-1">
+              MISSION: {state.missions.find((m) => m.id === state.activeMissionId)?.codename || "BLACK ICE"}
+            </small>
+            <small className="text-[8px] text-slate-500">SIM CLOCK: #{String(state.clock).padStart(4, "0")}</small>
           </div>
         </section>
 
         {/* Network Topology & Terminal / Event Grid */}
         <section className="mt-8 grid gap-6 lg:grid-cols-[1.25fr_0.75fr]">
-          <SecurityNetwork category={state.category} hosts={state.hosts} status={currentOpStatus} activeOpId={state.activeOpId} />
+          <SecurityNetwork
+            category={state.category}
+            hosts={state.hosts}
+            sessions={state.sessions}
+            selectedHostId={state.selectedHostId}
+            selectedSessionId={state.selectedSessionId}
+            status={currentOpStatus}
+            activeOpId={state.activeOpId}
+            onSelectHost={(hostId) => dispatch({ type: "SELECT_HOST", hostId })}
+            onSelectSession={(sessionId) => dispatch({ type: "SELECT_SESSION", sessionId })}
+          />
           <div className="grid gap-6">
             <SecurityTerminal lines={terminalLines} onCommand={handleCommand} activeOpId={state.activeOpId} status={currentOpStatus} />
             <SecurityEventStream events={state.events} />
@@ -635,6 +750,7 @@ export function SecurityLabApp() {
             state={state}
             onSelectCategory={(category) => dispatch({ type: "SET_CATEGORY", category })}
             onSelectOp={(opId) => dispatch({ type: "SET_ACTIVE_OP", opId })}
+            onSelectMission={(missionId) => dispatch({ type: "SELECT_MISSION", missionId })}
             onRunOperation={() => dispatch({ type: "START_OP" })}
             onPauseOperation={() => dispatch({ type: "PAUSE_OP" })}
             onResumeOperation={() => dispatch({ type: "RESUME_OP" })}

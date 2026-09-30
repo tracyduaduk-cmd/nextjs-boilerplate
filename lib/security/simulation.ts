@@ -88,6 +88,7 @@ export interface SecuritySession {
   id: string;
   target: string;
   module: string;
+  privilege: "USER" | "ADMIN" | "ROOT";
   status: "active" | "closed";
   createdAt: string;
 }
@@ -106,24 +107,40 @@ export interface MissionStage {
   label: string;
   description: string;
   status: "locked" | "in-progress" | "complete";
+  requiredCategory?: OperationCategory;
 }
 
 export interface SecurityMission {
   id: string;
+  codename: string;
   title: string;
+  briefing: string;
+  difficulty: "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | "EXPERT";
+  targetNetwork: string;
   flag: string;
   stages: MissionStage[];
+  status: "available" | "active" | "completed";
+}
+
+export interface ForensicsArtifact {
+  id: string;
+  timestamp: string;
+  artifactType: "LOG_ENTRY" | "MEMORY_DUMP" | "NETWORK_SOCKET" | "FILE_HASH" | "TRACE_EVIDENCE";
+  title: string;
+  description: string;
+  analysis: string;
+  flagged: boolean;
 }
 
 // Config & State interfaces for individual operations
 export interface BruteForceConfig {
   target: string;
-  service: "SSH" | "HTTPS" | "AUTH";
-  protocol?: "SSH" | "HTTPS" | "AUTH" | "FTP" | "SMTP";
+  service: string;
+  protocol: string;
   username: string;
   wordlist: string;
   workers: number;
-  mode: "dictionary" | "hybrid" | "brute-force";
+  mode: string;
   rateLimit: number;
 }
 
@@ -139,9 +156,9 @@ export interface BruteForceState {
 }
 
 export interface JohnHashcatConfig {
-  hashType: "bcrypt" | "SHA-256" | "MD5" | "Bcrypt-Sim";
+  hashType: string;
   targetHash: string;
-  mode: "DICTIONARY" | "MASK" | "HYBRID";
+  mode: string;
   wordlist: string;
   rules: string;
   threads: number;
@@ -154,30 +171,24 @@ export interface JohnHashcatState {
   hashRate: number;
   progress: number;
   matchedResult?: string;
+  recoveredPassword?: string;
   elapsedSec: number;
 }
 
 export interface MedusaHydraConfig {
   target: string;
-  service?: "SSH" | "FTP" | "HTTP-POST" | "SMB";
-  module: "ssh" | "https" | "ftp" | "smb";
+  service: string;
+  module: string;
   userList: string;
   passList: string;
   workers: number;
-  threads?: number;
-}
-
-export interface WorkerActivity {
-  id: number;
-  user: string;
-  status: "CONNECTING" | "AUTHENTICATING" | "RETRY" | "LOCKOUT" | "SUCCESS" | "IDLE";
-  progress: number;
+  threads: number;
 }
 
 export interface MedusaHydraState {
   status: OperationStatus;
   workerProgress: [number, number, number, number];
-  workerActivities: WorkerActivity[];
+  workerActivities: Array<{ id: number; user: string; status: string; progress: number }>;
   totalAttempts: number;
   attemptsPerSec: number;
   matchedPair?: { user: string; pass: string };
@@ -187,8 +198,8 @@ export interface MedusaHydraState {
 export interface ReconConfig {
   target: string;
   command: string;
-  scanType: "Host Discovery" | "Port Scan" | "Service Detection" | "OS Fingerprint" | "Deep Recon";
-  timing: "T1 Stealth" | "Quiet" | "T3 Normal" | "Normal" | "T4 Aggressive" | "Aggressive";
+  scanType: string;
+  timing: string;
 }
 
 export interface ReconState {
@@ -201,16 +212,16 @@ export interface ReconState {
   terminalLogs: string[];
 }
 
-export interface PacketLabConfig {
+export interface PacketLabState {
   isCapturing: boolean;
-  filter: "ALL" | "TCP" | "UDP" | "HTTP" | "HTTPS" | "DNS" | "SSH" | "TLS" | "ICMP";
+  filter: string;
   selectedPacketId?: string;
 }
 
-export interface WebLabConfig {
-  category: "SQL INJECTION" | "XSS" | "AUTHENTICATION" | "JWT" | "HEADERS" | "REQUEST INTERCEPTION";
+export interface WebLabState {
+  category: string;
   targetUrl: string;
-  method: "POST" | "GET" | "PUT";
+  method: string;
   payload: string;
   intercepted: boolean;
   lastResponse?: {
@@ -222,140 +233,116 @@ export interface WebLabConfig {
   };
 }
 
-export interface SnowploitConfig {
+export interface SnowploitState {
   selectedModule: string;
   target: string;
   commandHistory: string[];
-  activeSession?: string;
   consoleLogs: string[];
+  activeSession?: string;
 }
 
-export interface ForensicsArtifact {
-  id: string;
-  timestamp: string;
-  artifactType: "LOG_ENTRY" | "MEMORY_DUMP" | "FILE_HASH" | "NETWORK_SOCKET";
-  title: string;
-  description: string;
-  analysis: string;
-  flagged: boolean;
+export interface ForensicsState {
+  artifacts: ForensicsArtifact[];
+  selectedArtifactId?: string;
 }
 
 export interface SecuritySimulationState {
-  mode?: SecurityMode;
+  mode: SecurityMode;
   category: OperationCategory;
   activeOpId: string;
   clock: number;
+  selectedHostId?: string;
+  selectedSessionId?: string;
+  activeMissionId: string;
+  missions: SecurityMission[];
   hosts: SecurityHost[];
   credentials: SecurityCredential[];
   vulnerabilities: SecurityVulnerability[];
   packets: SecurityPacket[];
   alerts: SecurityAlert[];
   sessions: SecuritySession[];
-  mission: SecurityMission;
   events: SecurityEvent[];
-
-  // Specific Operation Engines
   bruteForce: { config: BruteForceConfig; state: BruteForceState };
   johnHashcat: { config: JohnHashcatConfig; state: JohnHashcatState };
   medusaHydra: { config: MedusaHydraConfig; state: MedusaHydraState };
   recon: { config: ReconConfig; state: ReconState };
-  packetLab: PacketLabConfig;
-  webLab: WebLabConfig;
-  snowploit: SnowploitConfig;
-  forensics: { artifacts: ForensicsArtifact[]; selectedArtifactId?: string };
+  packetLab: PacketLabState;
+  webLab: WebLabState;
+  snowploit: SnowploitState;
+  forensics: ForensicsState;
 }
 
-/** Format logical simulation ticks as a stable elapsed timestamp. */
-export function formatSimulationTimestamp(tick: number): string {
-  const elapsedMs = Math.max(0, tick) * 250;
-  const minutes = Math.floor(elapsedMs / 60000);
-  const seconds = Math.floor((elapsedMs % 60000) / 1000);
-  const milliseconds = elapsedMs % 1000;
-  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}.${String(milliseconds).padStart(3, "0")}`;
-}
-
-// Initial Mock Data (Fictional Snow Lab Fixtures)
+// Canonical Cyber Range Targets (10.44.0.0/24)
 export const INITIAL_HOSTS: SecurityHost[] = [
   {
-    id: "gateway",
-    hostname: "lab-gateway.snow.local",
-    address: "10.42.0.1",
-    role: "Gateway Router & Firewalled Ingress",
+    id: "host-edge",
+    hostname: "EDGE-GATEWAY",
+    address: "10.44.0.10",
+    role: "Perimeter Router & Security Gateway",
     status: "online",
-    x: 15,
-    y: 50,
+    x: 18,
+    y: 22,
     discovered: true,
     services: [
-      { port: 53, protocol: "UDP", service: "dns", version: "Unbound Sim 1.12", state: "open" },
-      { port: 80, protocol: "TCP", service: "http", version: "nginx/1.24 (snow-lab)", state: "open" },
-      { port: 443, protocol: "TCP", service: "https", version: "OpenSSL 3.0", state: "open" },
+      { port: 22, protocol: "TCP", service: "SSH", version: "OpenSSH 9.3p1", state: "open" },
+      { port: 443, protocol: "TCP", service: "HTTPS", version: "nginx/1.24.0", state: "open" },
+      { port: 53, protocol: "UDP", service: "DNS", version: "Unbound 1.19.0", state: "open" },
     ],
   },
   {
-    id: "web-01",
-    hostname: "lab-web-01.snow.local",
-    address: "10.42.0.10",
-    role: "Web Application Server (snow-lab.local)",
+    id: "host-auth",
+    hostname: "AUTH-SRV",
+    address: "10.44.0.20",
+    role: "Identity & Authentication Server",
     status: "online",
-    x: 40,
-    y: 25,
-    discovered: true,
+    x: 38,
+    y: 42,
+    discovered: false,
     services: [
-      { port: 80, protocol: "TCP", service: "http", version: "nginx/1.24 (snow-lab)", state: "open" },
-      { port: 443, protocol: "TCP", service: "https", version: "TLS 1.3 / OpenSSL", state: "open" },
+      { port: 22, protocol: "TCP", service: "SSH", version: "OpenSSH 8.9p1", state: "open" },
+      { port: 8443, protocol: "TCP", service: "AUTH-API", version: "SnowAuth/2.4", state: "open" },
     ],
   },
   {
-    id: "api-01",
-    hostname: "lab-api-01.snow.local",
-    address: "10.42.0.12",
-    role: "Internal Microservices Gateway",
+    id: "host-web",
+    hostname: "WEB-NODE",
+    address: "10.44.0.30",
+    role: "Application Server & Web Portal",
     status: "online",
-    x: 65,
+    x: 58,
     y: 30,
     discovered: false,
     services: [
-      { port: 8080, protocol: "TCP", service: "http-proxy", version: "Express / Node.js", state: "open" },
+      { port: 443, protocol: "TCP", service: "HTTPS", version: "SnowWeb/1.8.2", state: "open" },
+      { port: 8080, protocol: "TCP", service: "REST-API", version: "Node.js v20.11", state: "open" },
     ],
   },
   {
-    id: "auth-01",
-    hostname: "lab-auth.snow.local",
-    address: "10.42.0.14",
-    role: "Authentication Gateway & Identity Vault",
+    id: "host-data",
+    hostname: "DATA-NODE",
+    address: "10.44.0.40",
+    role: "Restricted Vault & Database Service",
     status: "online",
-    x: 45,
-    y: 75,
-    discovered: true,
-    services: [
-      { port: 22, protocol: "TCP", service: "ssh", version: "OpenSSH 9.2p1", state: "open" },
-      { port: 389, protocol: "TCP", service: "ldap", version: "OpenLDAP Sim", state: "open" },
-    ],
-  },
-  {
-    id: "db-01",
-    hostname: "lab-db-01.snow.local",
-    address: "10.42.0.19",
-    role: "Isolated Database Cluster",
-    status: "filtered",
-    x: 85,
-    y: 60,
+    x: 78,
+    y: 55,
     discovered: false,
     services: [
-      { port: 5432, protocol: "TCP", service: "postgresql", version: "PostgreSQL 16.1", state: "filtered" },
+      { port: 5432, protocol: "TCP", service: "PostgreSQL", version: "PostgreSQL 16.2", state: "filtered" },
+      { port: 9000, protocol: "TCP", service: "INTERNAL-API", version: "SnowVault/3.0", state: "filtered" },
     ],
   },
   {
-    id: "ids",
-    hostname: "lab-ids-sensor.snow.local",
-    address: "10.42.0.254",
-    role: "Network Intrusion Sensor",
+    id: "host-monitor",
+    hostname: "MONITOR",
+    address: "10.44.0.50",
+    role: "IDS Sensor & Log Telemetry Collector",
     status: "online",
-    x: 20,
-    y: 80,
-    discovered: true,
+    x: 50,
+    y: 75,
+    discovered: false,
     services: [
-      { port: 514, protocol: "UDP", service: "syslog", version: "Snow Sensor Core", state: "open" },
+      { port: 514, protocol: "UDP", service: "SYSLOG", version: "rsyslog 8.2310", state: "open" },
+      { port: 9100, protocol: "TCP", service: "METRICS", version: "Prometheus Exporter", state: "open" },
     ],
   },
 ];
@@ -363,79 +350,171 @@ export const INITIAL_HOSTS: SecurityHost[] = [
 export const INITIAL_CREDENTIALS: SecurityCredential[] = [
   {
     id: "cred-01",
-    target: "lab-auth.snow.local",
+    target: "AUTH-SRV (10.44.0.20:22)",
     username: "operator",
     hashType: "bcrypt",
     hash: "$2b$12$e83b38c290a1841e0a29b0f49a184e1a0123456789abcdef",
     status: "locked",
-    recovered: "snow-lab-2025!",
-    discovered: false,
+    discovered: true,
   },
   {
     id: "cred-02",
-    target: "lab-web-01.snow.local",
+    target: "WEB-NODE (10.44.0.30:443)",
     username: "admin",
-    hashType: "SHA-256",
-    hash: "7f3a2c89e10123456789abcdef0123456789abcdef0123456789abcdef012345",
+    hashType: "sha256",
+    hash: "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
     status: "locked",
-    recovered: "matrix2026!",
-    discovered: false,
-  },
-  {
-    id: "cred-03",
-    target: "lab-db-01.snow.local",
-    username: "dbadmin",
-    hashType: "MD5",
-    hash: "5d41402abc4b2a76b9719d911017c592",
-    status: "locked",
-    recovered: "rootpass_snow",
     discovered: false,
   },
 ];
 
 export const INITIAL_VULNERABILITIES: SecurityVulnerability[] = [
-  { id: "vuln-ssh-brute", hostId: "auth-01", title: "SSH Weak Credential Policy", severity: "HIGH", description: "SSH daemon permits continuous rapid authentication attempts on lab-auth.snow.local.", discovered: true },
-  { id: "vuln-web-sqli", hostId: "web-01", title: "SQL Injection in Search Form", severity: "CRITICAL", description: "Parameter 'q' on snow-lab.local/login is susceptible to Boolean SQLi.", discovered: true },
-  { id: "vuln-api-jwt", hostId: "api-01", title: "Weak JWT Signing Secret", severity: "MEDIUM", description: "API token signature relies on known dictionary word 'snowsecret'.", discovered: false },
-  { id: "vuln-db-exposure", hostId: "db-01", title: "Filtered Database Port", severity: "LOW", description: "PostgreSQL port is visible via deep service enumeration.", discovered: false },
+  {
+    id: "vuln-01",
+    hostId: "host-web",
+    title: "SQL Injection on Auth Endpoint",
+    severity: "CRITICAL",
+    description: "Parameter 'username' in POST /api/login allows arbitrary boolean SQL payload injection.",
+    discovered: false,
+  },
+  {
+    id: "vuln-02",
+    hostId: "host-auth",
+    title: "Weak Password Policy & Unthrottled SSH",
+    severity: "HIGH",
+    description: "SSH daemon permits password authentication without fail2ban rate limiting.",
+    discovered: false,
+  },
 ];
 
 export const INITIAL_PACKETS: SecurityPacket[] = [
-  { id: "pkt-001", timestamp: "10:42:01.104", source: "10.42.0.12", destination: "10.42.0.1", protocol: "TCP", port: 443, length: 74, info: "SYN · session negotiation", payload: "Flags: SYN | Window: 64240 | MSS: 1460", status: "observed", layers: ["Frame 1", "Ethernet II", "IPv4", "TCP"] },
-  { id: "pkt-002", timestamp: "10:42:01.109", source: "10.42.0.1", destination: "10.42.0.12", protocol: "TCP", port: 443, length: 74, info: "SYN, ACK · session accepted", payload: "Flags: SYN, ACK | Window: 65160 | MSS: 1460", status: "allowed", layers: ["Frame 2", "Ethernet II", "IPv4", "TCP"] },
-  { id: "pkt-003", timestamp: "10:42:02.112", source: "10.42.0.12", destination: "10.42.0.1", protocol: "TLS", port: 443, length: 512, info: "Client Hello · TLS 1.3 Handshake", payload: "Handshake Protocol: Client Hello | Version: TLS 1.3", status: "allowed", layers: ["Frame 3", "Ethernet II", "IPv4", "TCP", "TLS"] },
-  { id: "pkt-004", timestamp: "10:42:03.015", source: "10.42.0.18", destination: "10.42.0.10", protocol: "HTTP", port: 80, length: 824, info: "GET /login HTTP/1.1", payload: "GET /login HTTP/1.1\r\nHost: snow-lab.local\r\nUser-Agent: SnowOperator/4.0", status: "observed", layers: ["Frame 4", "Ethernet II", "IPv4", "TCP", "HTTP"] },
-  { id: "pkt-005", timestamp: "10:42:03.042", source: "10.42.0.10", destination: "10.42.0.18", protocol: "HTTP", port: 80, length: 1240, info: "HTTP/1.1 200 OK (text/html)", payload: "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nServer: nginx/1.24 (snow-lab)", status: "allowed", layers: ["Frame 5", "Ethernet II", "IPv4", "TCP", "HTTP"] },
-  { id: "pkt-006", timestamp: "10:42:04.201", source: "10.42.0.1", destination: "10.42.0.10", protocol: "DNS", port: 53, length: 164, info: "Standard query 0x1a2b A snow-lab.local", payload: "Query: snow-lab.local · Answer: 10.42.0.10", status: "allowed", layers: ["Frame 6", "Ethernet II", "IPv4", "UDP", "DNS"] },
-  { id: "pkt-007", timestamp: "10:42:05.882", source: "10.42.0.27", destination: "10.42.0.14", protocol: "SSH", port: 22, length: 320, info: "SSH-2.0-OpenSSH_9.2p1 AUTH ATTEMPT operator", payload: "Client: SSH-2.0-OpenSSH_9.2p1 · User: operator", status: "blocked", suspicious: true, layers: ["Frame 7", "Ethernet II", "IPv4", "TCP", "SSH"] },
-  { id: "pkt-008", timestamp: "10:42:06.901", source: "10.42.0.10", destination: "10.42.0.19", protocol: "TLS", port: 5432, length: 618, info: "Encrypted PostgreSQL Query Session", payload: "Application Data: [Encrypted PostgreSQL Query Payload]", status: "observed", layers: ["Frame 8", "Ethernet II", "IPv4", "TCP", "TLS"] },
+  {
+    id: "pkt-001",
+    timestamp: "10:00:01.120",
+    source: "10.44.0.100",
+    destination: "10.44.0.10",
+    protocol: "DNS",
+    port: 53,
+    length: 74,
+    info: "Standard query 0x1a2b A EDGE-GATEWAY.snow.local",
+    payload: "0000 00 01 01 00 00 01 00 00 00 00 00 00 0c 45 44 47 45",
+    status: "observed",
+    layers: ["Ethernet II", "IPv4", "UDP", "DNS"],
+  },
+  {
+    id: "pkt-002",
+    timestamp: "10:00:01.125",
+    source: "10.44.0.10",
+    destination: "10.44.0.100",
+    protocol: "DNS",
+    port: 53,
+    length: 90,
+    info: "Standard query response 0x1a2b A 10.44.0.10",
+    payload: "0000 00 01 81 80 00 01 00 01 00 00 00 00 0c 45 44 47 45",
+    status: "allowed",
+    layers: ["Ethernet II", "IPv4", "UDP", "DNS"],
+  },
+  {
+    id: "pkt-003",
+    timestamp: "10:00:02.400",
+    source: "10.44.0.100",
+    destination: "10.44.0.20",
+    protocol: "SSH",
+    port: 22,
+    length: 118,
+    info: "Client: SSH-2.0-OpenSSH_9.3p1 SnowLabTester",
+    payload: "53 53 48 2d 32 2e 30 2d 4f 70 65 6e 53 53 48 5f 39 2e 33",
+    status: "observed",
+    layers: ["Ethernet II", "IPv4", "TCP", "SSH"],
+  },
 ];
+
+export function formatSimulationTimestamp(seconds: number): string {
+  const base = new Date(2026, 2, 28, 10, 0, 0);
+  base.setSeconds(base.getSeconds() + seconds);
+  const h = String(base.getHours()).padStart(2, "0");
+  const m = String(base.getMinutes()).padStart(2, "0");
+  const s = String(base.getSeconds()).padStart(2, "0");
+  const ms = String(Math.floor((seconds % 1) * 1000)).padStart(3, "0");
+  return `${h}:${m}:${s}.${ms}`;
+}
 
 export const INITIAL_EVENTS: SecurityEvent[] = [
-  { id: "evt-001", timestamp: formatSimulationTimestamp(0), type: "SYSTEM", severity: "success", source: "OPERATIONS CORE", message: "SNOW WORKSTATION INITIALIZED / DETERMINISTIC SANDBOX CONNECTED" },
-  { id: "evt-002", timestamp: formatSimulationTimestamp(2), type: "POLICY", severity: "notice", source: "SAFETY ENGINE", message: "EXTERNAL RECON DISABLED / SANDBOX OPERATES ON LOCAL SYNTHETIC FIXTURES" },
-  { id: "evt-003", timestamp: formatSimulationTimestamp(5), type: "NETWORK", severity: "info", source: "PACKET SENSOR", message: "SYNTHETIC PACKET STREAM ONLINE / DISPLAY FILTERS READY" },
+  { id: "evt-001", timestamp: formatSimulationTimestamp(0), type: "SYSTEM", severity: "info", source: "OPERATIONS CORE", message: "SNOW WORKSTATION INITIALIZED // CYBER RANGE 10.44.0.0/24 ONLINE" },
+  { id: "evt-002", timestamp: formatSimulationTimestamp(2), type: "POLICY", severity: "notice", source: "SAFETY ENGINE", message: "ISOLATED DETERMINISTIC SANDBOX ACTIVE // MOCK TARGET FIXTURES LOADED" },
+  { id: "evt-003", timestamp: formatSimulationTimestamp(5), type: "NETWORK", severity: "info", source: "PACKET SENSOR", message: "MONITORING SENSOR ACTIVE ON 10.44.0.50 // PACKET CAPTURE READY" },
 ];
 
-export const INITIAL_MISSION: SecurityMission = {
-  id: "black-ice-001",
-  title: "BLACK ICE",
-  flag: "SNOW{BLACK_ICE_OPERATIONAL_COMPLETE}",
-  stages: [
-    { id: "stage-1", label: "Stage 01: Reconnaissance", description: "Enumerate lab-gateway.snow.local ports and services.", status: "in-progress" },
-    { id: "stage-2", label: "Stage 02: Access & Credentials", description: "Run Brute Force attack on lab-auth.snow.local (SSH).", status: "locked" },
-    { id: "stage-3", label: "Stage 03: Hash Cracking", description: "Crack target bcrypt hash with John/Hashcat workstation.", status: "locked" },
-    { id: "stage-4", label: "Stage 04: Packet Inspection", description: "Analyze HTTP/TLS synthetic traffic in Wireshark Packet Lab.", status: "locked" },
-    { id: "stage-5", label: "Stage 05: Web Security", description: "Simulate SQL Injection against snow-lab.local/login.", status: "locked" },
-    { id: "stage-6", label: "Stage 06: Exploitation & Flag", description: "Establish Snowploit session and retrieve target flag.", status: "locked" },
-  ],
-};
+export const MISSIONS_LIST: SecurityMission[] = [
+  {
+    id: "black-ice",
+    codename: "BLACK ICE",
+    title: "OPERATION BLACK ICE",
+    briefing: "Execute full multi-stage pentest against Black Ice cyber range (10.44.0.0/24). Progress from perimeter network discovery to credential exploitation, web injection, session establishment, and data extraction.",
+    difficulty: "INTERMEDIATE",
+    targetNetwork: "10.44.0.0/24",
+    flag: "SNOW{BLACK_ICE_OPERATIONAL_COMPLETE}",
+    status: "active",
+    stages: [
+      { id: "stage-1", label: "Stage 01: Reconnaissance", description: "Run RECON to discover 10.44.0.0/24 cyber range hosts and services.", status: "in-progress", requiredCategory: "recon" },
+      { id: "stage-2", label: "Stage 02: Access & Credentials", description: "Execute Brute Force against AUTH-SRV (10.44.0.20:22) to recover operator credential.", status: "locked", requiredCategory: "credentials" },
+      { id: "stage-3", label: "Stage 03: Web Security", description: "Interrogate WEB-NODE (10.44.0.30) using Web Security Sandbox SQL Injection.", status: "locked", requiredCategory: "web" },
+      { id: "stage-4", label: "Stage 04: Session Establishment", description: "Establish an active privilege session on WEB-NODE or AUTH-SRV.", status: "locked", requiredCategory: "exploitation" },
+      { id: "stage-5", label: "Stage 05: Vault Extraction", description: "Execute Snowploit vault extraction on DATA-NODE (10.44.0.40) and verify flag.", status: "locked", requiredCategory: "exploitation" },
+    ],
+  },
+  {
+    id: "ghost-protocol",
+    codename: "GHOST PROTOCOL",
+    title: "OPERATION GHOST PROTOCOL",
+    briefing: "Investigate covert network telemetry and rogue activity across perimeter router EDGE-GATEWAY and MONITOR node. Inspect packets, isolate rogue sessions, and analyze memory forensic artifacts.",
+    difficulty: "ADVANCED",
+    targetNetwork: "10.44.0.0/24",
+    flag: "SNOW{GHOST_PROTOCOL_TRACE_SUCCESS}",
+    status: "available",
+    stages: [
+      { id: "stage-1", label: "Stage 01: DNS & Recon Discovery", description: "Run network scan on EDGE-GATEWAY (10.44.0.10) to map perimeter DNS.", status: "in-progress", requiredCategory: "recon" },
+      { id: "stage-2", label: "Stage 02: Packet Traffic Analysis", description: "Analyze DNS & SSH packet frames in Packet Lab to isolate anomaly.", status: "locked", requiredCategory: "network" },
+      { id: "stage-3", label: "Stage 03: Session Identification", description: "Identify rogue session established on MONITOR (10.44.0.50).", status: "locked", requiredCategory: "exploitation" },
+      { id: "stage-4", label: "Stage 04: Digital Forensics Trace", description: "Inspect memory dumps and log timeline in Digital Forensics Station.", status: "locked", requiredCategory: "forensics" },
+    ],
+  },
+  {
+    id: "dark-packet",
+    codename: "DARK PACKET",
+    title: "OPERATION DARK PACKET",
+    briefing: "Deep packet inspection and protocol analysis mission focused on decrypted TLS payloads and IDS telemetry.",
+    difficulty: "BEGINNER",
+    targetNetwork: "10.44.0.0/24",
+    flag: "SNOW{DARK_PACKET_INSPECTED}",
+    status: "available",
+    stages: [
+      { id: "dp-1", label: "Stage 01: Capture Stream", description: "Start Packet Lab stream filter for TLS traffic.", status: "in-progress", requiredCategory: "network" },
+      { id: "dp-2", label: "Stage 02: Payload Inspection", description: "Select suspicious packet frame and verify layers.", status: "locked", requiredCategory: "network" },
+    ],
+  },
+  {
+    id: "zero-day",
+    codename: "ZERO DAY",
+    title: "OPERATION ZERO DAY",
+    briefing: "Simulated zero-day vulnerability discovery and response workflow across DATA-NODE microservices.",
+    difficulty: "EXPERT",
+    targetNetwork: "10.44.0.0/24",
+    flag: "SNOW{ZERO_DAY_PATCHED}",
+    status: "available",
+    stages: [
+      { id: "zd-1", label: "Stage 01: Vuln Identification", description: "Scan DATA-NODE for unpatched internal API endpoints.", status: "in-progress", requiredCategory: "recon" },
+      { id: "zd-2", label: "Stage 02: Exploit Proof", description: "Run Snowploit advisory test against port 9000.", status: "locked", requiredCategory: "exploitation" },
+    ],
+  },
+];
 
 export const INITIAL_FORENSICS: ForensicsArtifact[] = [
-  { id: "art-1", timestamp: "10:38:14", artifactType: "LOG_ENTRY", title: "/var/log/auth.log", description: "Repeated failed SSH authentication attempts from IP 10.42.0.27 targeting user 'operator'.", analysis: "Indicates automated dictionary brute-force spray against operator account.", flagged: true },
-  { id: "art-2", timestamp: "10:39:01", artifactType: "MEMORY_DUMP", title: "Memory Region 0x7fff4a20", description: "Extracted process string: 'SNOW_AUTH_SECRET_TOKEN=snow-lab-2025!'", analysis: "Plaintext credential artifact residing in memory buffer.", flagged: true },
-  { id: "art-3", timestamp: "10:39:45", artifactType: "NETWORK_SOCKET", title: "Established Socket 10.42.0.10:443 -> 10.42.0.19:5432", description: "Active DB connection carrying sanitized queries.", analysis: "Standard app-to-database communication pipeline.", flagged: false },
-  { id: "art-4", timestamp: "10:40:10", artifactType: "FILE_HASH", title: "/bin/snow-daemon SHA-256", description: "Hash match: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", analysis: "Verified binary integrity matching canonical release.", flagged: false },
+  { id: "art-1", timestamp: "10:00:14", artifactType: "LOG_ENTRY", title: "/var/log/auth.log", description: "Repeated SSH authentication attempts from 10.44.0.100 targeting user 'operator' on 10.44.0.20.", analysis: "Automated dictionary attack detected targeting auth gateway.", flagged: true },
+  { id: "art-2", timestamp: "10:01:02", artifactType: "MEMORY_DUMP", title: "Memory Buffer 0x7fff4a20", description: "Extracted process buffer: 'SNOW_AUTH_TOKEN=snow-lab-2025!'", analysis: "Plaintext credential artifact recovered in process memory.", flagged: true },
+  { id: "art-3", timestamp: "10:02:15", artifactType: "NETWORK_SOCKET", title: "Active Socket 10.44.0.30:443 -> 10.44.0.40:5432", description: "Established PostgreSQL socket connection transporting query payloads.", analysis: "Standard microservice database connection.", flagged: false },
+  { id: "art-4", timestamp: "10:03:00", artifactType: "FILE_HASH", title: "/bin/snow-daemon SHA-256", description: "Hash: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", analysis: "File hash matches canonical release build.", flagged: false },
+  { id: "art-5", timestamp: "10:04:10", artifactType: "TRACE_EVIDENCE", title: "GHOST PROTOCOL Telemetry Trace", description: "Covert DNS query trail discovered targeting host 10.44.0.50 (MONITOR).", analysis: "Ghost Protocol evidence chain verified.", flagged: true },
 ];
 
 export function initialSimulationState(): SecuritySimulationState {
@@ -444,18 +523,21 @@ export function initialSimulationState(): SecuritySimulationState {
     category: "recon",
     activeOpId: "nmap-recon",
     clock: 0,
+    selectedHostId: "host-edge",
+    selectedSessionId: undefined,
+    activeMissionId: "black-ice",
+    missions: JSON.parse(JSON.stringify(MISSIONS_LIST)),
     hosts: JSON.parse(JSON.stringify(INITIAL_HOSTS)),
     credentials: JSON.parse(JSON.stringify(INITIAL_CREDENTIALS)),
     vulnerabilities: JSON.parse(JSON.stringify(INITIAL_VULNERABILITIES)),
     packets: JSON.parse(JSON.stringify(INITIAL_PACKETS)),
     alerts: [],
     sessions: [],
-    mission: JSON.parse(JSON.stringify(INITIAL_MISSION)),
     events: JSON.parse(JSON.stringify(INITIAL_EVENTS)),
 
     bruteForce: {
       config: {
-        target: "lab-auth.snow.local",
+        target: "AUTH-SRV (10.44.0.20:22)",
         service: "SSH",
         protocol: "SSH",
         username: "operator",
@@ -496,7 +578,7 @@ export function initialSimulationState(): SecuritySimulationState {
 
     medusaHydra: {
       config: {
-        target: "lab-auth.snow.local",
+        target: "AUTH-SRV (10.44.0.20:22)",
         service: "SSH",
         module: "ssh",
         userList: "snow-users.txt",
@@ -521,16 +603,16 @@ export function initialSimulationState(): SecuritySimulationState {
 
     recon: {
       config: {
-        target: "lab-gateway.snow.local",
-        command: "nmap -sV -O lab-gateway.snow.local",
-        scanType: "Service Detection",
+        target: "10.44.0.0/24 Range",
+        command: "nmap -sV -O 10.44.0.0/24",
+        scanType: "Range Service Discovery",
         timing: "T3 Normal",
       },
       state: {
         status: "idle",
         progress: 0,
         currentPhase: "STANDBY",
-        hostsFound: 2,
+        hostsFound: 1,
         portsScanned: 0,
         elapsedSec: 0,
         terminalLogs: [],
@@ -545,24 +627,24 @@ export function initialSimulationState(): SecuritySimulationState {
 
     webLab: {
       category: "SQL INJECTION",
-      targetUrl: "https://snow-lab.local/login",
+      targetUrl: "https://10.44.0.30/login",
       method: "POST",
       payload: "' OR '1'='1",
       intercepted: false,
       lastResponse: {
         status: 200,
-        headers: { "content-type": "application/json", "server": "nginx/1.24 (snow-lab)" },
+        headers: { "content-type": "application/json", "server": "nginx/1.24 (snow-web)" },
         body: '{"status":"success","user":"admin","role":"administrator","flag":"SNOW{SQLI_BYPASS_SUCCESS}"}',
-        finding: "Boolean SQL Injection confirmed on parameter 'q' / 'username'.",
+        finding: "Boolean SQL Injection confirmed on parameter 'username' at 10.44.0.30.",
         remediation: "Use parameterized queries (PDO / Prepared Statements) and sanitize input.",
       },
     },
 
     snowploit: {
       selectedModule: "exploit/web/sno_2026_001_auth_bypass",
-      target: "lab-web-01.snow.local",
+      target: "WEB-NODE (10.44.0.30)",
       commandHistory: ["help"],
-      consoleLogs: ["snowploit > ready"],
+      consoleLogs: ["snowploit > framework ready // cyber range context initialized"],
     },
 
     forensics: {
@@ -577,7 +659,7 @@ export const CATEGORY_OPS: Record<
   Array<{ id: string; name: string; subtitle: string; icon: string }>
 > = {
   recon: [
-    { id: "nmap-recon", name: "Network Recon Engine", subtitle: "Nmap-Style Port & Service Discovery", icon: "RADAR" },
+    { id: "nmap-recon", name: "Network Recon Engine", subtitle: "Nmap-Style Range Port & Service Discovery", icon: "RADAR" },
   ],
   credentials: [
     { id: "brute-force", name: "Brute Force Auth Engine", subtitle: "Targeted Credential Attack Simulation", icon: "KEY" },
@@ -597,52 +679,96 @@ export const CATEGORY_OPS: Record<
     { id: "forensics-investigator", name: "Digital Forensics Station", subtitle: "Artifacts, Memory Dumps & Log Timeline", icon: "SHIELD" },
   ],
   missions: [
-    { id: "black-ice-mission", name: "Operation Black Ice", subtitle: "Multi-Stage Simulated Cyber Range", icon: "CROSSHAIR" },
+    { id: "black-ice-mission", name: "Operation Black Ice", subtitle: "Multi-Stage Cyber Range Operation", icon: "CROSSHAIR" },
+    { id: "ghost-protocol-mission", name: "Operation Ghost Protocol", subtitle: "Covert Telemetry & Forensic Investigation", icon: "SHIELD" },
   ],
 };
 
 export const HELP_COMMANDS = [
-  "help                 list available workstation commands",
-  "status               print operator workstation state",
-  "run                  run active operation",
-  "pause                pause active operation",
-  "resume               resume active operation",
-  "stop                 stop active operation",
-  "reset                reset workstation simulation state",
-  "recon                open Network Recon Engine",
-  "bruteforce           open Brute Force Auth Engine",
-  "crack / hashcat      open Hash Cracker Workstation",
-  "medusa / hydra       open Multi-Threaded Auth Tester",
-  "packets / wireshark  open Wireshark Packet Lab",
-  "web                  open Web Security Sandbox",
-  "snowploit            open Snowploit Console",
-  "forensics            open Digital Forensics Station",
-  "mission / blackice   open Operation Black Ice",
-  "targets              list active Snow sandbox targets",
-  "clear                clear terminal screen",
+  "help                            list available workstation commands",
+  "status                          print operator workstation state",
+  "targets                         list active Snow cyber range targets",
+  "sessions                        list active simulated sessions",
+  "run                             run active operation",
+  "pause                           pause active operation",
+  "resume                          resume active operation",
+  "stop                            stop active operation",
+  "reset                           reset simulation state",
+  "recon                           open Network Recon Engine",
+  "scan --demo                     execute quick demo network scan",
+  "bruteforce                      open Brute Force Auth Engine",
+  "bruteforce --demo               execute quick demo credential attack",
+  "crack / hashcat                 open Hash Cracker Workstation",
+  "medusa / hydra                  open Multi-Threaded Auth Tester",
+  "packets / wireshark             open Wireshark Packet Lab",
+  "web                             open Web Security Sandbox",
+  "snowploit                       open Snowploit Console",
+  "forensics                       open Digital Forensics Station",
+  "mission / mission --list        list cyber range missions",
+  "mission --start <id>            start mission (e.g. black-ice, ghost-protocol)",
+  "mission --status                show active mission stage progress",
+  "clear                           clear terminal screen",
 ];
 
-export function commandOutput(command: string): string[] {
-  const normalized = command.trim().toLowerCase();
-  if (normalized === "help") return ["AVAILABLE WORKSTATION COMMANDS", ...HELP_COMMANDS];
-  if (normalized === "status")
+export function commandOutput(command: string, state?: SecuritySimulationState): string[] {
+  const parts = command.trim().toLowerCase().split(/\s+/);
+  const main = parts[0];
+  const arg = parts[1];
+
+  if (main === "help") return ["AVAILABLE WORKSTATION COMMANDS", ...HELP_COMMANDS];
+  if (main === "status")
     return [
       "WORKSTATION STATUS",
-      "MODE ........ ISOLATED CONTROLLED SIMULATION",
-      "TARGETS ..... FICTIONAL SNOW MOCK SUITE",
-      "SAFETY ...... ISOLATED / NO EXTERNAL NETWORK ATTEMPTS",
-      "MATRIX ENGINE ONLINE",
+      "MODE ............ ISOLATED CONTROLLED SIMULATION",
+      "RANGE ........... SNOW CYBER RANGE 10.44.0.0/24",
+      "SAFETY .......... LOCAL SYNTHETIC FIXTURES ONLY",
+      `ACTIVE MISSION .. ${state?.activeMissionId.toUpperCase() || "BLACK-ICE"}`,
+      `SESSIONS ........ ${state?.sessions.length || 0} ACTIVE`,
+      "MATRIX ATMOSPHERE ONLINE",
     ];
-  if (normalized === "targets")
+  if (main === "targets") {
+    const hosts = state?.hosts || INITIAL_HOSTS;
     return [
-      "ACTIVE SANDBOX TARGETS:",
-      "10.42.0.1   lab-gateway.snow.local   Gateway Router (DNS, HTTP, HTTPS)",
-      "10.42.0.10  lab-web-01.snow.local    Web Application Server (snow-lab.local)",
-      "10.42.0.12  lab-api-01.snow.local    Internal Microservices Gateway",
-      "10.42.0.14  lab-auth.snow.local      Authentication Gateway (SSH 22)",
-      "10.42.0.19  lab-db-01.snow.local     PostgreSQL Database Cluster",
+      "ACTIVE CYBER RANGE TARGETS (10.44.0.0/24):",
+      ...hosts.map((h) =>
+        `${h.address.padEnd(12)} ${h.hostname.padEnd(14)} ${h.status.toUpperCase().padEnd(12)} [${h.discovered ? "DISCOVERED" : "LOCKED"}] ${h.role}`
+      ),
     ];
-  if (normalized === "clear") return [];
+  }
+  if (main === "sessions") {
+    const sessions = state?.sessions || [];
+    if (sessions.length === 0) return ["NO ACTIVE SIMULATED SESSIONS", "Run credential or exploit operations to establish sessions."];
+    return [
+      "ACTIVE SIMULATED SESSIONS:",
+      ...sessions.map((s) => `${s.id} | TARGET: ${s.target} | MODULE: ${s.module} | PRIVILEGE: ${s.privilege} | STATUS: ${s.status.toUpperCase()}`),
+    ];
+  }
+  if (main === "mission" || main === "missions") {
+    if (arg === "--list" || !arg) {
+      const missions = state?.missions || MISSIONS_LIST;
+      return [
+        "CYBER RANGE MISSIONS:",
+        ...missions.map((m) => `[${m.id}] ${m.title} (${m.difficulty}) - ${m.status.toUpperCase()}`),
+        "Use 'mission --start <id>' to switch mission.",
+      ];
+    }
+    if (arg === "--status") {
+      const activeMission = state?.missions.find((m) => m.id === state.activeMissionId) || MISSIONS_LIST[0];
+      return [
+        `ACTIVE MISSION: ${activeMission.title}`,
+        `BRIEFING: ${activeMission.briefing}`,
+        "STAGES:",
+        ...activeMission.stages.map((s) => `  [${s.status.toUpperCase().padEnd(11)}] ${s.label}: ${s.description}`),
+      ];
+    }
+    if (arg === "--start" && parts[2]) {
+      const targetId = parts[2].toLowerCase();
+      const exists = (state?.missions || MISSIONS_LIST).some((m) => m.id === targetId);
+      if (exists) return [`SWITCHING MISSION TO '${targetId.toUpperCase()}'`, "Dispatching mission context to workstation..."];
+      return [`UNKNOWN MISSION ID '${targetId}'`, "Available: black-ice, ghost-protocol, dark-packet, zero-day"];
+    }
+  }
+  if (main === "clear") return [];
 
   return [
     `EXECUTED COMMAND: ${command}`,
