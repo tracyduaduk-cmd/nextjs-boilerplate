@@ -1,23 +1,539 @@
 "use client";
+
 import { useEffect, useMemo, useReducer, useState } from "react";
 import { SecurityEventStream } from "@/components/security/SecurityEventStream";
+import { SecurityMatrix } from "@/components/security/SecurityMatrix";
 import { SecurityNetwork } from "@/components/security/SecurityNetwork";
 import { SecurityOperationPanel } from "@/components/security/SecurityOperationPanel";
 import { SecurityTerminal } from "@/components/security/SecurityTerminal";
-import { AUTH_OUTPUT, COMMAND_ALIASES, CREDENTIAL_OUTPUT, FIREWALL_OUTPUT, PACKET_OUTPUT, RECON_OUTPUT, commandOutput, initialSimulationState, type SecurityAlert, type SecurityMode, type SecurityOperation, type SecuritySimulationState } from "@/lib/security/simulation";
-const INITIAL_TERMINAL=["SNOW SECURITY LAB v0.2","CONTROLLED DIGITAL ENVIRONMENT // ALL SYSTEMS SIMULATED","SHARED STATE ONLINE // RED TEAM ↔ BLUE TEAM","","snow@lab:~$ help"];
-type Action={type:"command";command:string}|{type:"select";operation:SecurityOperation}|{type:"mode";mode:SecurityMode}|{type:"action";action:string;value?:string}|{type:"tick"};
-function addEvent(state:SecuritySimulationState,type:string,severity:SecurityAlert["severity"],source:string,message:string):SecuritySimulationState{const timestamp=`10:42:${String(5+state.events.length).padStart(2,"0")}`;return {...state,events:[...state.events,{id:`evt-${state.events.length+1}`,timestamp,type,severity,source,message}],clock:state.clock+1};}
-function missionProgress(state:SecuritySimulationState):SecuritySimulationState{const stages=state.mission.stages.map((stage,index)=>{const done=(index===0&&state.scanProgress>=100)||(index===1&&state.vulnerabilities.some(v=>v.discovered))||(index===2&&state.sessions.length>0)||(index===3&&state.alerts.length===0&&state.attacks.some(a=>a.status==="success"))||(index===4&&(state.defense.blockedHosts.length>0||state.defense.isolatedHosts.length>0))||(index===5&&state.sessions.length>0&&state.defense.isolatedHosts.length>0);return {...stage,status:done?"complete":index===0||state.mission.stages[index-1]?.status==="complete"?"in-progress":"locked"} as const});return {...state,mission:{...state.mission,stages}};}
-function reducer(state:SecuritySimulationState,action:Action):SecuritySimulationState{
- if(action.type==="select") return {...state,operation:action.operation}; if(action.type==="mode") return {...state,mode:action.mode,operation:action.mode==="blue"?"ids":"recon"}; if(action.type==="tick") return {...state,clock:state.clock+1};
- if(action.type==="command") {const normalized=action.command.trim().toLowerCase();let next={...state,operation:COMMAND_ALIASES[normalized]??state.operation}; if(normalized==="redteam")next={...next,mode:"red"}; if(normalized==="blueteam")next={...next,mode:"blue"}; if(normalized==="scan --demo"||normalized==="recon --demo") return reducer({...next},{type:"action",action:"recon"}); if(normalized==="password --demo"||normalized==="credentials") return reducer({...next},{type:"action",action:"credentials"}); if(normalized==="attack --demo"||normalized==="auth") return reducer({...next},{type:"action",action:"auth"}); return next; }
- let next=state; const actionName=action.action;
- if(actionName==="recon"){next={...next,scanProgress:100,hosts:next.hosts.map(h=>({...h,discovered:true})),vulnerabilities:next.vulnerabilities.map(v=>({...v,discovered:true}))};next=addEvent(next,"RECON","success","SNOWMAP-SIM","6 HOSTS DISCOVERED / SERVICES ENUMERATED / VULNERABILITIES INDEXED");}
- if(actionName==="credentials"){next={...next,credentials:next.credentials.map((c,i)=>i===0?{...c,discovered:true}:c),attacks:[...next.attacks,{id:`attack-${next.attacks.length+1}`,kind:"credential",target:"AUTH-01",strategy:action.value??"DICTIONARY",progress:100,status:"success",detected:false}]};next=addEvent(next,"CREDENTIAL ATTACK","success","HASHCORE-SIM","FICTIONAL MATCH FOUND / BLUE TEAM NOTIFIED");}
- if(actionName==="auth"){next={...next,attacks:[...next.attacks,{id:`attack-${next.attacks.length+1}`,kind:"auth",target:"AUTH-01",strategy:action.value??"SSH",progress:100,status:"success",detected:true}],alerts:[...next.alerts,{id:`alert-${next.alerts.length+1}`,timestamp:"10:43:18",type:"AUTH FAILURE",severity:"warning",source:"10.42.0.27",target:"AUTH-01",rule:"AUTH-07 / repeated synthetic attempts",response:"Rate limit and account lock available in Blue Team",resolved:false}]};next=addEvent(next,"IDS ALERT","warning","IDS-SENSOR","AUTH ATTACK DETECTED / RATE LIMIT RECOMMENDED");}
- if(actionName==="exploit"){if(action.value==="exploit")next={...next,sessions:[...next.sessions,{id:`session-${next.sessions.length+1}`,target:"WEB-01",module:"exploit/web/demo-auth-bypass",status:"active",createdAt:"10:43:21"}],hosts:next.hosts.map(h=>h.id==="web-01"?{...h,status:"compromised"}:h)};next=addEvent(next,"EXPLOIT SIM","notice","SNOWPLOIT","SAFE MODULE STATE UPDATED / NO PAYLOAD EXECUTED");}
- if(["block","isolate","rate-limit","lock","reset","quarantine","resolve"].includes(actionName)){if(actionName==="block"&&!next.defense.blockedHosts.includes(action.value??""))next={...next,defense:{...next.defense,blockedHosts:[...next.defense.blockedHosts,action.value??""]}};if(actionName==="isolate"&&!next.defense.isolatedHosts.includes(action.value??""))next={...next,defense:{...next.defense,isolatedHosts:[...next.defense.isolatedHosts,action.value??""]},hosts:next.hosts.map(h=>h.id===action.value?{...h,status:"isolated"}:h)};if(actionName==="rate-limit")next={...next,defense:{...next.defense,rateLimited:[...next.defense.rateLimited,action.value??""]}};if(actionName==="lock")next={...next,defense:{...next.defense,lockedAccounts:[...next.defense.lockedAccounts,action.value??""]}};if(actionName==="quarantine")next={...next,defense:{...next.defense,quarantinedServices:[...next.defense.quarantinedServices,action.value??""]}};if(actionName==="reset")next={...next,sessions:next.sessions.map(s=>({...s,status:"closed"}))};if(actionName==="resolve")next={...next,alerts:next.alerts.map(a=>a.id===action.value?{...a,resolved:true}:a)};next=addEvent(next,"DEFENSE","success","BLUE TEAM",`${actionName.toUpperCase()} / SHARED STATE UPDATED`);}
- return missionProgress(next);
+import {
+  initialSimulationState,
+  commandOutput,
+  type OperationCategory,
+  type OperationStatus,
+  type SecurityEvent,
+  type SecuritySimulationState,
+} from "@/lib/security/simulation";
+
+const INITIAL_TERMINAL = [
+  "SNOW SECURITY LAB // OPERATOR WORKSTATION v3.0",
+  "HIGH-FIDELITY CYBER OPERATIONS SANDBOX ONLINE",
+  "DETERMINISTIC SIMULATION ENGINE CONNECTED",
+  "Type 'help' or select an operation below to execute.",
+  "",
+];
+
+type Action =
+  | { type: "TICK" }
+  | { type: "SET_CATEGORY"; category: OperationCategory }
+  | { type: "SET_ACTIVE_OP"; opId: string }
+  | { type: "SET_MODE"; mode: "red" | "blue" }
+  | { type: "START_OP" }
+  | { type: "PAUSE_OP" }
+  | { type: "RESUME_OP" }
+  | { type: "STOP_OP" }
+  | { type: "RESET_OP" }
+  | { type: "UPDATE_BRUTE_FORCE"; config: Partial<SecuritySimulationState["bruteForce"]["config"]> }
+  | { type: "UPDATE_JOHN_HASHCAT"; config: Partial<SecuritySimulationState["johnHashcat"]["config"]> }
+  | { type: "UPDATE_MEDUSA_HYDRA"; config: Partial<SecuritySimulationState["medusaHydra"]["config"]> }
+  | { type: "UPDATE_RECON"; config: Partial<SecuritySimulationState["recon"]["config"]> }
+  | { type: "FILTER_PACKETS"; filter: SecuritySimulationState["packetLab"]["filter"] }
+  | { type: "SELECT_PACKET"; packetId: string }
+  | { type: "UPDATE_WEB_LAB"; update: Partial<SecuritySimulationState["webLab"]> }
+  | { type: "EXECUTE_SNOWPLOIT"; cmd: string }
+  | { type: "SELECT_FORENSIC"; id: string }
+  | { type: "ADD_EVENT"; event: Omit<SecurityEvent, "id"> };
+
+function addEvent(
+  state: SecuritySimulationState,
+  type: string,
+  severity: SecurityEvent["severity"],
+  source: string,
+  message: string
+): SecuritySimulationState {
+  const timestamp = new Date().toISOString().substring(11, 19);
+  return {
+    ...state,
+    events: [
+      ...state.events,
+      { id: `evt-${state.events.length + 1}`, timestamp, type, severity, source, message },
+    ],
+  };
 }
-export function SecurityLabApp(){const [state,dispatch]=useReducer(reducer,undefined,initialSimulationState);const [terminalLines,setTerminalLines]=useState(INITIAL_TERMINAL);const [clock,setClock]=useState(0);useEffect(()=>{const timer=window.setInterval(()=>{dispatch({type:"tick"});setClock(value=>value+1)},9000);return()=>window.clearInterval(timer)},[]);const handleCommand=(command:string)=>{const normalized=command.trim().toLowerCase();const output=normalized==="scan --demo"||normalized==="recon --demo"?RECON_OUTPUT:normalized==="password --demo"||normalized==="credentials"?CREDENTIAL_OUTPUT:normalized==="attack --demo"||normalized==="auth"?AUTH_OUTPUT:normalized.startsWith("packets")?PACKET_OUTPUT:normalized==="firewall"?FIREWALL_OUTPUT:commandOutput(command);setTerminalLines(current=>normalized==="clear"?INITIAL_TERMINAL:[...current,`snow@lab:~$ ${command}`,...output]);dispatch({type:"command",command})};const mission=useMemo(()=>state.mission.stages.filter(s=>s.status==="complete").length,[state.mission]);return <div className="relative z-10"><main id="main-content" className="mx-auto w-full max-w-[1500px] px-4 pb-24 pt-32 sm:px-6 sm:pt-40 lg:px-10"><section className="security-hero"><div className="security-hero-copy"><p className="security-kicker"><span className="security-live-dot"/>SNOW // SECURITY LAB</p><h1>Enter the <em>controlled</em> unknown.</h1><p className="security-hero-description">A shared cyber-operations range where every host, credential, packet, alert, and session is fictional, deterministic, and local.</p><div className="flex flex-wrap gap-3 font-mono text-[10px] uppercase tracking-[0.14em] text-slate-400"><span className="security-chip">{state.mode.toUpperCase()} TEAM</span><span className="security-chip">NO REAL TARGETS</span><span className="security-chip">EVENT BUS CONNECTED</span></div></div><div className="security-hero-signal"><div className="security-signal-ring"/><span>CORE<br/><strong>ONLINE</strong></span><small>SIMULATION CLOCK / {String(clock+1).padStart(2,"0")}</small></div></section><section className="mt-10 grid gap-4 lg:grid-cols-[1.25fr_0.75fr]"><SecurityNetwork operation={state.operation} hosts={state.hosts}/><div className="grid gap-4"><SecurityTerminal lines={terminalLines} onCommand={handleCommand}/><SecurityEventStream events={state.events}/></div></section><div className="mt-16"><SecurityOperationPanel state={state} onSelect={operation=>dispatch({type:"select",operation})} onMode={mode=>dispatch({type:"mode",mode})} onAction={(action,value)=>dispatch({type:"action",action,value})}/></div><section className="security-mission-callout mt-16"><div><p className="security-kicker">MISSION / BLACK ICE 001</p><h2>BLACK ICE</h2><p>{mission} / {state.mission.stages.length} stages complete. Progress is driven by the shared simulation state.</p></div><button type="button" onClick={()=>dispatch({type:"select",operation:"missions"})} className="security-command-button">OPEN MISSION →</button></section><p className="mt-8 text-center font-mono text-[10px] uppercase tracking-[0.14em] text-slate-600">This experience never scans, intercepts, attacks, or transmits data to real systems.</p></main></div>}
+
+function reducer(state: SecuritySimulationState, action: Action): SecuritySimulationState {
+  switch (action.type) {
+    case "SET_CATEGORY":
+      return {
+        ...state,
+        category: action.category,
+        activeOpId:
+          action.category === "recon"
+            ? "nmap-recon"
+            : action.category === "credentials"
+            ? "brute-force"
+            : action.category === "network"
+            ? "wireshark-packets"
+            : action.category === "web"
+            ? "web-interceptor"
+            : action.category === "exploitation"
+            ? "snowploit-console"
+            : action.category === "forensics"
+            ? "forensics-investigator"
+            : "black-ice-mission",
+      };
+
+    case "SET_ACTIVE_OP":
+      return { ...state, activeOpId: action.opId };
+
+    case "SET_MODE":
+      return { ...state, mode: action.mode };
+
+    case "UPDATE_BRUTE_FORCE":
+      return {
+        ...state,
+        bruteForce: { ...state.bruteForce, config: { ...state.bruteForce.config, ...action.config } },
+      };
+
+    case "UPDATE_JOHN_HASHCAT":
+      return {
+        ...state,
+        johnHashcat: { ...state.johnHashcat, config: { ...state.johnHashcat.config, ...action.config } },
+      };
+
+    case "UPDATE_MEDUSA_HYDRA":
+      return {
+        ...state,
+        medusaHydra: { ...state.medusaHydra, config: { ...state.medusaHydra.config, ...action.config } },
+      };
+
+    case "UPDATE_RECON":
+      return {
+        ...state,
+        recon: { ...state.recon, config: { ...state.recon.config, ...action.config } },
+      };
+
+    case "FILTER_PACKETS":
+      return { ...state, packetLab: { ...state.packetLab, filter: action.filter } };
+
+    case "SELECT_PACKET":
+      return { ...state, packetLab: { ...state.packetLab, selectedPacketId: action.packetId } };
+
+    case "UPDATE_WEB_LAB":
+      return { ...state, webLab: { ...state.webLab, ...action.update } };
+
+    case "EXECUTE_SNOWPLOIT": {
+      const nextState = addEvent(
+        state,
+        "SNOWPLOIT",
+        "info",
+        "CONSOLE",
+        `Executed command: snowploit > ${action.cmd}`
+      );
+      let sessionCreated = nextState.sessions;
+      if (action.cmd === "exploit") {
+        sessionCreated = [
+          ...sessionCreated,
+          {
+            id: `session-${sessionCreated.length + 1}`,
+            target: state.snowploit.target,
+            module: state.snowploit.selectedModule,
+            status: "active",
+            createdAt: new Date().toISOString().substring(11, 19),
+          },
+        ];
+      }
+      return {
+        ...nextState,
+        sessions: sessionCreated,
+        snowploit: {
+          ...state.snowploit,
+          activeSession: sessionCreated.length > 0 ? sessionCreated[0].id : undefined,
+          commandHistory: [...state.snowploit.commandHistory, action.cmd],
+        },
+      };
+    }
+
+    case "SELECT_FORENSIC":
+      return { ...state, forensics: { ...state.forensics, selectedArtifactId: action.id } };
+
+    case "START_OP": {
+      if (state.category === "recon") {
+        const s = addEvent(state, "RECON", "notice", "NMAP-ENGINE", `Scan initiated against ${state.recon.config.target}`);
+        return {
+          ...s,
+          recon: { ...s.recon, state: { ...s.recon.state, status: "running", progress: 5, currentPhase: "HOST DISCOVERY" } },
+        };
+      }
+      if (state.category === "credentials") {
+        if (state.activeOpId === "brute-force") {
+          const s = addEvent(state, "BRUTE FORCE", "warning", "AUTH-ENGINE", `Starting authentication test against ${state.bruteForce.config.target}`);
+          return {
+            ...s,
+            bruteForce: {
+              ...s.bruteForce,
+              state: { ...s.bruteForce.state, status: "running", attempts: 0, attemptsPerSec: 250, matchFound: false },
+            },
+          };
+        }
+        if (state.activeOpId === "john-hashcat") {
+          const s = addEvent(state, "HASHCAT", "notice", "GPU-CRACKER", `Engine launched. Hash: ${state.johnHashcat.config.targetHash.substring(0, 8)}...`);
+          return {
+            ...s,
+            johnHashcat: {
+              ...s.johnHashcat,
+              state: { ...s.johnHashcat.state, status: "running", progress: 0, hashRate: 31240 },
+            },
+          };
+        }
+        if (state.activeOpId === "medusa-hydra") {
+          const s = addEvent(state, "MEDUSA", "notice", "PARALLEL-WORKERS", `4 Worker threads dispatched to ${state.medusaHydra.config.target}`);
+          return {
+            ...s,
+            medusaHydra: {
+              ...s.medusaHydra,
+              state: { ...s.medusaHydra.state, status: "running", workerProgress: [10, 15, 8, 12], attemptsPerSec: 180 },
+            },
+          };
+        }
+      }
+      return state;
+    }
+
+    case "PAUSE_OP": {
+      if (state.category === "recon") {
+        return { ...state, recon: { ...state.recon, state: { ...state.recon.state, status: "paused" } } };
+      }
+      if (state.category === "credentials") {
+        if (state.activeOpId === "brute-force") {
+          return { ...state, bruteForce: { ...state.bruteForce, state: { ...state.bruteForce.state, status: "paused" } } };
+        }
+        if (state.activeOpId === "john-hashcat") {
+          return { ...state, johnHashcat: { ...state.johnHashcat, state: { ...state.johnHashcat.state, status: "paused" } } };
+        }
+        if (state.activeOpId === "medusa-hydra") {
+          return { ...state, medusaHydra: { ...state.medusaHydra, state: { ...state.medusaHydra.state, status: "paused" } } };
+        }
+      }
+      return state;
+    }
+
+    case "RESUME_OP": {
+      if (state.category === "recon") {
+        return { ...state, recon: { ...state.recon, state: { ...state.recon.state, status: "running" } } };
+      }
+      if (state.category === "credentials") {
+        if (state.activeOpId === "brute-force") {
+          return { ...state, bruteForce: { ...state.bruteForce, state: { ...state.bruteForce.state, status: "running" } } };
+        }
+        if (state.activeOpId === "john-hashcat") {
+          return { ...state, johnHashcat: { ...state.johnHashcat, state: { ...state.johnHashcat.state, status: "running" } } };
+        }
+        if (state.activeOpId === "medusa-hydra") {
+          return { ...state, medusaHydra: { ...state.medusaHydra, state: { ...state.medusaHydra.state, status: "running" } } };
+        }
+      }
+      return state;
+    }
+
+    case "STOP_OP": {
+      if (state.category === "recon") {
+        return { ...state, recon: { ...state.recon, state: { ...state.recon.state, status: "stopped" } } };
+      }
+      if (state.category === "credentials") {
+        if (state.activeOpId === "brute-force") {
+          return { ...state, bruteForce: { ...state.bruteForce, state: { ...state.bruteForce.state, status: "stopped", attemptsPerSec: 0 } } };
+        }
+        if (state.activeOpId === "john-hashcat") {
+          return { ...state, johnHashcat: { ...state.johnHashcat, state: { ...state.johnHashcat.state, status: "stopped", hashRate: 0 } } };
+        }
+        if (state.activeOpId === "medusa-hydra") {
+          return { ...state, medusaHydra: { ...state.medusaHydra, state: { ...state.medusaHydra.state, status: "stopped", attemptsPerSec: 0 } } };
+        }
+      }
+      return state;
+    }
+
+    case "RESET_OP":
+      return initialSimulationState();
+
+    case "TICK": {
+      let s = { ...state, clock: state.clock + 1 };
+
+      // RECON TICK PROGRESSION
+      if (s.recon.state.status === "running") {
+        const nextProgress = Math.min(100, s.recon.state.progress + 15);
+        let phase = "PORT ENUMERATION";
+        if (nextProgress >= 60) phase = "SERVICE DETECTION";
+        if (nextProgress >= 100) phase = "COMPLETE";
+
+        const isDone = nextProgress >= 100;
+        if (isDone) {
+          s = addEvent(s, "RECON", "success", "NMAP-ENGINE", "Scan completed. 6 Hosts discovered, 14 services enumerated.");
+          // Discover hosts
+          s = {
+            ...s,
+            hosts: s.hosts.map((h) => ({ ...h, discovered: true })),
+            mission: updateMissionStage(s.mission, "stage-1", "complete"),
+          };
+        }
+
+        s = {
+          ...s,
+          recon: {
+            ...s.recon,
+            state: {
+              ...s.recon.state,
+              progress: nextProgress,
+              currentPhase: phase,
+              hostsFound: nextProgress > 30 ? 6 : 2,
+              portsScanned: Math.floor((nextProgress / 100) * 1024),
+              elapsedSec: s.recon.state.elapsedSec + 1,
+              status: isDone ? "success" : "running",
+            },
+          },
+        };
+      }
+
+      // BRUTE FORCE TICK PROGRESSION
+      if (s.bruteForce.state.status === "running") {
+        const newAttempts = s.bruteForce.state.attempts + 450;
+        const total = s.bruteForce.state.totalCandidates;
+        const matchFound = newAttempts >= 3500;
+        const isDone = matchFound || newAttempts >= total;
+
+        const candidateNames = ["snow-2025", "admin123", "matrix-core", "snow-lab-2025!", "rootpass"];
+        const currentCandidate = candidateNames[Math.floor(Math.random() * candidateNames.length)];
+
+        if (matchFound && !s.bruteForce.state.matchFound) {
+          s = addEvent(s, "BRUTE FORCE", "success", "AUTH-ENGINE", "CREDENTIAL MATCH FOUND: admin / snow-lab-2025!");
+          s = {
+            ...s,
+            credentials: s.credentials.map((c) => (c.username === "admin" ? { ...c, status: "cracked", discovered: true } : c)),
+            mission: updateMissionStage(s.mission, "stage-3", "complete"),
+          };
+        }
+
+        s = {
+          ...s,
+          bruteForce: {
+            ...s.bruteForce,
+            state: {
+              ...s.bruteForce.state,
+              attempts: Math.min(total, newAttempts),
+              attemptsPerSec: isDone ? 0 : 320,
+              currentCandidate: matchFound ? "snow-lab-2025!" : currentCandidate,
+              matchFound: matchFound || s.bruteForce.state.matchFound,
+              matchedCredential: matchFound ? "snow-lab-2025!" : undefined,
+              elapsedSec: s.bruteForce.state.elapsedSec + 1,
+              status: isDone ? "success" : "running",
+            },
+          },
+        };
+      }
+
+      // JOHN / HASHCAT TICK PROGRESSION
+      if (s.johnHashcat.state.status === "running") {
+        const nextTested = s.johnHashcat.state.candidatesTested + 18500;
+        const nextProgress = Math.min(100, Math.floor((nextTested / s.johnHashcat.state.totalCandidates) * 100));
+        const match = nextProgress >= 80;
+
+        if (match && !s.johnHashcat.state.matchedResult) {
+          s = addEvent(s, "HASHCAT", "success", "GPU-CRACKER", "HASH PLAINTEXT RECOVERED: snow-lab-2025!");
+        }
+
+        s = {
+          ...s,
+          johnHashcat: {
+            ...s.johnHashcat,
+            state: {
+              ...s.johnHashcat.state,
+              candidatesTested: Math.min(s.johnHashcat.state.totalCandidates, nextTested),
+              progress: nextProgress,
+              hashRate: match ? 0 : 38420,
+              matchedResult: match ? "snow-lab-2025!" : undefined,
+              elapsedSec: s.johnHashcat.state.elapsedSec + 1,
+              status: match ? "success" : "running",
+            },
+          },
+        };
+      }
+
+      // MEDUSA / HYDRA TICK PROGRESSION
+      if (s.medusaHydra.state.status === "running") {
+        const nextWorkers: [number, number, number, number] = [
+          Math.min(100, s.medusaHydra.state.workerProgress[0] + 18),
+          Math.min(100, s.medusaHydra.state.workerProgress[1] + 14),
+          Math.min(100, s.medusaHydra.state.workerProgress[2] + 22),
+          Math.min(100, s.medusaHydra.state.workerProgress[3] + 12),
+        ];
+
+        const allDone = nextWorkers.every((w) => w >= 100);
+        if (allDone && s.medusaHydra.state.status === "running") {
+          s = addEvent(s, "MEDUSA", "success", "WORKERS", "AUTHENTICATION MATCH: admin:snow-lab-2025!");
+        }
+
+        s = {
+          ...s,
+          medusaHydra: {
+            ...s.medusaHydra,
+            state: {
+              ...s.medusaHydra.state,
+              workerProgress: nextWorkers,
+              totalAttempts: s.medusaHydra.state.totalAttempts + 120,
+              attemptsPerSec: allDone ? 0 : 210,
+              matchedPair: allDone ? { user: "admin", pass: "snow-lab-2025!" } : undefined,
+              elapsedSec: s.medusaHydra.state.elapsedSec + 1,
+              status: allDone ? "success" : "running",
+            },
+          },
+        };
+      }
+
+      return s;
+    }
+
+    default:
+      return state;
+  }
+}
+
+function updateMissionStage(mission: SecuritySimulationState["mission"], stageId: string, status: "complete" | "in-progress" | "locked") {
+  const stages = mission.stages.map((stg) => (stg.id === stageId ? { ...stg, status } : stg));
+  return { ...mission, stages };
+}
+
+export function SecurityLabApp() {
+  const [state, dispatch] = useReducer(reducer, undefined, initialSimulationState);
+  const [terminalLines, setTerminalLines] = useState(INITIAL_TERMINAL);
+
+  // Simulation Tick Loop
+  useEffect(() => {
+    const timer = setInterval(() => {
+      dispatch({ type: "TICK" });
+    }, 1200);
+    return () => clearInterval(timer);
+  }, []);
+
+  const handleCommand = (cmd: string) => {
+    const normalized = cmd.trim().toLowerCase();
+    if (normalized === "clear") {
+      setTerminalLines(INITIAL_TERMINAL);
+      return;
+    }
+
+    if (normalized === "recon") {
+      dispatch({ type: "SET_CATEGORY", category: "recon" });
+    } else if (normalized === "bruteforce") {
+      dispatch({ type: "SET_CATEGORY", category: "credentials" });
+      dispatch({ type: "SET_ACTIVE_OP", opId: "brute-force" });
+    } else if (normalized === "crack") {
+      dispatch({ type: "SET_CATEGORY", category: "credentials" });
+      dispatch({ type: "SET_ACTIVE_OP", opId: "john-hashcat" });
+    } else if (normalized === "medusa") {
+      dispatch({ type: "SET_CATEGORY", category: "credentials" });
+      dispatch({ type: "SET_ACTIVE_OP", opId: "medusa-hydra" });
+    } else if (normalized === "packets") {
+      dispatch({ type: "SET_CATEGORY", category: "network" });
+    } else if (normalized === "web") {
+      dispatch({ type: "SET_CATEGORY", category: "web" });
+    } else if (normalized === "snowploit") {
+      dispatch({ type: "SET_CATEGORY", category: "exploitation" });
+    } else if (normalized === "forensics") {
+      dispatch({ type: "SET_CATEGORY", category: "forensics" });
+    } else if (normalized === "missions") {
+      dispatch({ type: "SET_CATEGORY", category: "missions" });
+    } else if (normalized === "redteam") {
+      dispatch({ type: "SET_MODE", mode: "red" });
+    } else if (normalized === "blueteam") {
+      dispatch({ type: "SET_MODE", mode: "blue" });
+    }
+
+    const output = commandOutput(cmd);
+    setTerminalLines((prev) => [...prev, `snow@lab:~$ ${cmd}`, ...output]);
+  };
+
+  const currentOpStatus = useMemo(() => {
+    if (state.category === "recon") return state.recon.state.status;
+    if (state.category === "credentials") {
+      if (state.activeOpId === "john-hashcat") return state.johnHashcat.state.status;
+      if (state.activeOpId === "medusa-hydra") return state.medusaHydra.state.status;
+      return state.bruteForce.state.status;
+    }
+    return "idle" as OperationStatus;
+  }, [state]);
+
+  return (
+    <div className="relative min-h-screen bg-[#030c0f] text-slate-100 font-sans selection:bg-emerald-500 selection:text-black">
+      {/* Background Matrix & CRT Scanline Layer */}
+      <SecurityMatrix category={state.category} status={currentOpStatus} />
+
+      <main id="main-content" className="relative z-10 mx-auto w-full max-w-[1550px] px-4 pb-24 pt-28 sm:px-6 lg:px-10">
+        {/* Header Hero Section */}
+        <section className="security-hero flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border-b border-emerald-400/20 pb-8">
+          <div className="max-w-2xl">
+            <p className="security-kicker flex items-center gap-2">
+              <span className="security-live-dot" />
+              SNOW SECURITY LAB // PHASE 3 OPERATIONS
+            </p>
+            <h1 className="mt-2 text-4xl sm:text-6xl font-extrabold tracking-tight font-mono text-white">
+              HACKER <em className="text-emerald-400 not-italic">WORKSTATION</em>
+            </h1>
+            <p className="mt-3 text-sm sm:text-base text-slate-300 font-mono leading-relaxed">
+              Execute realistic cyber operations against deterministic Snow sandbox targets. Fully interactive, asynchronous, and client-isolated.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2 font-mono text-[10px] uppercase text-slate-400">
+              <span className="security-chip">{state.mode.toUpperCase()} TEAM MODE</span>
+              <span className="security-chip">LOCAL SANDBOX</span>
+              <span className="security-chip">100% DETERMINISTIC</span>
+            </div>
+          </div>
+
+          <div className="security-hero-signal flex flex-col items-center justify-center p-4 border border-cyan-400/30 bg-cyan-950/20 rounded-none w-full md:w-48 text-center font-mono">
+            <span className="text-[10px] text-cyan-300">CORE SYSTEM</span>
+            <strong className="text-emerald-400 text-lg">ONLINE</strong>
+            <small className="text-[8px] text-slate-500 mt-1">SIM CLOCK: #{String(state.clock).padStart(4, "0")}</small>
+          </div>
+        </section>
+
+        {/* Network Topology & Terminal / Event Grid */}
+        <section className="mt-8 grid gap-6 lg:grid-cols-[1.25fr_0.75fr]">
+          <SecurityNetwork category={state.category} hosts={state.hosts} status={currentOpStatus} activeOpId={state.activeOpId} />
+          <div className="grid gap-6">
+            <SecurityTerminal lines={terminalLines} onCommand={handleCommand} activeOpId={state.activeOpId} status={currentOpStatus} />
+            <SecurityEventStream events={state.events} />
+          </div>
+        </section>
+
+        {/* Primary Interactive Operation Panel */}
+        <div className="mt-10">
+          <SecurityOperationPanel
+            state={state}
+            onSelectCategory={(category) => dispatch({ type: "SET_CATEGORY", category })}
+            onSelectOp={(opId) => dispatch({ type: "SET_ACTIVE_OP", opId })}
+            onRunOperation={() => dispatch({ type: "START_OP" })}
+            onPauseOperation={() => dispatch({ type: "PAUSE_OP" })}
+            onResumeOperation={() => dispatch({ type: "RESUME_OP" })}
+            onStopOperation={() => dispatch({ type: "STOP_OP" })}
+            onResetOperation={() => dispatch({ type: "RESET_OP" })}
+            onUpdateBruteForce={(config) => dispatch({ type: "UPDATE_BRUTE_FORCE", config })}
+            onUpdateJohnHashcat={(config) => dispatch({ type: "UPDATE_JOHN_HASHCAT", config })}
+            onUpdateMedusaHydra={(config) => dispatch({ type: "UPDATE_MEDUSA_HYDRA", config })}
+            onUpdateRecon={(config) => dispatch({ type: "UPDATE_RECON", config })}
+            onSelectPacket={(packetId) => dispatch({ type: "SELECT_PACKET", packetId })}
+            onFilterPackets={(filter) => dispatch({ type: "FILTER_PACKETS", filter })}
+            onUpdateWebLab={(update) => dispatch({ type: "UPDATE_WEB_LAB", update })}
+            onExecuteSnowploit={(cmd) => dispatch({ type: "EXECUTE_SNOWPLOIT", cmd })}
+            onSelectForensicArtifact={(id) => dispatch({ type: "SELECT_FORENSIC", id })}
+            onMode={(mode) => dispatch({ type: "SET_MODE", mode })}
+          />
+        </div>
+
+        {/* Bottom Safety Banner */}
+        <p className="mt-12 text-center font-mono text-[10px] uppercase tracking-widest text-slate-500">
+          Snow Security Lab operates exclusively against local, synthetic mock fixtures. No external network requests or offensive binaries are executed.
+        </p>
+      </main>
+    </div>
+  );
+}
