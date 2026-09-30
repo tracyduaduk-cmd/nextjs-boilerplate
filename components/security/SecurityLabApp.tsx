@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useReducer, useState } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { SecurityEventStream } from "@/components/security/SecurityEventStream";
 import { SecurityMatrix } from "@/components/security/SecurityMatrix";
 import { SecurityNetwork } from "@/components/security/SecurityNetwork";
@@ -13,6 +13,7 @@ import {
   type OperationStatus,
   type SecurityEvent,
   type SecuritySimulationState,
+  formatSimulationTimestamp,
 } from "@/lib/security/simulation";
 
 const INITIAL_TERMINAL = [
@@ -50,7 +51,7 @@ function addEvent(
   source: string,
   message: string
 ): SecuritySimulationState {
-  const timestamp = new Date().toISOString().substring(11, 19);
+  const timestamp = formatSimulationTimestamp(state.clock);
   return {
     ...state,
     events: [
@@ -138,7 +139,7 @@ function reducer(state: SecuritySimulationState, action: Action): SecuritySimula
             target: state.snowploit.target,
             module: state.snowploit.selectedModule,
             status: "active",
-            createdAt: new Date().toISOString().substring(11, 19),
+            createdAt: formatSimulationTimestamp(state.clock),
           },
         ];
         newLog = `[*] Sending simulated payload...\n[+] Session established: session-${sessionCreated.length} on ${state.snowploit.target}`;
@@ -520,6 +521,7 @@ function updateMissionStage(
 export function SecurityLabApp() {
   const [state, dispatch] = useReducer(reducer, undefined, initialSimulationState);
   const [terminalLines, setTerminalLines] = useState(INITIAL_TERMINAL);
+  const previousEventCount = useRef(state.events.length);
 
   // Simulation Tick Loop
   useEffect(() => {
@@ -528,6 +530,19 @@ export function SecurityLabApp() {
     }, 1200);
     return () => clearInterval(timer);
   }, []);
+  useEffect(() => {
+    const previousCount = previousEventCount.current;
+    if (state.events.length < previousCount) {
+      setTerminalLines(INITIAL_TERMINAL);
+    } else if (state.events.length > previousCount) {
+      const newEvents = state.events.slice(previousCount);
+      setTerminalLines((prev) => [
+        ...prev,
+        ...newEvents.map((event) => `[${event.timestamp}] ${event.type}: ${event.message}`),
+      ]);
+    }
+    previousEventCount.current = state.events.length;
+  }, [state.events]);
 
   const handleCommand = (cmd: string) => {
     const normalized = cmd.trim().toLowerCase();

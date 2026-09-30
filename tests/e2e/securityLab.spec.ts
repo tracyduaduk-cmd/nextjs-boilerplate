@@ -1,4 +1,24 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
+
+async function captureBruteForceSequence(page: Page) {
+  await page.locator('button[data-category="credentials"]').click();
+  await page.getByRole("button", { name: "▶ RUN OPERATION" }).click();
+
+  const candidates = [
+    "operator / winter2026",
+    "operator / snowflake",
+    "operator / snowlab",
+    "operator / matrix2026",
+    "operator / cyber2026",
+    "operator / snow-lab-2025!",
+  ];
+  const sequence: string[] = [];
+  for (const candidate of candidates) {
+    await expect(page.getByText(candidate, { exact: true })).toBeVisible({ timeout: 4000 });
+    sequence.push(candidate);
+  }
+  return sequence;
+}
 
 test.describe("Snow Security Lab Phase 4 Realism, Matrix Immersion & Operator UX Polish", () => {
   test("renders operator workstation and category navigation without Red/Blue primary dominance", async ({ page }) => {
@@ -51,6 +71,40 @@ test.describe("Snow Security Lab Phase 4 Realism, Matrix Immersion & Operator UX
     // Reset operation
     await page.getByRole("button", { name: "🔄 RESET STATE" }).click();
     await expect(page.getByText("IDLE", { exact: true }).first()).toBeVisible();
+  });
+
+  test("repeats the same deterministic brute force candidate sequence after reset", async ({ page }) => {
+    await page.goto("/security");
+    const firstRun = await captureBruteForceSequence(page);
+
+    await page.getByRole("button", { name: "🔄 RESET STATE" }).click();
+    await expect(page.getByText("IDLE", { exact: true }).first()).toBeVisible();
+
+    const secondRun = await captureBruteForceSequence(page);
+    expect(secondRun).toEqual(firstRun);
+  });
+
+  test("brute force reaches deterministic completion and reports the result", async ({ page }) => {
+    await page.goto("/security");
+    await page.locator('button[data-category="credentials"]').click();
+    await page.getByRole("button", { name: "▶ RUN OPERATION" }).click();
+
+    await expect(page.getByText("CREDENTIAL MATCH: operator / snow-lab-2025!", { exact: true })).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText("100%", { exact: true })).toBeVisible();
+    await expect(page.getByText("SUCCESS", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("CREDENTIAL MATCH FOUND: operator / snow-lab-2025!", { exact: true })).toBeVisible();
+    await expect(page.locator(".security-terminal-output").getByText(/CREDENTIAL MATCH FOUND: operator \/ snow-lab-2025!/)).toBeVisible();
+  });
+
+  test("mounts the Matrix atmosphere in normal and reduced-motion modes", async ({ page }) => {
+    await page.goto("/security");
+    await expect(page.getByTestId("security-matrix").first()).toBeVisible();
+    await expect(page.getByTestId("security-matrix").first().locator("canvas")).toBeVisible();
+
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.reload();
+    await expect(page.getByTestId("security-matrix").first()).toBeVisible();
+    await expect(page.getByLabel("Type a Security Lab command")).toBeVisible();
   });
 
   test("terminal command execution connects to workstation state and shows output", async ({ page }) => {
