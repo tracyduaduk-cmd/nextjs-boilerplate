@@ -368,3 +368,11 @@
 @keyframes securityLinkFlow{to{stroke-dashoffset:-8}}@keyframes securitySpin{to{transform:rotate(360deg)}}
 @media (max-width:700px){.security-mode-switch{width:100%}.security-mode-switch button{flex:1}.security-alert{align-items:flex-start;flex-direction:column}.security-alert .security-command-button{width:100%;margin-top:.25rem}.security-operation-tab{min-height:74px}.security-packet-table{min-width:760px}}
 @media (prefers-reduced-motion:reduce){.security-link.is-active,.security-signal-ring{animation:none}}
+
+/* Security Lab CRT & Phosphor Atmosphere */
+.security-crt-overlay {
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+              linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+  background-size: 100% 4px, 6px 100%;
+  pointer-events: none;
+}
