@@ -3,6 +3,7 @@ import { Footer } from "@/components/layout/Footer";
 import { ServiceRequestFlow } from "@/components/request/ServiceRequestFlow";
 import { EntryMode } from "@/lib/requests/types";
 import { createPageMetadata } from "@/lib/seo";
+import { VisualSection } from "@/components/ui/VisualSection";
 
 export const metadata = createPageMetadata({
   title: "Request a Technical Service | Snow Studio",
@@ -34,6 +35,15 @@ export default async function RequestPage({
     <div className="flex flex-col min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-sky-500/30 selection:text-sky-200">
       <Header />
       <main id="main-content" className="flex-1">
+        <VisualSection
+          eyebrow="Start / project intake"
+          title="Bring the rough idea."
+          description="A considered first step into the studio: choose the right path, share the useful context, and let the work take shape from there."
+          project="local-services-platform"
+          role="hero"
+          accent="cyan"
+          compact
+        />
         <ServiceRequestFlow
           initialServiceSlug={initialServiceSlug}
           initialMode={initialMode}

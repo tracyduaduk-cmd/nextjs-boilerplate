@@ -6,6 +6,7 @@ import { QuickActionGrid } from "@/components/telecom/QuickActionGrid";
 import { OperatorGuide } from "@/components/telecom/OperatorGuide";
 import { TelecomGuides } from "@/components/telecom/TelecomGuides";
 import { ToolVisualStage } from "@/components/tools/ToolVisualStage";
+import { VisualSection } from "@/components/ui/VisualSection";
 import { Radio, ShieldCheck, ArrowUpRight, Smartphone, Info } from "lucide-react";
 import { createPageMetadata } from "@/lib/seo";
 export const metadata: Metadata = createPageMetadata({
@@ -132,6 +133,16 @@ export default function TelecomPage() {
             </div>
           </div>
         </div>
+
+        <VisualSection
+          eyebrow="Connectivity / editorial view"
+          title="A clearer way through everyday network moments."
+          description="Original Snow concept imagery gives the reference material a human, spatial layer while the directory stays factual and grounded in the published code set."
+          project="pulse-health"
+          role="mobile"
+          accent="amber"
+          compact
+        />
 
         {/* 1. Universal Quick Actions */}
         <section className="pt-6">

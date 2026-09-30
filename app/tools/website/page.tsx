@@ -8,6 +8,7 @@ import { SpatialInstrument } from "@/components/spatial/SpatialInstrument";
 import { ProximitySurface } from "@/components/spatial/ProximitySurface";
 import { SystemBadge } from "@/components/spatial/SystemBadge";
 import { Camera, FileText, FileSearch, ArrowRight, ShieldCheck, Globe } from "lucide-react";
+import { VisualSection } from "@/components/ui/VisualSection";
 
 export default function WebsiteLabPage() {
   const tools = [
@@ -86,6 +87,16 @@ export default function WebsiteLabPage() {
           </div>
         </Container>
       </section>
+
+      <VisualSection
+        eyebrow="Browser laboratory"
+        title="Inspect the web as a living surface."
+        description="Capture, compare, and understand responsive experiences with a visual workflow that keeps the useful result in focus."
+        project="aurora-commerce"
+        role="desktop"
+        accent="cyan"
+        compact
+      />
 
       <section className="py-8 sm:py-16">
         <Container>
