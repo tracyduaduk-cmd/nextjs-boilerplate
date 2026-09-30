@@ -40,14 +40,14 @@ export function SecurityMatrix({ category = "recon", status = "idle" }: Security
       const colWidth = compact ? 20 : 16;
       columns = Math.ceil(window.innerWidth / colWidth);
       drops = Array.from({ length: columns }, (_, index) => (index * 19) % 35);
-      speeds = Array.from({ length: columns }, () => 0.25 + Math.random() * 0.45);
+      speeds = Array.from({ length: columns }, (_, index) => 0.35 + ((index * 17) % 30) / 100);
     };
 
     resize();
     window.addEventListener("resize", resize, { passive: true });
 
     if (reduced) {
-      context.fillStyle = "rgba(3, 12, 15, 0.65)";
+      context.fillStyle = "rgba(3, 12, 15, 0.75)";
       context.fillRect(0, 0, window.innerWidth, window.innerHeight);
       return () => window.removeEventListener("resize", resize);
     }
@@ -61,35 +61,39 @@ export function SecurityMatrix({ category = "recon", status = "idle" }: Security
       context.fillStyle = `rgba(3, 12, 15, ${fadeAlpha})`;
       context.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
-      const fontSize = compact ? 11 : 12;
-      context.font = `${fontSize}px monospace`;
+      const fontSize = compact ? 11 : 13;
+      context.font = `600 ${fontSize}px monospace`;
 
       const colWidth = compact ? 20 : 16;
-      const speedMult = isRunning ? (category === "credentials" ? 1.8 : 1.4) : 0.9;
+      const speedMult = isRunning ? (category === "credentials" ? 1.8 : 1.4) : 1.0;
 
       drops.forEach((drop, index) => {
         const x = index * colWidth;
         const y = drop * (compact ? 16 : 18);
 
-        // Highlight head character
-        const isHead = Math.random() > 0.85;
+        // Deterministic head character check
+        const pseudoRand = ((index * 31 + Math.floor(drop) * 17 + tick * 7) % 100) / 100;
+        const isHead = pseudoRand > 0.82;
 
         if (isHead) {
-          context.fillStyle = isRunning ? "rgba(224, 242, 254, 0.95)" : "rgba(187, 247, 208, 0.85)";
-          context.shadowColor = "rgba(74, 222, 128, 0.8)";
-          context.shadowBlur = isRunning ? 10 : 4;
-        } else if (index % 6 === 0) {
-          context.fillStyle = "rgba(103, 232, 249, 0.45)"; // Cyan depth accents
+          context.fillStyle = isRunning ? "rgba(224, 242, 254, 0.98)" : "rgba(187, 247, 208, 0.90)";
+          context.shadowColor = "rgba(74, 222, 128, 0.9)";
+          context.shadowBlur = isRunning ? 12 : 6;
+        } else if (index % 5 === 0) {
+          context.fillStyle = "rgba(103, 232, 249, 0.55)"; // Cyan depth accents
           context.shadowBlur = 0;
         } else {
-          context.fillStyle = isRunning ? "rgba(74, 222, 128, 0.35)" : "rgba(34, 197, 94, 0.22)";
+          context.fillStyle = isRunning ? "rgba(74, 222, 128, 0.45)" : "rgba(34, 197, 94, 0.30)";
           context.shadowBlur = 0;
         }
 
         const glyphChar = glyphs[(index + Math.floor(drop) + tick) % glyphs.length];
         context.fillText(glyphChar, x, y);
 
-        if (y > window.innerHeight && Math.random() > 0.975) {
+        const resetThreshold = window.innerHeight;
+        const shouldReset = y > resetThreshold && ((index * 13 + tick) % 37 === 0);
+
+        if (shouldReset) {
           drops[index] = 0;
         }
         drops[index] += speeds[index] * speedMult;
@@ -97,7 +101,7 @@ export function SecurityMatrix({ category = "recon", status = "idle" }: Security
 
       // Operational Atmosphere Effects (Scanlines / Signals during running ops)
       if (isRunning && tick % 2 === 0) {
-        context.strokeStyle = category === "recon" ? "rgba(103, 232, 249, 0.05)" : "rgba(74, 222, 128, 0.04)";
+        context.strokeStyle = category === "recon" ? "rgba(103, 232, 249, 0.08)" : "rgba(74, 222, 128, 0.06)";
         context.lineWidth = 1;
         const scanY = (tick * 4) % window.innerHeight;
         context.beginPath();
@@ -122,8 +126,8 @@ export function SecurityMatrix({ category = "recon", status = "idle" }: Security
       <canvas
         ref={canvasRef}
         aria-hidden="true"
-        className={`h-full w-full opacity-65 mix-blend-screen transition-opacity duration-700 ${
-          status === "running" ? "opacity-85" : "opacity-60"
+        className={`h-full w-full mix-blend-screen transition-opacity duration-700 ${
+          status === "running" ? "opacity-90" : "opacity-75"
         }`}
       />
       {/* Visual scanline & phosphor glow layers */}
