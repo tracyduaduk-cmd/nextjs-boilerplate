@@ -7,6 +7,7 @@ import { ArrowUpRight, Check, Sparkles } from 'lucide-react';
 import { ServiceRecord } from '@/lib/services/types';
 import { CAPABILITY_FAMILIES } from '@/lib/services/capabilityFamilies';
 import { getLocalPublicUrl } from '@/lib/projects/mediaManifest';
+import { SpatialMediaPlane } from '@/components/spatial/SpatialMediaPlane';
 
 const FAMILY_VISUALS: Record<string, { image: string; eyebrow: string; tone: string }> = {
   WEB: { image: getLocalPublicUrl('aurora-commerce', 'hero.webp'), eyebrow: 'WEB / DIGITAL PRODUCTS', tone: 'from-cyan-400/30' },
@@ -43,11 +44,11 @@ export function ServicesStudio({ services }: ServicesStudioProps) {
             <h1 className="max-w-4xl text-[clamp(3.2rem,8vw,7.7rem)] font-black leading-[.86] tracking-[-.07em]">Built for the<br /><span className="text-cyan-300">next interface.</span></h1>
             <p className="mt-8 max-w-xl text-lg leading-relaxed text-slate-300 sm:text-xl">Snow designs, builds, and looks after digital products that need to feel as considered as they are capable.</p>
           </div>
-          <div className="relative hidden min-h-[300px] overflow-hidden rounded-[2rem] border border-white/15 bg-white/5 lg:block">
+          <SpatialMediaPlane className="group/spatial-plane relative hidden min-h-[300px] overflow-hidden rounded-[2rem] border border-white/15 bg-white/5 lg:block" intensity={2}>
             <Image src={getLocalPublicUrl('nova-ai-assistant', 'hero.webp')} alt="Snow AI interface concept" fill priority className="object-cover opacity-80 mix-blend-screen" sizes="40vw" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#101b2a] via-transparent to-cyan-300/10" />
             <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between font-mono text-[10px] uppercase tracking-[.18em] text-cyan-200"><span>Design + engineering</span><span>01 / 08</span></div>
-          </div>
+          </SpatialMediaPlane>
         </div>
       </section>
 
@@ -60,12 +61,12 @@ export function ServicesStudio({ services }: ServicesStudioProps) {
 
       <main className="mx-auto max-w-7xl px-6 py-16 sm:px-10 lg:px-16 lg:py-24">
         {featured && <article className="grid gap-8 lg:grid-cols-[1.1fr_.9fr] lg:items-center">
-          <div className="relative min-h-[320px] overflow-hidden rounded-[2rem] bg-slate-900 shadow-2xl sm:min-h-[460px]">
+          <SpatialMediaPlane className="group/spatial-plane relative min-h-[320px] overflow-hidden rounded-[2rem] bg-slate-900 shadow-2xl sm:min-h-[460px]" intensity={2.5}>
             <Image src={visual.image} alt={`${featured.name} visual`} fill className="object-cover transition duration-700 hover:scale-105" sizes="(max-width: 1024px) 100vw, 55vw" />
             <div className={`absolute inset-0 bg-gradient-to-tr ${visual.tone} via-transparent to-slate-950/70`} />
             <div className="absolute left-5 top-5 rounded-full border border-white/20 bg-slate-950/60 px-3 py-1 font-mono text-[10px] uppercase tracking-[.18em] text-white backdrop-blur">{visual.eyebrow}</div>
             <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between text-white"><span className="max-w-[14rem] text-2xl font-bold leading-tight">A clearer way to move from idea to product.</span><span className="font-mono text-xs text-cyan-200">FEATURED</span></div>
-          </div>
+          </SpatialMediaPlane>
           <div className="lg:pl-8">
             <p className="font-mono text-xs uppercase tracking-[.18em] text-cyan-700">{featured.category} / {featured.capability_family}</p>
             <h2 className="mt-4 text-4xl font-black tracking-[-.05em] sm:text-6xl">{featured.name}</h2>

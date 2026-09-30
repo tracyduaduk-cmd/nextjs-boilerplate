@@ -7,13 +7,13 @@ import { useEffect, useState } from "react";
  * Automatically updates if system preference changes.
  */
 export function useReducedMotion(): boolean {
-  const [shouldReduceMotion, setShouldReduceMotion] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  });
+  // Keep the server and first client render identical. The browser preference
+  // is applied immediately after hydration in the effect below.
+  const [shouldReduceMotion, setShouldReduceMotion] = useState(false);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const frame = window.requestAnimationFrame(() => setShouldReduceMotion(mediaQuery.matches));
 
     const handleChange = (event: MediaQueryListEvent) => {
       setShouldReduceMotion(event.matches);
@@ -21,10 +21,16 @@ export function useReducedMotion(): boolean {
 
     if (mediaQuery.addEventListener) {
       mediaQuery.addEventListener("change", handleChange);
-      return () => mediaQuery.removeEventListener("change", handleChange);
+      return () => {
+        window.cancelAnimationFrame(frame);
+        mediaQuery.removeEventListener("change", handleChange);
+      };
     } else {
       mediaQuery.addListener(handleChange);
-      return () => mediaQuery.removeListener(handleChange);
+      return () => {
+        window.cancelAnimationFrame(frame);
+        mediaQuery.removeListener(handleChange);
+      };
     }
   }, []);
 
