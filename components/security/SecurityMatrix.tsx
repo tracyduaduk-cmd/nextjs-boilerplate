@@ -49,6 +49,15 @@ export function SecurityMatrix({ category = "recon", status = "idle" }: Security
     if (reduced) {
       context.fillStyle = "rgba(3, 12, 15, 0.75)";
       context.fillRect(0, 0, window.innerWidth, window.innerHeight);
+      // Static matrix rain rendering for reduced-motion
+      context.font = `600 ${compact ? 11 : 13}px monospace`;
+      const colWidth = compact ? 20 : 16;
+      drops.forEach((drop, index) => {
+        const x = index * colWidth;
+        const y = drop * (compact ? 16 : 18);
+        context.fillStyle = "rgba(34, 197, 94, 0.35)";
+        context.fillText(glyphs[(index + Math.floor(drop)) % glyphs.length], x, y);
+      });
       return () => window.removeEventListener("resize", resize);
     }
 
@@ -65,7 +74,11 @@ export function SecurityMatrix({ category = "recon", status = "idle" }: Security
       context.font = `600 ${fontSize}px monospace`;
 
       const colWidth = compact ? 20 : 16;
-      const speedMult = isRunning ? (category === "credentials" ? 1.8 : 1.4) : 1.0;
+
+      // Operation-specific speed multiplier
+      let speedMult = isRunning ? 1.4 : 1.0;
+      if (category === "credentials") speedMult = isRunning ? 2.2 : 1.0; // Rapid vertical data streams
+      if (category === "forensics") speedMult = isRunning ? 0.8 : 0.7; // Slower evidence streams
 
       drops.forEach((drop, index) => {
         const x = index * colWidth;
@@ -77,10 +90,13 @@ export function SecurityMatrix({ category = "recon", status = "idle" }: Security
 
         if (isHead) {
           context.fillStyle = isRunning ? "rgba(224, 242, 254, 0.98)" : "rgba(187, 247, 208, 0.90)";
-          context.shadowColor = "rgba(74, 222, 128, 0.9)";
+          context.shadowColor = category === "exploitation" ? "rgba(239, 68, 68, 0.9)" : "rgba(74, 222, 128, 0.9)";
           context.shadowBlur = isRunning ? 12 : 6;
-        } else if (index % 5 === 0) {
-          context.fillStyle = "rgba(103, 232, 249, 0.55)"; // Cyan depth accents
+        } else if (index % 5 === 0 || category === "network") {
+          context.fillStyle = "rgba(103, 232, 249, 0.55)"; // Cyan packet trails
+          context.shadowBlur = 0;
+        } else if (category === "web") {
+          context.fillStyle = "rgba(251, 191, 36, 0.45)"; // Amber trace streams for web
           context.shadowBlur = 0;
         } else {
           context.fillStyle = isRunning ? "rgba(74, 222, 128, 0.45)" : "rgba(34, 197, 94, 0.30)";
@@ -99,10 +115,15 @@ export function SecurityMatrix({ category = "recon", status = "idle" }: Security
         drops[index] += speeds[index] * speedMult;
       });
 
-      // Operational Atmosphere Effects (Scanlines / Signals during running ops)
+      // Operational Atmosphere Effects (Scanlines / Radar Pulses during running ops)
       if (isRunning && tick % 2 === 0) {
-        context.strokeStyle = category === "recon" ? "rgba(103, 232, 249, 0.08)" : "rgba(74, 222, 128, 0.06)";
-        context.lineWidth = 1;
+        context.strokeStyle =
+          category === "recon"
+            ? "rgba(103, 232, 249, 0.12)"
+            : category === "exploitation"
+            ? "rgba(239, 68, 68, 0.10)"
+            : "rgba(74, 222, 128, 0.08)";
+        context.lineWidth = 1.5;
         const scanY = (tick * 4) % window.innerHeight;
         context.beginPath();
         context.moveTo(0, scanY);
