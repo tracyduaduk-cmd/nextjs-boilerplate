@@ -24,7 +24,7 @@ export const ProjectFilter: React.FC<ProjectFilterProps> = ({
             : "bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-100 hover:bg-slate-800"
         }`}
       >
-        All Systems ({categories.length})
+        All projects
       </button>
 
       {categories.map((cat) => {

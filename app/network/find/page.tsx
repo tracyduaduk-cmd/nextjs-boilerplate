@@ -345,10 +345,10 @@ export default function FindMyDevicePage() {
   return (
     <ToolShell>
       <ToolHeader
-        title="Find My Device & Spatial Location Center"
-        description="Browser-native GPS geolocation, interactive spatial earth mapping, device recovery simulator, session location trail, and client-side device diagnostic instrumentation."
-        category="NETWORK LAYER"
-        badge="Spatial / GPS"
+        title="Find your place in the world."
+        description="A private spatial view of this browser's location signal, with a cinematic map, a temporary session trail, and a clearly labelled recovery simulator."
+        category="SPATIAL EXPERIENCE"
+        badge="Browser GPS"
         status={
           locationStatus === "LOCATING" || locationStatus === "REQUESTING_PERMISSION"
             ? "scanning"
@@ -379,7 +379,7 @@ export default function FindMyDevicePage() {
               </span>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-bold text-slate-100 font-sans">Spatial Location Console</h3>
+                  <h3 className="text-sm font-bold text-slate-100 font-sans">Your location, in focus</h3>
                   <span
                     className={"px-2 py-0.5 rounded-md text-[10px] font-mono font-bold uppercase " +
                       (locationStatus === "LOCATED"
@@ -389,7 +389,7 @@ export default function FindMyDevicePage() {
                     {locationStatus}
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 font-mono">100% Client-Side • Zero Database Retention</p>
+                <p className="text-xs text-slate-400 font-mono">Private by design • nothing saved by Snow</p>
               </div>
             </div>
 
