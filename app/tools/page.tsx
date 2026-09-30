@@ -287,7 +287,7 @@ export default function ToolsHubPage() {
                   />
                   <div className="space-y-1">
                     <h3 className="text-xs font-bold text-slate-200 font-mono uppercase tracking-wider">
-                      SNOW_SPATIAL_CORE
+                      SNOW SPATIAL CORE
                     </h3>
                     <p className="text-[11px] text-slate-400 font-sans leading-relaxed">
                       Interactive representation of client execution and cryptographic safety.

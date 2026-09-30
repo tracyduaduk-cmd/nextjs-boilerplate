@@ -9,7 +9,7 @@ import { Footer } from "@/components/layout/Footer";
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen bg-black text-white font-sans selection:bg-cyan-400 selection:text-black">
+    <div className="flex min-h-screen flex-col bg-[#f7f6f2] font-sans text-slate-950 selection:bg-cyan-300 selection:text-slate-950">
       <Header />
       <main id="main-content" className="flex-1">
         {/* SCENE 01: INTRO & KINETIC HERO */}
