@@ -8,7 +8,7 @@ import { Tilt } from "@/components/spatial/Tilt";
 import { Magnetic } from "@/components/spatial/Magnetic";
 import { Button } from "@/components/ui/Button";
 import { motionTokens } from "@/motion/tokens";
-import { getPublicUrl } from "@/lib/projects/mediaManifest";
+import { getLocalPublicUrl } from "@/lib/projects/mediaManifest";
 import {
   CheckCircle2,
   HelpCircle,
@@ -27,35 +27,35 @@ interface ActiveServiceDisplayProps {
 
 const FAMILY_VISUAL_MAP: Record<string, { image: string; caption: string }> = {
   WEB: {
-    image: getPublicUrl("aurora-commerce", "hero.webp"),
+    image: getLocalPublicUrl("aurora-commerce", "hero.webp"),
     caption: "Full-Stack Web Engineering & Fast Spatial Interfaces",
   },
   "APPS & SOFTWARE": {
-    image: getPublicUrl("pulse-health", "desktop.webp"),
+    image: getLocalPublicUrl("pulse-health", "desktop.webp"),
     caption: "Cross-Platform Mobile Apps & Telemetry Architecture",
   },
   AI: {
-    image: getPublicUrl("nova-ai-assistant", "hero.webp"),
+    image: getLocalPublicUrl("nova-ai-assistant", "hero.webp"),
     caption: "Autonomous LLM Workspace & Intelligent Agent Pipelines",
   },
   "SECURITY & RECOVERY": {
-    image: getPublicUrl("secure-account-recovery", "hero.webp"),
+    image: getLocalPublicUrl("secure-account-recovery", "hero.webp"),
     caption: "Zero-Trust Defensive Audit & Recovery Terminal",
   },
   INFRASTRUCTURE: {
-    image: getPublicUrl("atlas-business-portal", "desktop.webp"),
+    image: getLocalPublicUrl("atlas-business-portal", "desktop.webp"),
     caption: "Resilient Cloud Edge Networks & High-Availability Telemetry",
   },
   "DIGITAL GROWTH": {
-    image: getPublicUrl("studio-landing", "hero.webp"),
+    image: getLocalPublicUrl("studio-landing", "hero.webp"),
     caption: "Spatial Design, SEO & High-Performance Web Engine",
   },
   "DEVICES & HARDWARE": {
-    image: getPublicUrl("orbit-finance", "desktop.webp"),
+    image: getLocalPublicUrl("orbit-finance", "desktop.webp"),
     caption: "High-Frequency Workstations & Multi-Screen Trading Systems",
   },
   "BUSINESS IT": {
-    image: getPublicUrl("atlas-business-portal", "hero.webp"),
+    image: getLocalPublicUrl("atlas-business-portal", "hero.webp"),
     caption: "Enterprise Operations Portal & Access Control Management",
   },
 };

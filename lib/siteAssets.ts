@@ -2,9 +2,9 @@ import { createClient } from "@supabase/supabase-js";
 
 const SUPABASE_PROJECT_REF = "jwetpisuobxyypgofvsd";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || `https://${SUPABASE_PROJECT_REF}.supabase.co`;
-const ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp3ZXRwaXN1b2J4eXlwZ29mdnNkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAxNTU5ODYsImV4cCI6MjEwNTczMTk4Nn0.Tk51IJg7Kufg4P9EvtK5f39ywa2E7wswgrzoEwlUQGE";
+const ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_KEY || "";
 
-export const supabase = createClient(SUPABASE_URL, ANON_KEY);
+export const supabase = ANON_KEY ? createClient(SUPABASE_URL, ANON_KEY) : null;
 
 export interface SiteAssetRecord {
   id: string;
@@ -238,6 +238,8 @@ export async function fetchSiteAsset(pageKey: string, slotKey: string): Promise<
   const staticFallback = STATIC_FALLBACK_ASSETS[fallbackKey];
 
   try {
+    if (!supabase) throw new Error("Supabase client is not configured");
+
     const { data, error } = await supabase
       .from("site_assets")
       .select("*")
