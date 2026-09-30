@@ -244,7 +244,7 @@ export function SpatialLocationMap({
           ) : (
             <span className="flex items-center gap-1.5 text-slate-400 font-bold">
               <Target className="w-3.5 h-3.5 text-slate-500" />
-              LOCATION ENGINE READY
+              READY TO LOCATE
             </span>
           )}
         </div>
@@ -260,7 +260,7 @@ export function SpatialLocationMap({
                   ? "bg-sky-400 text-slate-950 shadow-md shadow-sky-950/50"
                   : "text-slate-400 hover:text-slate-200")}
             >
-              {mode}
+              {mode === "EARTH" ? "GLOBE" : mode}
             </button>
           ))}
         </div>
@@ -278,7 +278,7 @@ export function SpatialLocationMap({
             <div className="flex items-center gap-2">
               <Globe className="w-4 h-4 text-sky-400 animate-spin" style={{ animationDuration: "10s" }} />
               <div>
-                <span className="text-slate-400 text-[10px] uppercase block">Spatial Globe Projection</span>
+                <span className="text-slate-400 text-[10px] uppercase block">Spatial globe view</span>
                 <span className="text-slate-100 font-bold">{dms.latDMS} / {dms.lngDMS}</span>
               </div>
             </div>
@@ -327,7 +327,7 @@ export function SpatialLocationMap({
             type="button"
             onClick={() => setIsFullscreen(!isFullscreen)}
             className="p-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-300 border border-slate-800 backdrop-blur-md transition-all shadow-lg"
-            title="Toggle Map Stage Size"
+            title="Expand map"
           >
             <Maximize2 className="w-4 h-4" />
           </button>

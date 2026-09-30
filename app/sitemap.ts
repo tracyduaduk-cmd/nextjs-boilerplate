@@ -7,6 +7,7 @@ const publicRoutes = [
   "/ai",
   "/care",
   "/work",
+  "/services",
   "/request",
   "/telecom",
   "/network",

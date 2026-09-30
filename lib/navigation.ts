@@ -114,7 +114,7 @@ export const NAVIGATION_GROUPS: NavigationGroup[] = [
 
 export const PRIMARY_NAVIGATION = [
   { href: "/work", label: "Work", icon: Sparkles },
-  { href: "/#services", label: "Services", icon: Wrench },
+  { href: "/services", label: "Services", icon: Wrench },
   { href: "/care", label: "Care", icon: Activity },
   { href: "/tools", label: "Tools", icon: Zap },
 ] satisfies NavigationItem[];

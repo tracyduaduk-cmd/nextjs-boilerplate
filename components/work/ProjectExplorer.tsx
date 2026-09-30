@@ -10,22 +10,23 @@ interface ProjectExplorerProps {
   projects: ProjectWithMedia[];
 }
 
+const CATEGORY_MATCHES: Record<string, string[]> = {
+  "Web design": ["Design & Spatial", "E-Commerce"],
+  "Digital products": ["E-Commerce", "Enterprise Portal", "Fintech"],
+  "Web apps": ["Web App", "Enterprise Portal", "Fintech"],
+  "AI / automation": ["AI & Intelligence"],
+  "UI / UX": ["Healthcare", "Healthcare Systems Study", "Design & Spatial"],
+  Experimental: ["Fintech", "AI & Intelligence", "Design & Spatial"],
+};
+
 export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({ projects }) => {
   const [activeCategory, setActiveCategory] = useState("All");
-
-  // Extract real unique categories present in the static projects dataset
-  const categories = useMemo(() => {
-    const set = new Set<string>();
-    projects.forEach((p) => {
-      if (p.category) set.add(p.category);
-    });
-    return Array.from(set).sort();
-  }, [projects]);
+  const categories = useMemo(() => ["Web design", "Digital products", "Web apps", "AI / automation", "UI / UX", "Experimental"], []);
 
   // Filter projects by category
   const filteredProjects = useMemo(() => {
     if (activeCategory === "All") return projects;
-    return projects.filter((p) => p.category === activeCategory);
+    return projects.filter((p) => CATEGORY_MATCHES[activeCategory]?.includes(p.category));
   }, [projects, activeCategory]);
 
   return (
@@ -35,10 +36,10 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({ projects }) =>
         <div className="mb-12 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 pb-6 border-b border-slate-900">
           <div>
             <span className="text-xs font-mono uppercase tracking-widest text-slate-500 block mb-1">
-              ARCHIVE FILTER
+              EXPLORE THE FIELD
             </span>
             <h2 className="text-xl font-bold text-slate-200 font-sans">
-              System Exploration Field
+              Projects, prototypes, and interface studies
             </h2>
           </div>
 
