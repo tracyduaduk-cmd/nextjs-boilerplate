@@ -302,4 +302,9 @@
 .care-card { border:1px solid rgba(15,23,42,.18); border-radius:1.25rem; padding:1.5rem; background:rgba(255,255,255,.28); }
 .care-card h3 { margin-top:2.5rem; font-size:1.18rem; font-weight:800; letter-spacing:-.03em; }.care-card p { margin-top:.55rem; max-width:22rem; font-size:.9rem; line-height:1.6; color:rgba(15,23,42,.7); }
 .studio-cta { background:#f7f6f2; padding:9rem 0; }
+.work-page .glass-surface { color:#0b1220; background:rgba(255,255,255,.78); border-color:rgba(15,23,42,.13); box-shadow:0 24px 70px rgba(15,23,42,.12); }
+.work-page .glass-surface h3 { color:#0b1220; }
+.work-page .glass-surface p { color:rgba(15,23,42,.68); }
+.work-page .work-explorer > div > div:first-child { border-color:rgba(15,23,42,.15); }
+.work-page .work-explorer .text-slate-200 { color:#0b1220; }
 @media (max-width: 700px) { .studio-section-head { align-items:flex-start; flex-direction:column; } .studio-section { padding:5rem 0; } .studio-cta { padding:6rem 0; } }

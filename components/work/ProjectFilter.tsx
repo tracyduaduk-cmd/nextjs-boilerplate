@@ -21,7 +21,7 @@ export const ProjectFilter: React.FC<ProjectFilterProps> = ({
         className={`px-4 py-2 rounded-xl text-xs font-mono transition-all shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 ${
           activeCategory === "All"
             ? "bg-sky-500 text-slate-950 font-bold shadow-md shadow-sky-500/20"
-            : "bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-100 hover:bg-slate-800"
+            : "bg-white/70 border border-slate-950/15 text-slate-600 hover:text-slate-950 hover:bg-white"
         }`}
       >
         All projects
@@ -37,7 +37,7 @@ export const ProjectFilter: React.FC<ProjectFilterProps> = ({
             className={`px-4 py-2 rounded-xl text-xs font-mono transition-all shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 ${
               isActive
                 ? "bg-sky-500 text-slate-950 font-bold shadow-md shadow-sky-500/20"
-                : "bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-100 hover:bg-slate-800"
+                : "bg-white/70 border border-slate-950/15 text-slate-600 hover:text-slate-950 hover:bg-white"
             }`}
           >
             {cat}

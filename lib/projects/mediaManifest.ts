@@ -123,6 +123,10 @@ export function getPublicUrl(slug: string, filename: PortfolioAssetFilename): st
   return `${BASE_STORAGE_URL}/${getStoragePath(slug, filename)}`;
 }
 
+export function getLocalPublicUrl(slug: string, filename: PortfolioAssetFilename): string {
+  return `/${getLocalPath(slug, filename).replace(/^public\//, "")}`;
+}
+
 export function getLocalPath(slug: string, filename: PortfolioAssetFilename): string {
   return `public/assets/portfolio/${slug}/${filename}`;
 }

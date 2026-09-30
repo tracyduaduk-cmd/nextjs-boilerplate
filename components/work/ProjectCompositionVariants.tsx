@@ -7,7 +7,7 @@ import { PortfolioDeviceFrame } from "@/components/work/PortfolioDeviceFrame";
 import { GlassSurface } from "@/components/spatial/GlassSurface";
 import { Reveal } from "@/components/spatial/Reveal";
 import { PointerGlow } from "@/components/spatial/PointerGlow";
-import { getPublicUrl, PortfolioProjectSlug } from "@/lib/projects/mediaManifest";
+import { getLocalPublicUrl, PortfolioProjectSlug } from "@/lib/projects/mediaManifest";
 
 interface ProjectVariantProps {
   project: ProjectWithMedia;
@@ -20,10 +20,10 @@ export const FeaturedSpatialProject: React.FC<ProjectVariantProps> = ({ project 
   const slug = project.slug as PortfolioProjectSlug;
   const heroUrl =
     project.hero_media?.url ||
-    getPublicUrl(slug, "hero.webp");
+    getLocalPublicUrl(slug, "hero.webp");
   const desktopUrl =
     project.desktop_media?.url ||
-    getPublicUrl(slug, "desktop.webp");
+    getLocalPublicUrl(slug, "desktop.webp");
 
   return (
     <Reveal direction="up" duration={0.8} className="w-full">
@@ -33,7 +33,7 @@ export const FeaturedSpatialProject: React.FC<ProjectVariantProps> = ({ project 
         <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
           <div className="flex items-center gap-3 font-mono text-xs">
             <span className="px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-400 font-semibold tracking-wide">
-              FEATURED SYSTEM #{project.sort_order.toString().padStart(2, "0")}
+              FEATURED PROJECT #{project.sort_order.toString().padStart(2, "0")}
             </span>
             <span className="text-slate-400">• {project.category}</span>
           </div>
@@ -56,7 +56,7 @@ export const FeaturedSpatialProject: React.FC<ProjectVariantProps> = ({ project 
             <GlassSurface intensity="heavy" elevation="floating" className="p-6 md:p-8 space-y-5">
               <div>
                 <span className="text-[11px] font-mono tracking-widest text-sky-400 uppercase block mb-1">
-                  ARCHITECTURAL PROFILE
+                  PROJECT PROFILE
                 </span>
                 <h3 className="text-3xl font-bold tracking-tight text-white font-sans">
                   {project.title}
@@ -70,7 +70,7 @@ export const FeaturedSpatialProject: React.FC<ProjectVariantProps> = ({ project 
               {project.problem && (
                 <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800/80">
                   <span className="text-[10px] font-mono uppercase tracking-wider text-rose-400 block mb-1">
-                    CHALLENGE SCOPE
+                    THE BRIEF
                   </span>
                   <p className="text-xs text-slate-300 leading-relaxed">
                     {project.problem}
@@ -116,10 +116,10 @@ export const DeviceStackProject: React.FC<ProjectVariantProps> = ({ project }) =
   const slug = project.slug as PortfolioProjectSlug;
   const desktopUrl =
     project.desktop_media?.url ||
-    getPublicUrl(slug, "desktop.webp");
+    getLocalPublicUrl(slug, "desktop.webp");
   const mobileUrl =
     project.mobile_media?.url ||
-    getPublicUrl(slug, "mobile.webp");
+    getLocalPublicUrl(slug, "mobile.webp");
 
   return (
     <Reveal direction="up" duration={0.8} className="w-full">
@@ -129,7 +129,7 @@ export const DeviceStackProject: React.FC<ProjectVariantProps> = ({ project }) =
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <div className="lg:col-span-5 space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-xs font-mono text-slate-300">
-              <span>SYSTEM #{project.sort_order.toString().padStart(2, "0")}</span>
+              <span>PROJECT #{project.sort_order.toString().padStart(2, "0")}</span>
               <span>•</span>
               <span className="text-sky-400">{project.category}</span>
             </div>
@@ -143,7 +143,7 @@ export const DeviceStackProject: React.FC<ProjectVariantProps> = ({ project }) =
             </p>
 
             <div className="space-y-2 font-mono text-xs">
-              <div className="text-slate-500 uppercase tracking-wider text-[10px]">VERIFIED OUTCOME</div>
+              <div className="text-slate-500 uppercase tracking-wider text-[10px]">PROJECT NOTE</div>
               <p className="text-slate-300 italic bg-slate-900/60 p-3 rounded-xl border border-slate-800">
                 &quot;{project.results}&quot;
               </p>
@@ -165,7 +165,7 @@ export const DeviceStackProject: React.FC<ProjectVariantProps> = ({ project }) =
                 href={`/work/${project.slug}`}
                 className="inline-flex items-center gap-2 font-mono text-xs text-sky-400 hover:text-sky-300 font-semibold group/link"
               >
-                <span>View Responsive Case Study</span>
+                <span>View Project</span>
                 <span className="group-hover/link:translate-x-1 transition-transform">→</span>
               </Link>
             </div>
@@ -204,7 +204,7 @@ export const DarkLabProject: React.FC<ProjectVariantProps> = ({ project }) => {
   const slug = project.slug as PortfolioProjectSlug;
   const desktopUrl =
     project.desktop_media?.url ||
-    getPublicUrl(slug, "desktop.webp");
+    getLocalPublicUrl(slug, "desktop.webp");
 
   return (
     <Reveal direction="up" duration={0.8} className="w-full">
@@ -214,7 +214,7 @@ export const DarkLabProject: React.FC<ProjectVariantProps> = ({ project }) => {
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6 relative z-10">
           <div className="flex items-center gap-2 font-mono text-xs text-sky-400">
             <span className="w-2 h-2 rounded-full bg-sky-400 animate-ping" />
-            <span>LABORATORY PROTOCOL #{project.sort_order.toString().padStart(2, "0")}</span>
+            <span>SNOW LAB #{project.sort_order.toString().padStart(2, "0")}</span>
           </div>
           <span className="px-3 py-1 rounded-full bg-slate-900 border border-slate-800 font-mono text-xs text-slate-400">
             {project.category}
@@ -235,7 +235,7 @@ export const DarkLabProject: React.FC<ProjectVariantProps> = ({ project }) => {
           <div className="lg:col-span-5 space-y-6">
             <div>
               <span className="text-[10px] font-mono tracking-widest text-emerald-400 uppercase block mb-1">
-                TECHNICAL ANALYSIS
+                DESIGN & BUILD
               </span>
               <h3 className="text-3xl font-bold tracking-tight text-slate-100 font-sans">
                 {project.title}
@@ -247,7 +247,7 @@ export const DarkLabProject: React.FC<ProjectVariantProps> = ({ project }) => {
             </p>
 
             <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 space-y-2">
-              <span className="text-[10px] font-mono uppercase text-slate-400 block">ARCHITECTURAL SOLUTION</span>
+              <span className="text-[10px] font-mono uppercase text-slate-400 block">THE APPROACH</span>
               <p className="text-xs text-slate-300 leading-relaxed font-sans">
                 {project.solution}
               </p>
@@ -266,7 +266,7 @@ export const DarkLabProject: React.FC<ProjectVariantProps> = ({ project }) => {
                 href={`/work/${project.slug}`}
                 className="px-4 py-2 rounded-xl bg-slate-900 border border-sky-500/40 hover:border-sky-400 text-sky-400 text-xs font-mono font-semibold transition-all hover:bg-sky-500/10"
               >
-                Inspect Protocol →
+                Explore Project →
               </Link>
             </div>
           </div>
@@ -283,7 +283,7 @@ export const EditorialProject: React.FC<ProjectVariantProps> = ({ project }) => 
   const slug = project.slug as PortfolioProjectSlug;
   const desktopUrl =
     project.desktop_media?.url ||
-    getPublicUrl(slug, "desktop.webp");
+    getLocalPublicUrl(slug, "desktop.webp");
 
   return (
     <Reveal direction="up" duration={0.8} className="w-full">
@@ -291,7 +291,7 @@ export const EditorialProject: React.FC<ProjectVariantProps> = ({ project }) => 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <div className="lg:col-span-6 space-y-6 z-10">
             <div className="font-mono text-xs text-slate-500">
-              SYSTEM RECORD #{project.sort_order.toString().padStart(2, "0")} — {project.category}
+              PROJECT RECORD #{project.sort_order.toString().padStart(2, "0")} — {project.category}
             </div>
 
             <h3 className="text-4xl sm:text-5xl font-bold tracking-tight text-slate-100 font-sans leading-[1.05]">
@@ -338,10 +338,10 @@ export const SplitPerspectiveProject: React.FC<ProjectVariantProps> = ({ project
   const slug = project.slug as PortfolioProjectSlug;
   const desktopUrl =
     project.desktop_media?.url ||
-    getPublicUrl(slug, "desktop.webp");
+    getLocalPublicUrl(slug, "desktop.webp");
   const mobileUrl =
     project.mobile_media?.url ||
-    getPublicUrl(slug, "mobile.webp");
+    getLocalPublicUrl(slug, "mobile.webp");
 
   return (
     <Reveal direction="up" duration={0.8} className="w-full">
@@ -349,7 +349,7 @@ export const SplitPerspectiveProject: React.FC<ProjectVariantProps> = ({ project
         <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
           <div>
             <span className="text-xs font-mono text-sky-400 block mb-1">
-              SYSTEM #{project.sort_order.toString().padStart(2, "0")} • {project.category}
+              PROJECT #{project.sort_order.toString().padStart(2, "0")} • {project.category}
             </span>
             <h3 className="text-3xl font-bold text-slate-100 font-sans">
               {project.title}
@@ -408,7 +408,7 @@ export const MinimalProject: React.FC<ProjectVariantProps> = ({ project }) => {
   const slug = project.slug as PortfolioProjectSlug;
   const heroUrl =
     project.hero_media?.url ||
-    getPublicUrl(slug, "hero.webp");
+    getLocalPublicUrl(slug, "hero.webp");
 
   return (
     <Reveal direction="up" duration={0.8} className="w-full">

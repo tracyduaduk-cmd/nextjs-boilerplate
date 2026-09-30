@@ -22,8 +22,6 @@ export const Reveal: React.FC<RevealProps> = ({
   children,
   delay = 0,
   duration = motionTokens.duration.normal,
-  direction = "up",
-  distance = 30,
   className = "",
   once = true,
 }) => {
@@ -33,29 +31,11 @@ export const Reveal: React.FC<RevealProps> = ({
     return <div className={className}>{children}</div>;
   }
 
-  const getInitialPosition = () => {
-    switch (direction) {
-      case "up":
-        return { y: distance, x: 0 };
-      case "down":
-        return { y: -distance, x: 0 };
-      case "left":
-        return { x: distance, y: 0 };
-      case "right":
-        return { x: -distance, y: 0 };
-      default:
-        return { x: 0, y: 0 };
-    }
-  };
-
-  const initial = {
-    opacity: 0,
-    ...getInitialPosition(),
-  };
-
   return (
     <motion.div
-      initial={initial}
+      // Render content immediately as a resilient baseline; the viewport animation
+      // can enhance it without ever hiding portfolio content from slow observers.
+      initial={false}
       whileInView={{
         opacity: 1,
         x: 0,
