@@ -6,6 +6,7 @@ import { ServiceExplorer } from "@/components/services/ServiceExplorer";
 import { SnowCareScene } from "@/components/home/SnowCareScene";
 import { SystemCtaScene } from "@/components/home/SystemCtaScene";
 import { Footer } from "@/components/layout/Footer";
+import { VisualSection } from "@/components/ui/VisualSection";
 
 export default function Home() {
   return (
@@ -17,6 +18,17 @@ export default function Home() {
 
         {/* SCENE 02: CAPABILITY MATRIX & SPATIAL FIELD */}
         <CapabilityField />
+
+        <VisualSection
+          eyebrow="A studio in motion"
+          title="Ideas become interfaces people can feel."
+          description="We bring art direction, product thinking, and engineering into the same room — then shape the useful details that make a digital experience memorable."
+          project="studio-landing"
+          role="hero"
+          accent="violet"
+          href="/work"
+          cta="Explore the studies"
+        />
 
         {/* SCENE 03: EDITORIAL WORK SHOWCASE */}
         <WorkShowcaseScene />

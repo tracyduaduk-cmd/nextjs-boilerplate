@@ -32,6 +32,7 @@ import { SystemBadge } from "@/components/spatial/SystemBadge";
 import { Container } from "@/components/ui/Container";
 import { SiteAssetImage } from "@/components/ui/SiteAssetImage";
 import { useCursor } from "@/components/spatial/CursorSystem";
+import { VisualSection } from "@/components/ui/VisualSection";
 
 interface ToolModuleMeta {
   id: string;
@@ -299,6 +300,16 @@ export default function ToolsHubPage() {
           </div>
         </Container>
       </section>
+
+      <VisualSection
+        eyebrow="Technical laboratory"
+        title="Useful instruments, presented with intent."
+        description="A focused collection for building, inspecting, and understanding digital systems — with the visual clarity of a studio, not a utility drawer."
+        project="orbit-finance"
+        role="desktop"
+        accent="cyan"
+        compact
+      />
 
       {/* Global Tool Command Bar */}
       <ToolCommandNav />

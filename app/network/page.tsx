@@ -9,6 +9,7 @@ import { ToolHeader } from "@/components/tools/ToolHeader";
 import { ToolNavigation } from "@/components/tools/ToolNavigation";
 import { ToolVisualStage } from "@/components/tools/ToolVisualStage";
 import { ToolRecommendation } from "@/components/tools/ToolRecommendation";
+import { VisualSection } from "@/components/ui/VisualSection";
 import { Reveal } from "@/components/spatial/Reveal";
 import { Tilt } from "@/components/spatial/Tilt";
 import {
@@ -87,6 +88,15 @@ export default function NetworkLandingPage() {
         badge="Privacy Preserving"
         status="engine-ready"
         statusMessage="Network Diagnostic Layer Active"
+      />
+      <VisualSection
+        eyebrow="Network / systems view"
+        title="See the path, not just the result."
+        description="Snow's network tools make the invisible legible: resolution, routing, device context, and speed — presented as a calm diagnostic field without invented readings."
+        project="atlas-business-portal"
+        role="desktop"
+        accent="cyan"
+        compact
       />
       <ToolNavigation />
 

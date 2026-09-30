@@ -4,6 +4,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Container } from "@/components/ui/Container";
 import { SystemBadge } from "@/components/spatial/SystemBadge";
+import { VisualSection } from "@/components/ui/VisualSection";
 import { createPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = createPageMetadata({
@@ -27,6 +28,15 @@ export default function AIPage() {
             </div>
           </Container>
         </section>
+        <VisualSection
+          eyebrow="AI / interface studies"
+          title="Intelligence should feel considered."
+          description="From conversational surfaces to workflow copilots, Snow explores AI as a useful layer between people, context, and action — without pretending a concept is a customer result."
+          project="nova-ai-assistant"
+          role="desktop"
+          accent="violet"
+          compact
+        />
         <section className="py-8 sm:py-12"><Container><AIConcierge title="Snow Intelligent Concierge" subtitle="Describe your business challenge or technical goal in plain language." /></Container></section>
       </main>
       <Footer />
