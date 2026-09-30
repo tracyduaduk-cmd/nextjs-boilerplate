@@ -34,14 +34,14 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ className = ''
     ],
     'AI': [
       { name: 'Autonomous AI Agents', tag: 'AI-01', desc: 'LLM agents integrated into customer support, internal search, and automated data entry workflows.', tech: ['OpenAI', 'LangChain', 'Pinecone', 'Python'] },
-      { name: 'RAG & Vector Search Systems', tag: 'AI-02', desc: 'High-density document ingestion pipelines for contextual enterprise search.', tech: ['pgvector', 'Supabase', 'Embeddings', 'TypeScript'] },
+      { name: 'RAG & Vector Search Systems', tag: 'AI-02', desc: 'High-density document ingestion pipelines for contextual enterprise search.', tech: ['Vector search', 'Data modeling', 'Embeddings', 'TypeScript'] },
     ],
     'SECURITY & RECOVERY': [
       { name: 'Security Header & Triage Audit', tag: 'SEC-01', desc: 'Defensive security analysis, vulnerability scans, and CSP hardening for web applications.', tech: ['OWASP', 'CSP Hardening', 'JWT Audit', 'SSL/TLS'] },
       { name: 'Account Recovery Guidance', tag: 'SEC-02', desc: 'Guided forensic analysis and cryptographically signed incident reports for compromise recovery.', tech: ['Cryptography', 'Evidence Logs', 'MFA Enforcement', 'DNS SEC'] },
     ],
     'INFRASTRUCTURE': [
-      { name: 'Supabase Postgres Pipelines', tag: 'INF-01', desc: 'Database migration, row-level security policy design, and real-time channel setup.', tech: ['PostgreSQL', 'RLS', 'Edge Functions', 'Storage'] },
+      { name: 'Data & Platform Foundations', tag: 'INF-01', desc: 'Database migration, row-level security policy design, and real-time channel setup.', tech: ['PostgreSQL', 'RLS', 'Edge Functions', 'Storage'] },
       { name: 'Global Edge & CDN Routing', tag: 'INF-02', desc: 'Sub-second global content routing, DNS optimization, and automated Netlify/Vercel deployments.', tech: ['Vercel Edge', 'Netlify', 'Cloudflare', 'DNS'] },
     ],
     'DIGITAL GROWTH': [

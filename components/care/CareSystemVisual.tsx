@@ -20,7 +20,7 @@ export const CareSystemVisual: React.FC = () => {
       <div className="flex items-center justify-between text-xs font-mono border-b border-slate-800/80 pb-3">
         <div className="flex items-center gap-2 text-emerald-400 font-semibold">
           <Activity className="w-4 h-4 animate-pulse" />
-          <span>CARE SYSTEM PIPELINE</span>
+          <span>CARE COVERAGE</span>
         </div>
         <SystemBadge variant="emerald" size="sm">
           SNW-CARE-01
@@ -142,7 +142,7 @@ export const CareSystemVisual: React.FC = () => {
       {/* Visual Pipeline Flow Diagram */}
       <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-mono text-slate-300 space-y-2">
         <div className="flex items-center justify-between text-[10px] text-slate-400 uppercase tracking-wider">
-          <span>PIPELINE PROGRESSION</span>
+          <span>CARE PROGRESSION</span>
           <span>AUTOMATED TRIAGE</span>
         </div>
         <div className="flex items-center justify-between gap-1">

@@ -49,7 +49,7 @@ export const CareProcess: React.FC = () => {
         <div className="max-w-3xl mb-16">
           <Reveal direction="up">
             <SystemBadge variant="emerald" pulse={true} className="mb-4">
-              ENGINEERING METHODOLOGY PIPELINE
+              HOW CARE WORKS
             </SystemBadge>
             <h2 className="text-3xl sm:text-5xl font-extrabold text-slate-100 tracking-tight mb-4 font-sans">
               How Snow Care Works.

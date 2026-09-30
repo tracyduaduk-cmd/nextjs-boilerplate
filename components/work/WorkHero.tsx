@@ -15,7 +15,7 @@ export const WorkHero: React.FC = () => {
       <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20 space-y-6 relative z-10">
         <div className="inline-flex items-center gap-3 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-[11px] sm:text-xs font-mono text-cyan-400">
           <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-          <span>SPATIAL DIGITAL LABORATORY // SELECTED PRODUCTIONS</span>
+          <span>SNOW / SELECTED WORK</span>
         </div>
 
         <KineticText variant="velocity" className="text-[clamp(2.5rem,6vw,5.25rem)] font-black uppercase tracking-tight leading-[0.95] text-white">
@@ -23,25 +23,25 @@ export const WorkHero: React.FC = () => {
         </KineticText>
 
         <p className="text-lg sm:text-xl text-neutral-300 font-light max-w-2xl leading-relaxed">
-          Digital products, spatial Web platforms, high-throughput applications, and AI systems built for demanding operational environments.
+          Original product concepts, interface studies, and digital systems shaped with care.
         </p>
 
         <div className="pt-6 grid grid-cols-2 sm:grid-cols-4 gap-6 border-t border-white/10 font-mono text-xs text-neutral-400">
           <div>
-            <span className="text-neutral-500 block text-[10px] uppercase tracking-wider">ARCHIVE</span>
-            <span className="text-white font-bold">8 System Studies</span>
+            <span className="text-neutral-500 block text-[10px] uppercase tracking-wider">FORMAT</span>
+            <span className="text-white font-bold">Concept archive</span>
           </div>
           <div>
-            <span className="text-neutral-500 block text-[10px] uppercase tracking-wider">MEDIA ENGINE</span>
-            <span className="text-cyan-400 font-bold">Supabase snow-media</span>
+            <span className="text-neutral-500 block text-[10px] uppercase tracking-wider">FOCUS</span>
+            <span className="text-cyan-400 font-bold">Digital products</span>
           </div>
           <div>
-            <span className="text-neutral-500 block text-[10px] uppercase tracking-wider">GRAPHICS ENGINE</span>
-            <span className="text-white font-bold">WebGL + Three.js</span>
+            <span className="text-neutral-500 block text-[10px] uppercase tracking-wider">APPROACH</span>
+            <span className="text-white font-bold">Design + engineering</span>
           </div>
           <div>
-            <span className="text-neutral-500 block text-[10px] uppercase tracking-wider">TARGET LATENCY</span>
-            <span className="text-cyan-400 font-bold">&lt; 100ms Interaction</span>
+            <span className="text-neutral-500 block text-[10px] uppercase tracking-wider">STATUS</span>
+            <span className="text-cyan-400 font-bold">Original concepts</span>
           </div>
         </div>
       </div>

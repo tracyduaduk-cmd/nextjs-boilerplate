@@ -265,3 +265,41 @@
     animation: none;
   }
 }
+
+/* Snow studio editorial system */
+:root { --studio-ink:#0b1220; --studio-paper:#f7f6f2; --studio-cyan:#26d9e8; --studio-violet:#7767ff; --studio-lime:#d8f36b; }
+.studio-hero { background: var(--studio-paper); min-height: 92vh; color: #0b1220; }
+.hero-wash { position:absolute; inset:0; pointer-events:none; background: radial-gradient(circle at 68% 20%, rgba(38,217,232,.28), transparent 24%), radial-gradient(circle at 10% 76%, rgba(119,103,255,.16), transparent 28%), linear-gradient(115deg, transparent 0 42%, rgba(255,255,255,.7) 62%, transparent 82%); }
+.studio-orbit-card { background: rgba(255,255,255,.72); border:1px solid rgba(15,23,42,.15); border-radius: 1.75rem; box-shadow: 0 24px 80px rgba(15,23,42,.14); backdrop-filter: blur(16px); }
+.eyebrow-pill, .section-kicker { display:inline-flex; align-items:center; gap:.55rem; text-transform:uppercase; letter-spacing:.18em; font-size:.68rem; font-weight:800; color:#475569; }
+.eyebrow-pill { border:1px solid rgba(15,23,42,.16); border-radius:999px; padding:.55rem .8rem; background:rgba(255,255,255,.5); }
+.eyebrow-dot { width:.45rem; height:.45rem; border-radius:50%; background:#21c9d5; box-shadow:0 0 0 .22rem rgba(38,217,232,.18); }
+.text-gradient { background: linear-gradient(100deg,#12aebf 0%,#5261e6 48%,#9b4de8 100%); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.studio-button { display:inline-flex; align-items:center; gap:.65rem; border-radius:999px; padding:.9rem 1.2rem; font-size:.75rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; transition: transform .25s ease, background .25s ease, color .25s ease; }
+.studio-button:hover { transform:translateY(-2px); }
+.studio-button-dark { background:#0b1220; color:white; box-shadow:0 10px 30px rgba(15,23,42,.16); }
+.studio-button-dark:hover { background:#26d9e8; color:#071018; }
+.studio-button-light { border:1px solid rgba(15,23,42,.16); color:#0b1220; background:rgba(255,255,255,.45); }
+.studio-button-light:hover { background:white; }
+.studio-button-outline { border:1px solid rgba(255,255,255,.28); color:white; }
+.studio-button-outline:hover { background:white; color:#0b1220; }
+.studio-section { padding:7rem 0; }
+.studio-section-light { background:#f7f6f2; color:#0b1220; }
+.studio-section-ink { background:#0b1220; color:white; }
+.studio-section-lime { background:var(--studio-lime); color:#0b1220; }
+.studio-section-head { display:flex; align-items:end; justify-content:space-between; gap:2rem; border-bottom:1px solid rgba(15,23,42,.16); padding-bottom:2rem; }
+.studio-section-head-ink { border-color:rgba(255,255,255,.18); }
+.section-kicker-light { color:#67e8f9; }
+.studio-display { font-size:clamp(2.6rem,6vw,6.1rem); line-height:.9; letter-spacing:-.065em; font-weight:900; }
+.studio-display em { font-style:normal; color:#5166df; }
+.studio-section-ink .studio-display em { color:#67e8f9; }
+.service-tile { min-height:290px; border-radius:1.25rem; padding:1.35rem; display:flex; flex-direction:column; border:1px solid rgba(15,23,42,.12); transition:transform .25s ease, box-shadow .25s ease; }
+.service-tile:hover { transform:translateY(-7px); box-shadow:0 18px 35px rgba(15,23,42,.12); }
+.service-tile h3 { margin-top:auto; font-size:1.25rem; font-weight:800; letter-spacing:-.03em; }
+.service-tile p { margin-top:.65rem; font-size:.88rem; line-height:1.55; color:rgba(15,23,42,.68); }
+.service-tile a { margin-top:1rem; display:flex; justify-content:flex-end; }
+.service-tile-cyan { background:#8af0f0; }.service-tile-violet { background:#c7c2ff; }.service-tile-lime { background:#d8f36b; }.service-tile-coral { background:#ffb6a3; }.service-tile-blue { background:#a8d6ff; }
+.care-card { border:1px solid rgba(15,23,42,.18); border-radius:1.25rem; padding:1.5rem; background:rgba(255,255,255,.28); }
+.care-card h3 { margin-top:2.5rem; font-size:1.18rem; font-weight:800; letter-spacing:-.03em; }.care-card p { margin-top:.55rem; max-width:22rem; font-size:.9rem; line-height:1.6; color:rgba(15,23,42,.7); }
+.studio-cta { background:#f7f6f2; padding:9rem 0; }
+@media (max-width: 700px) { .studio-section-head { align-items:flex-start; flex-direction:column; } .studio-section { padding:5rem 0; } .studio-cta { padding:6rem 0; } }

@@ -123,7 +123,7 @@ export const CaseStudyView: React.FC<CaseStudyViewProps> = ({ project, nextProje
               Desktop & Mobile Systems.
             </h2>
             <p className="text-slate-400 text-base font-sans">
-              Real WebP assets served directly from Supabase Storage bucket <code className="text-cyan-400">snow-media</code>, presented in responsive device frames.
+              Original Snow interface media presented in responsive device frames.
             </p>
           </div>
 
@@ -211,7 +211,7 @@ export const CaseStudyView: React.FC<CaseStudyViewProps> = ({ project, nextProje
               </p>
             </div>
             <div className="shrink-0 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-[11px] text-slate-400">
-              SUPABASE STORAGE: snow-media
+              ORIGINAL SNOW MEDIA
             </div>
           </div>
         </Container>
