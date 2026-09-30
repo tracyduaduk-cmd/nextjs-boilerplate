@@ -122,7 +122,7 @@ export function SecurityMatrix({ category = "recon", status = "idle" }: Security
   }, [category, status]);
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+    <div data-testid="security-matrix" className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
       <canvas
         ref={canvasRef}
         aria-hidden="true"

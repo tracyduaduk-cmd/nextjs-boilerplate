@@ -265,6 +265,15 @@ export interface SecuritySimulationState {
   forensics: { artifacts: ForensicsArtifact[]; selectedArtifactId?: string };
 }
 
+/** Format logical simulation ticks as a stable elapsed timestamp. */
+export function formatSimulationTimestamp(tick: number): string {
+  const elapsedMs = Math.max(0, tick) * 250;
+  const minutes = Math.floor(elapsedMs / 60000);
+  const seconds = Math.floor((elapsedMs % 60000) / 1000);
+  const milliseconds = elapsedMs % 1000;
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}.${String(milliseconds).padStart(3, "0")}`;
+}
+
 // Initial Mock Data (Fictional Snow Lab Fixtures)
 export const INITIAL_HOSTS: SecurityHost[] = [
   {
@@ -403,9 +412,9 @@ export const INITIAL_PACKETS: SecurityPacket[] = [
 ];
 
 export const INITIAL_EVENTS: SecurityEvent[] = [
-  { id: "evt-001", timestamp: "10:42:00", type: "SYSTEM", severity: "success", source: "OPERATIONS CORE", message: "SNOW WORKSTATION INITIALIZED / DETERMINISTIC SANDBOX CONNECTED" },
-  { id: "evt-002", timestamp: "10:42:02", type: "POLICY", severity: "notice", source: "SAFETY ENGINE", message: "EXTERNAL RECON DISABLED / SANDBOX OPERATES ON LOCAL SYNTHETIC FIXTURES" },
-  { id: "evt-003", timestamp: "10:42:05", type: "NETWORK", severity: "info", source: "PACKET SENSOR", message: "SYNTHETIC PACKET STREAM ONLINE / DISPLAY FILTERS READY" },
+  { id: "evt-001", timestamp: formatSimulationTimestamp(0), type: "SYSTEM", severity: "success", source: "OPERATIONS CORE", message: "SNOW WORKSTATION INITIALIZED / DETERMINISTIC SANDBOX CONNECTED" },
+  { id: "evt-002", timestamp: formatSimulationTimestamp(2), type: "POLICY", severity: "notice", source: "SAFETY ENGINE", message: "EXTERNAL RECON DISABLED / SANDBOX OPERATES ON LOCAL SYNTHETIC FIXTURES" },
+  { id: "evt-003", timestamp: formatSimulationTimestamp(5), type: "NETWORK", severity: "info", source: "PACKET SENSOR", message: "SYNTHETIC PACKET STREAM ONLINE / DISPLAY FILTERS READY" },
 ];
 
 export const INITIAL_MISSION: SecurityMission = {
@@ -434,7 +443,7 @@ export function initialSimulationState(): SecuritySimulationState {
     mode: "red",
     category: "recon",
     activeOpId: "nmap-recon",
-    clock: 1,
+    clock: 0,
     hosts: JSON.parse(JSON.stringify(INITIAL_HOSTS)),
     credentials: JSON.parse(JSON.stringify(INITIAL_CREDENTIALS)),
     vulnerabilities: JSON.parse(JSON.stringify(INITIAL_VULNERABILITIES)),
@@ -458,7 +467,7 @@ export function initialSimulationState(): SecuritySimulationState {
       state: {
         status: "idle",
         attempts: 0,
-        totalCandidates: 10000,
+        totalCandidates: 2700,
         attemptsPerSec: 0,
         currentCandidate: "---",
         matchFound: false,
