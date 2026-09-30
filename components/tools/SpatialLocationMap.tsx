@@ -8,9 +8,8 @@ import {
   getGoogleMapsUrl,
   formatCoordinateDMS,
 } from "@/lib/tools/findDevice";
-import { SpatialInstrument } from "@/components/spatial/SpatialInstrument";
+import { CinematicGlobe } from "@/components/tools/CinematicGlobe";
 import {
-  Globe,
   Navigation,
   Target,
   ExternalLink,
@@ -267,28 +266,11 @@ export function SpatialLocationMap({
       </div>
 
       {mapMode === "EARTH" ? (
-        <div className="relative w-full h-full bg-slate-950 flex items-center justify-center">
-          <SpatialInstrument
-            mode="home"
-            badgeLabel="SNOW SPATIAL EARTH GLOBE"
-            accentColor={isSimulated ? "#f59e0b" : "#38bdf8"}
-            scale={1.2}
-          />
-          <div className="absolute bottom-4 left-4 right-4 z-10 flex flex-wrap items-center justify-between gap-2 p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800/80 backdrop-blur-md font-mono text-xs">
-            <div className="flex items-center gap-2">
-              <Globe className="w-4 h-4 text-sky-400 animate-spin" style={{ animationDuration: "10s" }} />
-              <div>
-                <span className="text-slate-400 text-[10px] uppercase block">Spatial globe view</span>
-                <span className="text-slate-100 font-bold">{dms.latDMS} / {dms.lngDMS}</span>
-              </div>
-            </div>
-            {isSimulated && (
-              <span className="px-2.5 py-0.5 rounded-md bg-amber-950 text-amber-300 border border-amber-800 text-[10px] font-bold uppercase">
-                DEMO DATA GLOBE
-              </span>
-            )}
-          </div>
-        </div>
+        <CinematicGlobe
+          liveLocation={liveLocation}
+          simulatedLocation={simulatedLocation}
+          sessionTrail={sessionTrail}
+        />
       ) : googleApiKey && googleMapsLoaded ? (
         <div ref={googleMapContainerRef} className="w-full h-full" aria-label="Interactive Map View" />
       ) : (
