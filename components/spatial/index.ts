@@ -21,3 +21,4 @@ export * from "./SplitText";
 export * from "./Tilt";
 export * from "./SpatialWebGLScene";
 export * from "./SpatialInstrument";
+export * from "./SpatialMediaPlane";

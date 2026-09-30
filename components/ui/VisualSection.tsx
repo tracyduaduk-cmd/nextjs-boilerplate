@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { getLocalPublicUrl, PortfolioProjectSlug } from "@/lib/projects/mediaManifest";
+import { SpatialMediaPlane } from "@/components/spatial/SpatialMediaPlane";
 
 interface VisualSectionProps {
   eyebrow: string;
@@ -46,15 +47,17 @@ export function VisualSection({
           <p className="mt-5 max-w-lg text-sm leading-relaxed text-slate-600 sm:text-base">{description}</p>
           {href && cta && <Link href={href} className="mt-7 inline-flex min-h-11 items-center gap-2 rounded-full bg-slate-950 px-5 py-3 font-mono text-[11px] font-bold uppercase tracking-[.12em] text-white transition hover:-translate-y-0.5 hover:bg-cyan-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500">{cta}<ArrowUpRight size={15} /></Link>}
         </div>
-        <div className="lg:col-span-7">
-          <div className={`group relative overflow-hidden rounded-[1.75rem] border border-slate-950/10 bg-slate-950 shadow-[0_28px_80px_rgba(15,23,42,.16)] ${compact ? "aspect-[16/8]" : "aspect-[16/10]"}`}>
-            <Image src={image} alt={`${title} — original Snow concept`} fill sizes="(max-width: 1024px) 100vw, 58vw" className="object-cover transition duration-700 group-hover:scale-[1.035]" />
-            <div className={`absolute inset-0 bg-gradient-to-tr ${accents[accent].split(" ").slice(0, 3).join(" ")} via-transparent to-slate-950/55 mix-blend-screen`} />
-            <div className="absolute inset-x-4 bottom-4 flex items-end justify-between gap-4 rounded-xl border border-white/15 bg-slate-950/60 px-4 py-3 text-white backdrop-blur-md sm:inset-x-6 sm:bottom-6 sm:px-5">
-              <div><span className="block font-mono text-[9px] uppercase tracking-[.18em] text-cyan-200">Snow / original concept</span><span className="mt-1 block text-sm font-semibold">Interface study · {project.replaceAll("-", " ")}</span></div>
-              <span className="font-mono text-[10px] uppercase tracking-widest text-white/50">{role}</span>
+        <div className="lg:col-span-7 [perspective:1200px]">
+          <SpatialMediaPlane className="group/spatial-plane" intensity={2.25}>
+            <div className={`group relative overflow-hidden rounded-[1.75rem] border border-slate-950/10 bg-slate-950 shadow-[0_28px_80px_rgba(15,23,42,.16)] ${compact ? "aspect-[16/8]" : "aspect-[16/10]"}`}>
+              <Image src={image} alt={`${title} — original Snow concept`} fill sizes="(max-width: 1024px) 100vw, 58vw" className="object-cover transition duration-700 group-hover:scale-[1.035]" />
+              <div className={`absolute inset-0 bg-gradient-to-tr ${accents[accent].split(" ").slice(0, 3).join(" ")} via-transparent to-slate-950/55 mix-blend-screen`} />
+              <div className="absolute inset-x-4 bottom-4 flex items-end justify-between gap-4 rounded-xl border border-white/15 bg-slate-950/60 px-4 py-3 text-white backdrop-blur-md sm:inset-x-6 sm:bottom-6 sm:px-5">
+                <div><span className="block font-mono text-[9px] uppercase tracking-[.18em] text-cyan-200">Snow / original concept</span><span className="mt-1 block text-sm font-semibold">Interface study · {project.replaceAll("-", " ")}</span></div>
+                <span className="font-mono text-[10px] uppercase tracking-widest text-white/50">{role}</span>
+              </div>
             </div>
-          </div>
+          </SpatialMediaPlane>
         </div>
       </div>
     </section>
