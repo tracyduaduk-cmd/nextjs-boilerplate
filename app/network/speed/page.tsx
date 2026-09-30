@@ -179,25 +179,32 @@ export default function ConnectionSpeedPage() {
     return () => initialController.abort();
   }, [measureLatency]);
 
-  // Read Network Information API parameters
-  const getNetworkInfo = () => {
-    let effectiveType = "Not exposed by this browser";
-    let downlinkEstimate = "Not exposed by this browser";
-    let rttEstimate = "Not exposed by this browser";
+  const [netInfo, setNetInfo] = useState({
+    effectiveType: "Not exposed by this browser",
+    downlinkEstimate: "Not exposed by this browser",
+    rttEstimate: "Not exposed by this browser",
+  });
 
-    if (typeof navigator !== "undefined" && "connection" in navigator) {
-      const conn = (navigator as unknown as { connection?: { effectiveType?: string; downlink?: number; rtt?: number } }).connection;
-      if (conn) {
-        if (conn.effectiveType) effectiveType = conn.effectiveType.toUpperCase();
-        if (conn.downlink !== undefined) downlinkEstimate = `${conn.downlink} Mbps`;
-        if (conn.rtt !== undefined) rttEstimate = `${conn.rtt} ms`;
+  // Read browser-only Network Information API parameters after hydration.
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      let effectiveType = "Not exposed by this browser";
+      let downlinkEstimate = "Not exposed by this browser";
+      let rttEstimate = "Not exposed by this browser";
+
+      if ("connection" in navigator) {
+        const conn = (navigator as unknown as { connection?: { effectiveType?: string; downlink?: number; rtt?: number } }).connection;
+        if (conn) {
+          if (conn.effectiveType) effectiveType = conn.effectiveType.toUpperCase();
+          if (conn.downlink !== undefined) downlinkEstimate = `${conn.downlink} Mbps`;
+          if (conn.rtt !== undefined) rttEstimate = `${conn.rtt} ms`;
+        }
       }
-    }
 
-    return { effectiveType, downlinkEstimate, rttEstimate };
-  };
-
-  const netInfo = getNetworkInfo();
+      setNetInfo({ effectiveType, downlinkEstimate, rttEstimate });
+    }, 0);
+    return () => window.clearTimeout(timeoutId);
+  }, []);
 
   const getProfileRating = () => {
     if (!latencyData) return { label: "Awaiting Diagnostic", color: "text-slate-400" };

@@ -16,6 +16,8 @@ async function runTests() {
   console.assert(isPrivateOrReservedIPv4("1.1.1.1") === false, "1.1.1.1 public DNS");
 
   console.assert(isPrivateOrReservedIPv6("::1") === true, "::1 loopback");
+  console.assert(isPrivateOrReservedIPv6("[::1]") === true, "bracketed IPv6 loopback");
+  console.assert(isPrivateOrReservedIPv6("::ffff:7f00:1") === true, "mapped IPv4 loopback");
   console.assert(isPrivateOrReservedIPv6("fe80::1") === true, "fe80 link local");
   console.assert(isPrivateOrReservedIPv6("fc00::1") === true, "fc00 unique local");
   console.assert(isPrivateOrReservedIPv6("2001:4860:4860::8888") === false, "Google IPv6 public");
@@ -23,6 +25,12 @@ async function runTests() {
   const resLocal = await validateTargetUrl("http://localhost:3000");
   console.assert(resLocal.isValid === false, "localhost blocked");
   console.assert(resLocal.errorCategory === "LOCALHOST_REJECTED", "localhost category");
+
+  const resLocalDot = await validateTargetUrl("http://localhost.:3000");
+  console.assert(resLocalDot.isValid === false, "trailing-dot localhost blocked");
+
+  const resIpv6 = await validateTargetUrl("http://[::1]/");
+  console.assert(resIpv6.isValid === false, "IPv6 loopback blocked");
 
   const resIp = await validateTargetUrl("http://127.0.0.1/admin");
   console.assert(resIp.isValid === false, "127.0.0.1 blocked");
