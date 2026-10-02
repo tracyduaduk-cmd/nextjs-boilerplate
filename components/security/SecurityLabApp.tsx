@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { SecurityEventStream } from "@/components/security/SecurityEventStream";
 import { SecurityMatrix } from "@/components/security/SecurityMatrix";
+import { SecurityMonitor } from "@/components/security/SecurityMonitor";
 import { SecurityNetwork } from "@/components/security/SecurityNetwork";
 import { SecurityOperationPanel } from "@/components/security/SecurityOperationPanel";
 import { SecurityTerminal } from "@/components/security/SecurityTerminal";
@@ -494,7 +495,7 @@ function reducer(state: SecuritySimulationState, action: Action): SecuritySimula
 
         let sessions = s.sessions;
         if (matchFound && !s.bruteForce.state.matchFound) {
-          s = addEvent(s, "BRUTE FORCE", "success", "AUTH-ENGINE", "CREDENTIAL MATCH FOUND: operator / snow-lab-2025!");
+          s = addEvent(s, "BRUTE FORCE", "success", "AUTH-ENGINE", "MATCH CONFIRMED // operator / snow-lab-2025!");
           // Create session upon credential match
           const newSess: SecuritySession = {
             id: `session-0${sessions.length + 1}`,
@@ -608,6 +609,8 @@ function reducer(state: SecuritySimulationState, action: Action): SecuritySimula
 export function SecurityLabApp() {
   const [state, dispatch] = useReducer(reducer, undefined, initialSimulationState);
   const [terminalLines, setTerminalLines] = useState(INITIAL_TERMINAL);
+  const [isWorkstationFullscreen, setIsWorkstationFullscreen] = useState(false);
+  const workstationRef = useRef<HTMLDivElement>(null);
   const previousEventCount = useRef(state.events.length);
 
   // Simulation Tick Loop
@@ -689,24 +692,39 @@ export function SecurityLabApp() {
     return "idle" as OperationStatus;
   }, [state]);
 
+  const toggleWorkstationFullscreen = async () => {
+    if (!document.fullscreenElement) {
+      await workstationRef.current?.requestFullscreen?.();
+    } else {
+      await document.exitFullscreen?.();
+    }
+  };
+
+  useEffect(() => {
+    const onFullscreenChange = () => setIsWorkstationFullscreen(document.fullscreenElement === workstationRef.current);
+    document.addEventListener("fullscreenchange", onFullscreenChange);
+    return () => document.removeEventListener("fullscreenchange", onFullscreenChange);
+  }, []);
+
   return (
-    <div className="relative min-h-screen bg-[#030c0f] text-slate-100 font-sans selection:bg-emerald-500 selection:text-black">
+    <div ref={workstationRef} className={`relative min-h-screen bg-[#030c0f] text-slate-100 font-sans selection:bg-emerald-500 selection:text-black ${isWorkstationFullscreen ? "security-workstation-fullscreen" : ""}`}>
       {/* Background Matrix & CRT Scanline Layer */}
       <SecurityMatrix category={state.category} status={currentOpStatus} />
 
       <main id="main-content" className="relative z-10 mx-auto w-full max-w-[1550px] px-4 pb-24 pt-28 sm:px-6 lg:px-10">
-        {/* Header Hero Section */}
-        <section className="security-hero flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border-b border-emerald-400/20 pb-8">
-          <div className="max-w-2xl">
+        {/* Workstation header: establish the computer metaphor before controls. */}
+        <section className="security-workstation-header border border-emerald-400/25 bg-[#041316]/95 p-4 sm:p-6">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-3xl">
             <p className="security-kicker flex items-center gap-2 font-mono text-xs text-emerald-400 tracking-wider">
               <span className="security-live-dot h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
               SNOW SECURITY LAB // OPERATOR WORKSTATION
             </p>
-            <h1 className="mt-2 text-4xl sm:text-6xl font-extrabold tracking-tight font-mono text-white">
-              CYBER <em className="text-emerald-400 not-italic">RANGE</em>
+            <h1 className="mt-2 text-3xl sm:text-5xl font-extrabold tracking-tight font-mono text-white">
+              SNOW <em className="text-emerald-400 not-italic">{"// CYBER RANGE"}</em>
             </h1>
             <p className="mt-3 text-sm sm:text-base text-slate-300 font-mono leading-relaxed">
-              Step into an authentic hacker workstation targeting the local <strong>10.44.0.0/24 cyber range</strong>. Execute deterministic operations, establish active sessions, capture traffic, analyze forensic traces, and complete cinematic missions.
+              Fictional operator console targeting the isolated <strong>10.44.0.0/24 cyber range</strong>. Every signal is synthetic, deterministic, and local to this workstation.
             </p>
             <div className="mt-4 flex flex-wrap gap-2 font-mono text-[10px] uppercase text-slate-400">
               <span className="security-chip border border-emerald-500/30 bg-emerald-950/40 px-2 py-0.5 text-emerald-300">RANGE: 10.44.0.0/24</span>
@@ -714,8 +732,20 @@ export function SecurityLabApp() {
               <span className="security-chip border border-slate-700 bg-slate-900 px-2 py-0.5 text-slate-300">100% DETERMINISTIC</span>
             </div>
           </div>
-
-          <div className="security-hero-signal flex flex-col items-center justify-center p-4 border border-cyan-400/30 bg-cyan-950/20 rounded-none w-full md:w-52 text-center font-mono">
+          <div className="flex flex-wrap items-center gap-3 font-mono text-[10px] uppercase">
+            <button type="button" onClick={toggleWorkstationFullscreen} className="security-command-button mt-0" aria-label={isWorkstationFullscreen ? "Exit fullscreen workstation" : "Enter fullscreen workstation"}>
+              {isWorkstationFullscreen ? "ESC // EXIT WORKSTATION" : "⛶ FULLSCREEN WORKSTATION"}
+            </button>
+          </div>
+          </div>
+          <div className="mt-5 grid grid-cols-2 gap-2 border-t border-emerald-400/15 pt-4 font-mono text-[10px] uppercase sm:grid-cols-4">
+            <div><span className="text-slate-500">SYSTEM STATUS</span><strong className="block text-emerald-300">ONLINE</strong></div>
+            <div><span className="text-slate-500">TARGET</span><strong className="block text-cyan-300">AUTH-SRV</strong></div>
+            <div><span className="text-slate-500">SESSION</span><strong className="block text-amber-300">{state.selectedSessionId || "STANDBY"}</strong></div>
+            <div><span className="text-slate-500">SIM CLOCK</span><strong className="block text-slate-200">#{String(state.clock).padStart(4, "0")}</strong></div>
+          </div>
+          {/* Keep the existing signal readout available without letting it dominate the viewport. */}
+          <div className="sr-only">
             <span className="text-[10px] text-cyan-300">ACTIVE WORKSTATION</span>
             <strong className="text-emerald-400 text-lg">CYBER RANGE ONLINE</strong>
             <small className="text-[9px] text-slate-400 mt-1">
@@ -725,8 +755,9 @@ export function SecurityLabApp() {
           </div>
         </section>
 
-        {/* Network Topology & Terminal / Event Grid */}
-        <section className="mt-8 grid gap-6 lg:grid-cols-[1.25fr_0.75fr]">
+        {/* Main CRT monitor + live network pane: the first viewport reads as a workstation. */}
+        <section className="mt-6 grid gap-5 xl:grid-cols-[minmax(0,1.55fr)_minmax(330px,.75fr)]">
+          <SecurityMonitor state={state} status={currentOpStatus} />
           <SecurityNetwork
             category={state.category}
             hosts={state.hosts}
@@ -738,10 +769,14 @@ export function SecurityLabApp() {
             onSelectHost={(hostId) => dispatch({ type: "SELECT_HOST", hostId })}
             onSelectSession={(sessionId) => dispatch({ type: "SELECT_SESSION", sessionId })}
           />
-          <div className="grid gap-6">
+        </section>
+
+        {/* Lower monitors: terminal and event stream stay visible as separate programs. */}
+        <section className="mt-5 grid gap-5 lg:grid-cols-[1.2fr_.8fr]">
+          <div>
             <SecurityTerminal lines={terminalLines} onCommand={handleCommand} activeOpId={state.activeOpId} status={currentOpStatus} />
-            <SecurityEventStream events={state.events} />
           </div>
+          <SecurityEventStream events={state.events} />
         </section>
 
         {/* Primary Interactive Operation Panel */}
