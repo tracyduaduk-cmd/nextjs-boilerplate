@@ -166,7 +166,7 @@ export function SecurityNetwork({
               </span>
             </div>
             <div className="text-white font-extrabold text-sm flex items-center gap-2">
-              <span>{activeHost.hostname}</span>
+              <span>{activeHost.hostname === "EDGE-GATEWAY" ? "EDGE ROUTER" : activeHost.hostname}</span>
               <span className="text-cyan-300 font-normal text-xs">({activeHost.address})</span>
             </div>
             <p className="text-[10px] text-slate-400">{activeHost.role}</p>
@@ -220,7 +220,7 @@ export function SecurityNetwork({
           <span className="flex items-center gap-1"><i className="legend-dot inline-block h-1.5 w-1.5 rounded-full bg-cyan-400" />DISCOVERED</span>
           <span className="flex items-center gap-1"><i className="legend-dot inline-block h-1.5 w-1.5 rounded-full bg-amber-300" />SESSION</span>
         </div>
-        <span className="text-emerald-400/80">SNOW CYBER RANGE SIMULATION // 10.44.0.0/24</span>
+        <span className="text-emerald-400/80">SNOW CYBER RANGE SIMULATION // RANGE 10.44.0.0/24</span>
       </div>
     </div>
   );

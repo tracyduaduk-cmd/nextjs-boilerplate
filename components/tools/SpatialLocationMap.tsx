@@ -124,13 +124,17 @@ export function SpatialLocationMap({ liveLocation = null, simulatedLocation = nu
   }, [isFullscreen]);
 
   return (
-    <div className={`relative w-full overflow-hidden rounded-3xl border border-slate-800 bg-slate-950 shadow-2xl transition-all ${isFullscreen ? "fixed inset-4 z-50 h-[calc(100vh-2rem)]" : "h-[440px] sm:h-[500px]"} ${className}`}>
+    <div className={`relative w-full ${isFullscreen ? "fixed inset-4 z-50 h-[calc(100vh-2rem)]" : ""} ${className}`}>
+      <div className="sticky top-4 z-40 mb-3 flex items-center justify-between gap-3 rounded-2xl border border-sky-400/25 bg-slate-950/95 p-2 shadow-[0_12px_35px_rgba(2,8,23,.45)] backdrop-blur-xl" aria-label="Map display modes">
+        <span className="hidden pl-2 text-[10px] font-mono font-bold uppercase tracking-[.18em] text-sky-300 sm:inline">Spatial display</span>
+        <div className="flex min-w-0 flex-1 items-center justify-end gap-1 overflow-x-auto">
+          {(["MAP", "SATELLITE", "TERRAIN", "EARTH"] as MapDisplayMode[]).map((mode) => <button key={mode} type="button" onClick={() => { setMapMode(mode); setTileError(false); onModeChange?.(mode); }} aria-pressed={mapMode === mode} aria-label={mode === "EARTH" ? "EARTH" : mode} className={`min-h-[44px] shrink-0 rounded-xl px-3 text-[10px] font-mono font-bold transition-all sm:px-4 sm:text-xs ${mapMode === mode ? "bg-sky-400 text-slate-950 shadow-md shadow-sky-950/50" : "text-slate-400 hover:bg-slate-800 hover:text-slate-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-sky-300"}`}>{mode === "EARTH" ? "GLOBE" : mode}</button>)}
+        </div>
+      </div>
+      <div className={`relative w-full overflow-hidden rounded-3xl border border-slate-800 bg-slate-950 shadow-2xl transition-all ${isFullscreen ? "h-full" : "h-[440px] sm:h-[500px]"}`}>
       <div className="pointer-events-none absolute left-4 right-4 top-4 z-20 flex flex-wrap items-center justify-between gap-3">
         <div className="pointer-events-auto flex items-center gap-2 rounded-xl border border-slate-800/90 bg-slate-950/90 px-3 py-1.5 font-mono text-xs shadow-lg backdrop-blur-md">
           {liveLocation ? <span className="flex items-center gap-1.5 font-bold text-sky-400"><span className="h-2 w-2 animate-pulse rounded-full bg-sky-400" />LIVE BROWSER GPS</span> : simulatedLocation ? <span className="flex items-center gap-1.5 font-bold text-amber-400"><span className="h-2 w-2 animate-pulse rounded-full bg-amber-400" />SIMULATED DEMO DEVICE</span> : <span className="flex items-center gap-1.5 font-bold text-slate-400"><Target className="h-3.5 w-3.5 text-slate-500" />READY TO LOCATE</span>}
-        </div>
-        <div className="pointer-events-auto flex items-center rounded-xl border border-slate-800/90 bg-slate-900/90 p-1 backdrop-blur-md">
-          {(["MAP", "SATELLITE", "TERRAIN", "EARTH"] as MapDisplayMode[]).map((mode) => <button key={mode} type="button" onClick={() => { setMapMode(mode); setTileError(false); onModeChange?.(mode); }} aria-pressed={mapMode === mode} aria-label={mode === "EARTH" ? "EARTH" : mode} className={`rounded-lg px-3 py-1 text-[10px] font-mono font-bold transition-all sm:text-xs ${mapMode === mode ? "bg-sky-400 text-slate-950 shadow-md shadow-sky-950/50" : "text-slate-400 hover:text-slate-200"}`}>{mode === "EARTH" ? "GLOBE" : mode}</button>)}
         </div>
       </div>
       {mapMode === "EARTH" ? <CinematicGlobe liveLocation={liveLocation} simulatedLocation={simulatedLocation} sessionTrail={sessionTrail} /> : <div ref={mapElementRef} className="h-full w-full" aria-label={`${TILE_CONFIG[mapMode].label} centered on the selected location`} />}
@@ -139,6 +143,7 @@ export function SpatialLocationMap({ liveLocation = null, simulatedLocation = nu
         <div className="pointer-events-auto space-y-1 rounded-2xl border border-slate-800 bg-slate-950/90 p-3 font-mono text-xs backdrop-blur-md"><div className="flex items-center gap-2"><Navigation className="h-3.5 w-3.5 text-sky-400" /><span className="font-bold text-slate-200">{activeLat.toFixed(6)}°, {activeLng.toFixed(6)}°</span></div><div className="text-[10px] text-slate-400">{dms.latDMS} | {dms.lngDMS}</div></div>
         <div className="pointer-events-auto flex items-center gap-2">{activeLocation && <a href={getGoogleMapsUrl(activeLat, activeLng)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 rounded-xl border border-slate-800 bg-slate-900/90 px-3.5 py-2 font-mono text-xs font-bold text-sky-300 shadow-lg backdrop-blur-md transition-all hover:bg-sky-400 hover:text-slate-950"><span>Open in Google Maps</span><ExternalLink className="h-3.5 w-3.5" /></a>}<button type="button" onClick={() => setIsFullscreen((value) => !value)} aria-label={isFullscreen ? "Exit fullscreen map" : "Expand map"} className="rounded-xl border border-slate-800 bg-slate-900/90 p-2 text-slate-300 shadow-lg backdrop-blur-md transition-all hover:bg-slate-800"><Maximize2 className="h-4 w-4" /></button></div>
       </div>
+    </div>
     </div>
   );
 }
